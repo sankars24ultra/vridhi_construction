@@ -1,0 +1,1445 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vridhi Constructions &amp; Designs</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
+    :root {
+      color-scheme: light;
+      --ink: #202d2b;
+      --muted: #72817d;
+      --paper: #f3f6f2;
+      --surface: #fff;
+      --line: #e3e9e3;
+      --pine: #155d4a;
+      --pine-dark: #104838;
+      --lime: #d4ed7c;
+      --coral: #df7458;
+      --amber: #dfa841;
+      --blue: #6592a1;
+      --shadow: 0 8px 24px rgba(33, 52, 45, .055);
+      font-family: 'DM Sans', sans-serif;
+    }
+    * { box-sizing: border-box; }
+    .shell[hidden], .auth-screen[hidden] { display: none !important; }
+    body { margin: 0; background: var(--paper); color: var(--ink); }
+    button, select, input { font: inherit; }
+    button { cursor: pointer; }
+    .shell { height: 100vh; height: 100dvh; overflow: hidden; display: grid; grid-template-columns: 246px minmax(0, 1fr); }
+    aside { min-height: 0; overflow: hidden; background: #183f36; color: #f3f6f1; padding: 24px 16px; display: flex; flex-direction: column; }
+    .brand { display: flex; align-items: center; gap: 11px; padding: 2px 10px 28px; }
+    .brand-mark { width: 34px; height: 34px; border-radius: 9px; background: var(--lime); color: var(--pine-dark); display: grid; place-items: center; font-family: Manrope, sans-serif; font-weight: 800; }
+    .brand-name { font: 800 16px Manrope, sans-serif; letter-spacing: .3px; }
+    .brand-sub { color: #aac3b9; font-size: 10px; margin-top: 2px; letter-spacing: .8px; text-transform: uppercase; }
+    .side-label { color: #91aaa0; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; padding: 14px 12px 8px; text-transform: uppercase; }
+    .project-select { width: 100%; background: #214e43; color: white; border: 1px solid #376457; border-radius: 7px; padding: 11px 10px; outline-color: var(--lime); }
+    .nav { display: grid; gap: 4px; }
+    .nav button { border: 0; border-radius: 6px; text-align: left; color: #c3d4cd; background: transparent; padding: 10px 11px; display: flex; gap: 11px; align-items: center; font-size: 13px; transition: background .16s ease, color .16s ease; }
+    .nav button[hidden] { display: none; }
+    .nav button:hover { background: #244e43; color: #fff; }
+    .nav button.active { background: var(--lime); color: #21483c; font-weight: 700; }
+    .nav-icon { width: 19px; text-align: center; font-size: 15px; }
+    .side-bottom { margin-top: auto; border-top: 1px solid #31574d; padding: 17px 10px 0; color: #b2c9c0; font-size: 11px; line-height: 1.5; }
+    .user-chip { display: flex; align-items: center; gap: 9px; margin-top: 15px; color: white; }
+    .avatar { width: 29px; height: 29px; display: grid; place-items: center; background: #e8a17d; color: #4a342a; border-radius: 50%; font-weight: 700; }
+    main { min-width: 0; min-height: 0; height: 100%; overflow: hidden; display: grid; grid-template-rows: 69px minmax(0, 1fr); }
+    .topbar { height: 69px; min-height: 69px; background: rgba(255,255,255,.88); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 34px; }
+    .crumb { color: #56645e; font-size: 12px; }
+    .crumb strong { color: var(--ink); font-weight: 600; }
+    .top-actions { display: flex; align-items: center; gap: 10px; }
+    .asof { color: #56645e; font-size: 11px; }
+    .icon-button { position: relative; border: 1px solid var(--line); background: white; color: #486059; width: 35px; height: 35px; border-radius: 7px; }
+    .icon-button:hover { border-color: #9cb3a9; }
+    .notification-dot { position: absolute; top: 6px; right: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--coral); }
+    .content { width: 100%; max-width: 1480px; min-height: 0; overflow: auto; overscroll-behavior: contain; margin: 0 auto; padding: 28px 34px 38px; }
+    .title-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+    .eyebrow { color: var(--pine); text-transform: uppercase; font-weight: 700; letter-spacing: 1.25px; font-size: 10px; margin-bottom: 8px; }
+    h1 { font: 800 26px Manrope, sans-serif; letter-spacing: 0; margin: 0; }
+    .subtitle { color: #56645e; font-size: 12px; margin-top: 6px; }
+    .actions { display: flex; gap: 8px; }
+    .button { border: 1px solid var(--line); border-radius: 6px; padding: 9px 12px; background: white; color: #44534e; font-size: 12px; font-weight: 600; }
+    .button:hover { background: #f8faf7; border-color: #b8c9bf; }
+    .button.primary { color: white; background: var(--pine); border-color: var(--pine); }
+    .button.primary:hover { background: var(--pine-dark); }
+    .button .plus { font-size: 15px; vertical-align: -1px; margin-right: 4px; }
+    .notice { display: flex; gap: 9px; align-items: center; background: #fff6df; color: #795d22; border: 1px solid #f1e1b8; border-radius: 6px; padding: 10px 13px; font-size: 11px; margin-bottom: 17px; }
+    .notice b { font-weight: 700; }
+    .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; margin-bottom: 15px; }
+    .kpis.portfolio-kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 7px; padding: 16px 17px; box-shadow: var(--shadow); min-height: 116px; }
+    .kpi-top { display: flex; align-items: center; justify-content: space-between; color: #46544e; font-size: 11px; font-weight: 600; }
+    .kpi-symbol { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 6px; font-size: 14px; }
+    .sym-pine { color: var(--pine); background: #e3f0e7; }
+    .sym-coral { color: #b8533d; background: #fbebe6; }
+    .sym-amber { color: #9a6c1d; background: #fbf1d9; }
+    .sym-blue { color: #4b7787; background: #e5f0f3; }
+    .kpi-value { font: 800 23px Manrope, sans-serif; margin-top: 9px; letter-spacing: 0; }
+    .kpi-foot { font-size: 10px; color: #58665f; margin-top: 5px; }
+    .positive { color: var(--pine); font-weight: 700; }
+    .negative { color: #ba5b43; font-weight: 700; }
+    .grid-main { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(270px, .9fr); gap: 14px; margin-bottom: 15px; }
+    .overview-sections { display: grid; gap: 15px; }
+    .overview-sections > .title-row,
+    .overview-sections > .notice,
+    .overview-sections > .kpis,
+    .overview-sections > .status-panel,
+    .overview-sections > .grid-main,
+    .overview-sections > .plan-documents,
+    .overview-sections > .panel { margin-bottom: 0; }
+    .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 7px; box-shadow: var(--shadow); min-width: 0; }
+    .panel-head { padding: 15px 17px; border-bottom: 1px solid #edf0ec; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .panel-title { font: 700 13px Manrope, sans-serif; }
+    .panel-caption { color: #5b6962; font-size: 10px; margin-top: 4px; }
+    .range-select { border: 1px solid var(--line); border-radius: 5px; padding: 7px 8px; font-size: 10px; color: #53615d; background: white; }
+    .chart-wrap { padding: 15px 18px 14px; }
+    .chart-legend { display: flex; gap: 16px; color: #56645e; font-size: 10px; }
+    .legend-key { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 8px; height: 8px; border-radius: 2px; background: var(--pine); }
+    .dot.budget { background: #d7e0d8; }
+    .chart { height: 165px; position: relative; display: flex; align-items: end; justify-content: space-around; padding: 10px 6px 24px; margin-top: 10px; border-bottom: 1px solid var(--line); background: repeating-linear-gradient(to bottom, transparent 0, transparent 40px, #edf1ed 41px, transparent 42px); }
+    .bar-group { height: 100%; width: 11%; display: flex; align-items: end; justify-content: center; gap: 5px; position: relative; }
+    .bar { width: 13px; border-radius: 3px 3px 0 0; min-height: 5px; transition: height .25s ease; }
+    .bar.actual { background: var(--pine); }
+    .bar.budget { background: #d6e0d8; }
+    .bar-label { position: absolute; bottom: -19px; color: #5f6d66; font-size: 9px; white-space: nowrap; }
+    .chart-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 13px; color: #56645e; font-size: 10px; }
+    .chart-foot strong { color: var(--pine); }
+    .mix { padding: 15px 17px 17px; }
+    .mix-row { margin: 14px 0; }
+    .mix-meta { display: flex; justify-content: space-between; color: #52615b; font-size: 10px; margin-bottom: 7px; }
+    .track { height: 7px; background: #edf1ed; border-radius: 9px; overflow: hidden; }
+    .fill { height: 100%; border-radius: inherit; }
+    .fill.material { background: var(--pine); width: 63%; }
+    .fill.labor { background: var(--coral); width: 27%; }
+    .fill.equipment { background: var(--amber); width: 10%; }
+    .mix-total { border-top: 1px solid var(--line); padding-top: 11px; display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; }
+    .table-panel { overflow: hidden; }
+    .table-tools { display: flex; align-items: center; gap: 8px; }
+    .search { width: 145px; border: 1px solid var(--line); border-radius: 5px; padding: 7px 9px; font-size: 10px; outline-color: var(--pine); }
+    .table-scroll { overflow: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+    th { color: #53615b; font-size: 9px; font-weight: 700; letter-spacing: .7px; text-transform: uppercase; padding: 10px 15px; background: #fbfcfa; border-bottom: 1px solid var(--line); }
+    td { padding: 12px 15px; font-size: 10px; color: #45534e; border-bottom: 1px solid #edf0ec; }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: #fbfcfa; }
+    .main-cell { color: var(--ink); font-size: 11px; font-weight: 600; }
+    .sub-cell { color: #5f6d66; margin-top: 3px; font-size: 9px; }
+    .badge { display: inline-block; border-radius: 20px; padding: 4px 8px; font-size: 9px; font-weight: 700; }
+    .badge.green { background: #e5f3e9; color: #2f7451; }
+    .badge.yellow { background: #fbf1d9; color: #936b20; }
+    .badge.blue { background: #e7f0f3; color: #4d7785; }
+    .badge.red { background: #fbe9e4; color: #a74f3a; }
+    .payment-state { display: inline-block; min-width: 88px; text-align: center; border-radius: 5px; padding: 5px 7px; font-size: 10px; font-weight: 700; }
+    .payment-state.unpaid { background: #fae5e2; color: #9f3028; }
+    .payment-state.partial { background: #fff0d2; color: #8b5b00; }
+    .payment-state.paid { background: #e0f1e6; color: #23613b; }
+    .payment-summary { display: grid; gap: 3px; min-width: 105px; }
+    .payment-summary span { font-size: 10px; color: #4f5e57; font-weight: 600; }
+    .payment-summary strong { color: var(--ink); }
+    .po-actions { display: flex; align-items: center; gap: 4px; }
+    .payment-history { padding: 15px 18px; }
+    #purchasePaymentHistoryDialog { width: 60vw; max-width: 60vw; max-height: calc(100dvh - 32px); overflow: hidden; display: flex; flex-direction: column; }
+    #purchasePaymentHistoryDialog[open] { display: flex; }
+    #purchasePaymentHistoryDialog .dialog-body { min-height: 0; overflow-y: auto; display: block; }
+    .payment-history { min-width: 0; }
+    .payment-history-row { display: grid; grid-template-columns: minmax(100px, .75fr) minmax(115px, .9fr) minmax(150px, 1fr) minmax(200px, 1.35fr) minmax(140px, .9fr) minmax(170px, 1fr); gap: 12px; align-items: start; border-bottom: 1px solid #edf0ec; padding: 10px 0; font-size: 10px; }
+    .payment-history-row > * { min-width: 0; overflow-wrap: anywhere; }
+    .payment-history-head { color: #43534b; background: #f7f9f6; font-size: 9px; font-weight: 700; text-transform: uppercase; }
+    .payment-history-row:last-child { border-bottom: 0; }
+    .receipt-link { color: var(--pine); font-size: 10px; font-weight: 700; }
+    .receipt-preview { display: block; width: 64px; height: 48px; object-fit: cover; border: 1px solid var(--line); border-radius: 4px; margin-top: 5px; }
+    .po-status-cell { display: flex; align-items: center; gap: 7px; }
+    .po-status-cell .project-status-icon { flex: 0 0 25px; }
+    .icon-action { width: 30px; height: 30px; display: inline-grid; place-items: center; border: 1px solid var(--line); border-radius: 5px; background: white; color: #486059; text-decoration: none; margin-right: 4px; }
+    .icon-action:hover { border-color: #9cb3a9; background: #f8faf7; }
+    .icon-action:disabled, .icon-action[aria-disabled="true"] { color: #9aa6a0; background: #f0f2ef; cursor: not-allowed; }
+    @media (max-width: 720px) {
+      .payment-history-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px 12px; }
+      .payment-history-head { display: none; }
+      .payment-history-row:not(.payment-history-head) > *::before { display: block; content: attr(data-label); margin-bottom: 3px; color: #5b6962; font-size: 8px; font-weight: 700; text-transform: uppercase; }
+      #purchasePaymentHistoryDialog { width: calc(100vw - 24px); max-width: calc(100vw - 24px); max-height: calc(100dvh - 24px); }
+    }
+    .empty { padding: 32px; text-align: center; color: #56645e; font-size: 12px; }
+    .toast { position: fixed; bottom: 22px; right: 22px; background: #203f36; color: white; padding: 12px 16px; border-radius: 6px; font-size: 12px; box-shadow: var(--shadow); opacity: 0; transform: translateY(9px); transition: .2s ease; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    dialog { border: 0; padding: 0; width: min(430px, calc(100% - 28px)); border-radius: 8px; box-shadow: 0 24px 80px rgba(22,40,34,.25); }
+    dialog::backdrop { background: rgba(21,39,33,.45); }
+    .dialog-head { padding: 18px 20px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+    .dialog-head h2 { margin: 0; font: 700 16px Manrope, sans-serif; }
+    .dialog-body { padding: 18px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .field { display: grid; gap: 5px; color: #64726c; font-size: 10px; }
+    .field[hidden], .assignment-list[hidden] { display: none !important; }
+    .field input, .field select { width: 100%; padding: 9px; border: 1px solid var(--line); border-radius: 5px; font-size: 12px; color: var(--ink); }
+    .dialog-actions { border-top: 1px solid var(--line); padding: 13px 20px; display: flex; justify-content: flex-end; gap: 8px; }
+    .dialog-note { grid-column: 1 / -1; color: #56645e; font-size: 11px; line-height: 1.5; }
+    .field.full { grid-column: 1 / -1; }
+    .field textarea { min-height: 76px; resize: vertical; width: 100%; padding: 9px; border: 1px solid var(--line); border-radius: 5px; font: inherit; font-size: 12px; color: var(--ink); }
+    .field input[type="checkbox"] { width: auto; }
+    .portfolio-heading { margin: 0 0 12px; font: 700 14px Manrope, sans-serif; display: flex; align-items: center; gap: 8px; }
+    .portfolio-heading span { color: #56645e; font: 500 10px 'DM Sans', sans-serif; }
+    .project-title-line { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+    .project-status-icon { display: inline-grid; place-items: center; width: 25px; height: 25px; border-radius: 6px; font: 700 13px 'DM Sans', sans-serif; vertical-align: middle; }
+    .project-status-icon.planning { background: #fbf1d9; color: #936b20; }
+    .project-status-icon.active { background: #e5f3e9; color: #2f7451; }
+    .project-status-icon.on-hold { background: #fbf1d9; color: #936b20; }
+    .project-status-icon.completed { background: #e7f0f3; color: #4d7785; }
+    .status-history { padding: 14px 17px; }
+    .status-current { display: flex; align-items: center; gap: 9px; margin-bottom: 12px; font-size: 11px; }
+    .status-entry { display: grid; grid-template-columns: minmax(105px, .7fr) minmax(0, 2fr); gap: 12px; padding: 11px 0; border-top: 1px solid #edf0ec; }
+    .status-entry-meta { color: #56645e; font-size: 10px; line-height: 1.5; }
+    .status-entry-comment { color: #45534e; font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+    .project-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 22px; }
+    .project-card { background: var(--surface); border: 1px solid var(--line); border-radius: 7px; padding: 15px; box-shadow: var(--shadow); cursor: pointer; transition: border-color .15s ease, transform .15s ease; }
+    .project-card:hover { border-color: #9eb8a9; transform: translateY(-2px); }
+    .project-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .project-card h3 { margin: 0; font: 700 13px Manrope, sans-serif; }
+    .project-card p { margin: 5px 0 13px; color: #56645e; font-size: 10px; }
+    .project-card-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding-top: 11px; border-top: 1px solid var(--line); }
+    .project-metric-label { color: #56645e; font-size: 9px; }
+    .project-metric-value { margin-top: 3px; font-size: 11px; font-weight: 700; }
+    .portfolio-empty { color: #56645e; border: 1px dashed var(--line); padding: 18px; border-radius: 6px; font-size: 11px; }
+    .portfolio-section { margin-bottom: 22px; }
+    .project-nav-context { color: #aac3b9; font-size: 10px; line-height: 1.4; padding: 12px 11px 4px; overflow-wrap: anywhere; }
+    .user-action { border: 1px solid var(--line); border-radius: 5px; background: white; color: #44534e; padding: 6px 8px; font-size: 10px; margin-right: 5px; }
+    .user-action.danger { color: #a74f3a; }
+    .assignment-list { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; max-height: 150px; overflow: auto; padding: 9px; border: 1px solid var(--line); border-radius: 5px; }
+    .assignment-list label { display: flex; align-items: center; gap: 7px; color: #53615d; font-size: 10px; }
+    .role-matrix { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 15px; }
+    .role-item { border: 1px solid var(--line); background: #fbfcfa; padding: 12px; border-radius: 6px; }
+    .role-item strong { display: block; font: 700 11px Manrope, sans-serif; margin-bottom: 5px; }
+    .role-item span { color: #56645e; font-size: 10px; line-height: 1.5; }
+    .users-table { min-width: 720px; }
+    .auth-screen { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: radial-gradient(ellipse at 15% 10%, #e0ebdf 0, transparent 45%), linear-gradient(135deg, #f3f6f2 0%, #e7eee6 100%); }
+    .auth-panel { width: min(420px, 100%); background: white; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 18px 55px rgba(24, 63, 54, .12); overflow: hidden; }
+    .auth-brand { background: #183f36; color: white; padding: 22px 24px; display: flex; align-items: center; gap: 12px; }
+    .auth-body { padding: 24px; }
+    .auth-body h1 { font-size: 21px; margin-bottom: 7px; }
+    .auth-copy { color: var(--muted); font-size: 12px; line-height: 1.55; margin-bottom: 18px; }
+    .auth-form { display: grid; gap: 13px; }
+    .auth-form .field { font-size: 11px; }
+    .auth-form input { min-height: 40px; }
+    .auth-submit { width: 100%; min-height: 40px; }
+    .auth-link { border: 0; background: transparent; color: var(--pine); font-size: 11px; font-weight: 700; padding: 6px; }
+    .auth-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+    .auth-message { min-height: 18px; color: #a74f3a; font-size: 11px; line-height: 1.5; margin-top: 12px; }
+    .auth-message.success { color: var(--pine); }
+    .demo-credentials { background: #f3f7f1; border: 1px solid #e1eadf; padding: 11px; border-radius: 5px; margin-top: 16px; color: #56645d; font-size: 10px; line-height: 1.6; }
+    .demo-credentials strong { color: var(--ink); }
+    .auth-warning { color: #8a6a2b; font-size: 10px; line-height: 1.5; margin-top: 13px; }
+    @media (max-width: 720px) { .role-matrix { grid-template-columns: 1fr; } .assignment-list { grid-template-columns: 1fr; } }
+    @media (max-width: 1020px) { .shell { grid-template-columns: 205px minmax(0, 1fr); } .content { padding: 24px 22px; } .topbar { padding: 0 22px; } .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 720px) {
+      .shell { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
+      aside { min-height: 0; padding: 12px 14px; }
+      .brand { padding: 0 5px 12px; }
+      .side-label, .project-select, .side-bottom { display: none; }
+      .nav { display: flex; overflow-x: auto; gap: 5px; padding-bottom: 2px; }
+      .nav button { flex: 0 0 auto; padding: 9px; font-size: 11px; }
+      .nav-icon { width: auto; }
+      main { height: auto; min-height: 0; grid-template-rows: 52px minmax(0, 1fr); }
+      .topbar { height: 52px; min-height: 52px; padding: 0 15px; }
+      .asof { display: none; }
+      .content { padding: 21px 14px 30px; }
+      h1 { font-size: 22px; }
+      .title-row { align-items: flex-start; flex-direction: column; }
+      .actions { width: 100%; }
+      .grid-main { grid-template-columns: 1fr; }
+      .portfolio-kpis { display: flex; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 5px; }
+      .portfolio-kpis .kpi { flex: 0 0 155px; }
+      .project-grid { grid-template-columns: minmax(0, 1fr); }
+      .project-card { min-width: 0; }
+      .project-card h3 { overflow-wrap: anywhere; }
+      .project-card-top { min-width: 0; }
+      .status-entry { grid-template-columns: 1fr; gap: 5px; }
+      .kpi { padding: 13px; min-height: 108px; }
+      .kpi-value { font-size: 19px; }
+      .search { width: 112px; }
+      th, td { padding-left: 11px; padding-right: 11px; }
+    }
+  </style>
+</head>
+<body>
+  <section class="auth-screen" id="authScreen"></section>
+  <div class="shell" id="appShell" hidden>
+    <aside>
+      <div class="brand">
+        <div class="brand-mark">V</div>
+        <div><div class="brand-name">Vridhi</div><div class="brand-sub">Constructions &amp; Designs</div></div>
+      </div>
+      <div class="side-label">Workspace</div>
+      <nav class="nav" aria-label="Main navigation">
+        <button class="active" data-view="projects"><span class="nav-icon">▦</span>Projects</button>
+        <button class="project-module" data-view="dashboard"><span class="nav-icon">⌂</span>Overview</button>
+        <button class="project-module" data-view="procurement"><span class="nav-icon">↗</span>Procurement</button>
+        <button class="project-module" data-view="inventory"><span class="nav-icon">▤</span>Inventory</button>
+        <button class="project-module" data-view="billing"><span class="nav-icon">▧</span>Progress billing</button>
+        <button class="project-module" data-view="attendance"><span class="nav-icon">◷</span>Attendance</button>
+        <button data-view="users" id="usersNav" hidden><span class="nav-icon">♙</span>Users</button>
+      </nav>
+      <div class="project-nav-context" id="projectNavContext" hidden></div>
+      <div class="side-bottom">
+        Prototype workspace<br>Sample data · Not connected to a server
+        <div class="user-chip"><div class="avatar">AM</div><div><strong style="font-size:11px">Alex Morgan</strong><br><span>Project controller</span></div></div>
+      </div>
+    </aside>
+    <main>
+      <header class="topbar">
+        <div class="crumb"><strong id="crumbProject">Projects</strong></div>
+        <div class="top-actions"><span class="asof">Last updated today, 10:42 AM</span><button class="icon-button" aria-label="Notifications" title="Notifications">♧<span class="notification-dot"></span></button><div class="avatar" id="headerAvatar" title="Signed-in user">AM</div><button class="button" id="logoutButton" type="button">Sign out</button></div>
+      </header>
+      <section class="content" id="appContent"></section>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <dialog id="timeDialog">
+    <form id="timeForm">
+      <div class="dialog-head"><h2>Log employee hours</h2><button class="icon-button" type="button" id="closeDialog" aria-label="Close">×</button></div>
+      <div class="dialog-body">
+        <label class="field" style="grid-column:1/-1">Employee<input name="employee" required placeholder="Employee name"></label>
+        <label class="field">Work date<input name="date" type="date" required></label>
+        <label class="field">Cost code<select name="costCode"><option>Concrete</option><option>Framing</option><option>Electrical</option><option>Sitework</option></select></label>
+        <label class="field">Hours<input name="hours" type="number" min="0.25" max="24" step="0.25" required value="8"></label>
+        <label class="field">Hourly rate (₹)<input name="rate" type="number" min="0" step="0.01" required value="34"></label>
+      </div>
+      <div class="dialog-actions"><button class="button" type="button" id="cancelDialog">Cancel</button><button class="button primary" type="submit">Save timecard</button></div>
+    </form>
+  </dialog>
+  <dialog id="projectDialog">
+    <form id="projectForm">
+      <div class="dialog-head"><h2>Create project</h2><button class="icon-button" type="button" data-close="projectDialog" aria-label="Close">×</button></div>
+      <div class="dialog-body">
+        <label class="field full">Project name<input name="name" required maxlength="120" placeholder="e.g. Riverside Medical Center"></label>
+        <label class="field full">Location<input name="location" required maxlength="160" placeholder="City, state or region"></label>
+        <label class="field">Approved budget (₹)<input name="budget" type="number" min="0" step="0.01" required></label>
+        <label class="field">Contract value (₹)<input name="contract" type="number" min="0" step="0.01" required></label>
+        <label class="field full">Start date<input name="startDate" type="date" required></label>
+        <label class="field full">Initial plan approval document (optional)<input name="planDocument" type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"></label>
+        <label class="field full">Document comment<textarea name="planComment" maxlength="500" placeholder="Add a note about this approval document"></textarea></label>
+        <div class="dialog-note">New projects are created in Planning status. Assign project access and cost codes before recording transactions.</div>
+      </div>
+      <div class="dialog-actions"><button class="button" type="button" data-close="projectDialog">Cancel</button><button class="button primary" type="submit">Create project</button></div>
+    </form>
+  </dialog>
+  <dialog id="planDocumentDialog">
+    <form id="planDocumentForm">
+      <div class="dialog-head"><h2>Upload plan document</h2><button class="icon-button" type="button" data-close="planDocumentDialog" aria-label="Close">×</button></div>
+      <div class="dialog-body">
+        <label class="field">Current project value (₹)<input name="currentValue" id="planCurrentValue" type="text" disabled></label>
+        <label class="field">New estimated value (₹)<input name="newEstimate" type="number" min="0" step="0.01" required placeholder="Enter revised estimate"></label>
+        <label class="field full">Plan approval or updated plan<input name="planDocument" type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx" required></label>
+        <label class="field full">Comment<textarea name="comment" maxlength="500" required placeholder="Describe this approval or plan update"></textarea></label>
+        <div class="dialog-note">Uploads are available while the project is Planning, Active, or On Hold. Enter the updated project estimate from this plan. Demo files are limited to 1 MB and stored in this browser only.</div>
+      </div>
+      <div class="dialog-actions"><button class="button" type="button" data-close="planDocumentDialog">Cancel</button><button class="button primary" type="submit">Upload document</button></div>
+    </form>
+  </dialog>
+  <dialog id="purchaseOrderDialog">
+    <form id="purchaseOrderForm">
+      <div class="dialog-head"><h2 id="purchaseOrderDialogTitle">New purchase order</h2><button class="icon-button" type="button" data-close="purchaseOrderDialog" aria-label="Close">×</button></div>
+      <div class="dialog-body">
+        <input type="hidden" name="purchaseOrderId">
+        <label class="field full">Vendor<input name="vendor" required maxlength="140" placeholder="Vendor name"></label>
+        <label class="field full">Item description<input name="item" required maxlength="220" placeholder="Material or service"></label>
+        <label class="field">Quantity<input name="quantity" type="number" min="0.01" step="0.01" required></label>
+        <label class="field">Unit price (₹)<input name="unitPrice" type="number" min="0" step="0.01" required></label>
+        <label class="field full">Order date<input name="orderDate" type="date" required></label>
+        <div class="dialog-note">Total is calculated from quantity × unit price. Record every vendor payment separately in the payment history.</div>
+      </div>
+      <div class="dialog-actions"><button class="button" type="button" data-close="purchaseOrderDialog">Cancel</button><button class="button primary" type="submit">Save purchase order</button></div>
+    </form>
+  </dialog>
+  <dialog id="purchasePaymentDialog">
+    <form id="purchasePaymentForm">
+      <div class="dialog-head"><h2>Record vendor payment</h2><button class="icon-button" type="button" data-close="purchasePaymentDialog" aria-label="Close">×</button></div>
+      <div class="dialog-body">
+        <input type="hidden" name="purchaseOrderId">
+        <div class="dialog-note" id="paymentOrderSummary"></div>
+        <label class="field">Payment amount (₹)<input name="amount" type="number" min="0.01" step="0.01" required></label>
+        <label class="field">Payment date<input name="paymentDate" type="date" required></label>
+        <label class="field full">Transaction/reference number<input name="reference" maxlength="100" placeholder="Bank reference, UTR, cheque number"></label>
+        <label class="field full">Bill/payment screenshot (optional)<input name="receipt" type="file" accept="image/*,.pdf"></label>
+        <label class="field full">Comment<textarea name="comment" maxlength="300" placeholder="Optional payment note"></textarea></label>
+        <div class="dialog-note">Demo receipt files are limited to 1 MB and stored in this browser only.</div>
+      </div>
+      <div class="dialog-actions"><button class="button" type="button" data-close="purchasePaymentDialog">Cancel</button><button class="button primary" type="submit">Save payment</button></div>
+    </form>
+  </dialog>
+  <dialog id="purchasePaymentHistoryDialog">
+    <div class="dialog-head"><h2 data-history-title>Payment history</h2><button class="icon-button" type="button" data-close="purchasePaymentHistoryDialog" aria-label="Close">×</button></div>
+    <div class="dialog-body">
+      <div class="dialog-note" data-history-summary></div>
+      <div class="payment-history" data-payment-history></div>
+    </div>
+    <div class="dialog-actions"><button class="button" type="button" data-close="purchasePaymentHistoryDialog">Close</button></div>
+  </dialog>
+  <dialog id="statusDialog">
+    <form id="statusForm">
+      <div class="dialog-head"><h2>Update project status</h2><button class="icon-button" type="button" data-close="statusDialog" aria-label="Close">×</button></div>
+      <div class="dialog-body">
+        <label class="field full">Status<select name="status" id="statusChoice"><option>Planning</option><option>Active</option><option>On Hold</option><option>Completed</option></select></label>
+        <label class="field full" id="statusCommentField" hidden>Status change comment<textarea name="statusComment" id="statusComment" maxlength="500" placeholder="Explain why the status is changing"></textarea></label>
+        <label class="field full" id="holdReasonField" hidden>Reason for hold<textarea name="holdReason" id="holdReason" placeholder="Explain why work is paused" ></textarea></label>
+        <label class="field full" id="completionNoteField" hidden>Completion note<textarea name="completionNote" placeholder="Optional handover or closeout note"></textarea></label>
+        <label class="field full" id="completionConfirmField" hidden><span style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="confirmComplete" id="confirmComplete"> I confirm this project is ready to be marked completed.</span></label>
+        <div class="dialog-note" id="statusDialogNote">Status changes are recorded in this local prototype.</div>
+      </div>
+      <div class="dialog-actions"><button class="button" type="button" data-close="statusDialog">Cancel</button><button class="button primary" type="submit">Save status</button></div>
+    </form>
+  </dialog>
+  <dialog id="deletePlanDialog">
+    <form id="deletePlanForm">
+      <div class="dialog-head"><h2>Delete plan document?</h2><button class="icon-button" type="button" data-close="deletePlanDialog" aria-label="Close">×</button></div>
+      <div class="dialog-body">
+        <div class="dialog-note">This will remove the document from this project's plan history.</div>
+        <div class="main-cell" id="deletePlanFileName"></div>
+        <input type="hidden" name="documentId">
+      </div>
+      <div class="dialog-actions"><button class="button" type="button" data-close="deletePlanDialog">Cancel</button><button class="button danger" type="submit">Delete document</button></div>
+    </form>
+  </dialog>
+  <dialog id="userDialog">
+    <form id="userForm">
+      <div class="dialog-head"><h2 id="userDialogTitle">Add user</h2><button class="icon-button" type="button" data-close="userDialog" aria-label="Close">×</button></div>
+      <div class="dialog-body">
+        <input type="hidden" name="userId">
+        <label class="field full">Full name<input name="name" required maxlength="120" placeholder="Employee name"></label>
+        <label class="field full">Work email<input name="email" type="email" required maxlength="180" placeholder="name@company.com"></label>
+        <label class="field full">Username<input name="username" required minlength="3" maxlength="40" pattern="[A-Za-z0-9._-]+" placeholder="Use letters, numbers, dot, underscore, or hyphen"></label>
+        <label class="field full" id="userPasswordField">Temporary password<input name="password" type="password" minlength="8" autocomplete="new-password" placeholder="At least 8 characters"></label>
+        <label class="field full" id="userPasswordConfirmField">Confirm password<input name="passwordConfirm" type="password" minlength="8" autocomplete="new-password" placeholder="Re-enter password"></label>
+        <label class="field full">Role<select name="role" id="userRole" required><option>Admin</option><option>Supervisor</option><option>Cashier</option><option>Owner</option><option>Managing Director</option></select></label>
+        <div class="field full">Project access</div>
+        <div class="assignment-list" id="assignmentList"></div>
+        <div class="dialog-note">Project access is required for project-scoped roles. Owner and Managing Director roles have company-wide scope. Demo credentials are stored as browser-side hashes only.</div>
+      </div>
+      <div class="dialog-actions"><button class="button" type="button" data-close="userDialog">Cancel</button><button class="button primary" type="submit">Save user</button></div>
+    </form>
+  </dialog>
+  <dialog id="resetCodeDialog">
+    <form id="resetCodeForm">
+      <div class="dialog-head"><h2>Reset password</h2><button class="icon-button" type="button" data-close="resetCodeDialog" aria-label="Close">×</button></div>
+      <div class="dialog-body">
+        <label class="field full">Username or work email<input name="identity" required autocomplete="username"></label>
+        <div class="dialog-note">Local prototype only: the reset code appears here instead of being emailed.</div>
+        <div class="dialog-note" id="resetCodeMessage" aria-live="polite"></div>
+      </div>
+      <div class="dialog-actions"><button class="button" type="button" data-close="resetCodeDialog">Cancel</button><button class="button primary" type="submit">Generate demo reset code</button></div>
+    </form>
+  </dialog>
+  <dialog id="resetPasswordDialog">
+    <form id="resetPasswordForm">
+      <div class="dialog-head"><h2>Choose a new password</h2><button class="icon-button" type="button" data-close="resetPasswordDialog" aria-label="Close">×</button></div>
+      <div class="dialog-body">
+        <label class="field full">Username or work email<input name="identity" required autocomplete="username"></label>
+        <label class="field full">Demo reset code<input name="code" required autocomplete="one-time-code"></label>
+        <label class="field full">New password<input name="password" type="password" minlength="8" required autocomplete="new-password"></label>
+        <label class="field full">Confirm new password<input name="passwordConfirm" type="password" minlength="8" required autocomplete="new-password"></label>
+        <div class="dialog-note">Use at least 8 characters for this prototype.</div>
+      </div>
+      <div class="dialog-actions"><button class="button" type="button" data-close="resetPasswordDialog">Cancel</button><button class="button primary" type="submit">Reset password</button></div>
+    </form>
+  </dialog>
+  <script>
+    const projects = {
+      plaza: { name: 'Cedar Ridge Plaza', location: 'Austin, TX', status: 'Active', budget: 2450000, contract: 3180000, billed: 1275000, actual: 884320, committed: 342600, margin: 21.8, po: [
+        ['PO-2481', 'Lone Star Supply', 'Rebar · Grade 60', 'Jun 18, 2025', '$42,600', 'In transit'],
+        ['PO-2479', 'Summit Concrete Co.', 'Ready-mix · 300 yd³', 'Jun 17, 2025', '$31,200', 'Approved'],
+        ['PO-2474', 'Metro Electric', 'Panel boards · 8 units', 'Jun 16, 2025', '$18,940', 'Received'],
+        ['PO-2468', 'ProBuild Rentals', 'Tower crane · monthly', 'Jun 14, 2025', '$12,500', 'Pending']
+      ], inventory: [['MAT-081', 'Rebar #5', 'Steel products', '12,400 lb', '4,800 lb', '7,600 lb'], ['MAT-044', 'Ready-mix concrete', 'Concrete', '320 yd³', '185 yd³', '135 yd³'], ['MAT-109', 'Plywood sheathing', 'Lumber', '860 sheets', '610 sheets', '250 sheets'], ['MAT-212', 'Copper wire 12 AWG', 'Electrical', '4,200 ft', '1,750 ft', '2,450 ft']], bills: [['PB-008', 'Foundation & footings', 'Jun 01, 2025', '$284,000', 'Submitted'], ['PB-007', 'Site preparation', 'May 01, 2025', '$196,500', 'Paid'], ['PB-006', 'Mobilization', 'Apr 01, 2025', '$159,000', 'Paid'], ['PB-005', 'Initial deposit', 'Mar 12, 2025', '$318,000', 'Paid']], people: [['Jordan Lee', 'Concrete', '8.0 h', '$272.00', 'Approved'], ['Sam Rivera', 'Sitework', '7.5 h', '$243.75', 'Approved'], ['Taylor Brooks', 'Electrical', '8.0 h', '$296.00', 'Pending'], ['Morgan Price', 'Framing', '6.5 h', '$214.50', 'Approved']] },
+      bridge: { name: 'Northline Bridge', location: 'Round Rock, TX', status: 'Active', budget: 5680000, contract: 7400000, billed: 2840000, actual: 1984250, committed: 726400, margin: 18.4, po: [
+        ['PO-2512', 'Central Steelworks', 'Structural beams · 12 ea', 'Jun 20, 2025', '$86,400', 'Approved'], ['PO-2508', 'Hill Country Asphalt', 'Asphalt mix · 220 ton', 'Jun 19, 2025', '$35,200', 'In transit'], ['PO-2501', 'ProBuild Rentals', 'Pile driver · weekly', 'Jun 17, 2025', '$24,800', 'Received'], ['PO-2496', 'Metro Electric', 'Conduit · 2,000 ft', 'Jun 15, 2025', '$9,760', 'Pending']
+      ], inventory: [['MAT-310', 'Structural beam W24', 'Steel products', '32 ea', '20 ea', '12 ea'], ['MAT-388', 'Asphalt mix', 'Road materials', '540 ton', '310 ton', '230 ton'], ['MAT-202', 'Concrete pile', 'Concrete', '84 ea', '62 ea', '22 ea'], ['MAT-450', 'Galvanized conduit', 'Electrical', '2,600 ft', '1,150 ft', '1,450 ft']], bills: [['PB-014', 'Pier caps & decking', 'Jun 01, 2025', '$510,000', 'Submitted'], ['PB-013', 'Structural steel erection', 'May 01, 2025', '$425,000', 'Paid'], ['PB-012', 'Foundation piers', 'Apr 01, 2025', '$370,000', 'Paid'], ['PB-011', 'Mobilization', 'Mar 12, 2025', '$296,000', 'Paid']], people: [['Chris Nolan', 'Concrete', '9.0 h', '$378.00', 'Approved'], ['Jamie Park', 'Structural', '8.0 h', '$360.00', 'Approved'], ['Riley Fox', 'Sitework', '8.5 h', '$297.50', 'Pending'], ['Avery Chen', 'Electrical', '7.0 h', '$280.00', 'Approved']] },
+      residential: { name: 'Juniper Residences', location: 'Georgetown, TX', status: 'Active', budget: 3920000, contract: 5150000, billed: 1895000, actual: 1467500, committed: 518200, margin: 19.6, po: [
+        ['PO-2530', 'Summit Concrete Co.', 'Foundation mix · 180 yd³', 'Jun 21, 2025', '$22,800', 'Approved'], ['PO-2526', 'Lone Star Supply', 'Dimensional lumber', 'Jun 20, 2025', '$41,400', 'In transit'], ['PO-2522', 'Metro Electric', 'Switchgear · 6 units', 'Jun 18, 2025', '$16,200', 'Received'], ['PO-2515', 'ProBuild Rentals', 'Scaffold · monthly', 'Jun 16, 2025', '$8,900', 'Pending']
+      ], inventory: [['MAT-522', 'Dimensional lumber', 'Lumber', '9,800 bd ft', '5,250 bd ft', '4,550 bd ft'], ['MAT-488', 'Ready-mix concrete', 'Concrete', '460 yd³', '295 yd³', '165 yd³'], ['MAT-609', 'Roof sheathing', 'Lumber', '1,200 sheets', '820 sheets', '380 sheets'], ['MAT-610', 'Electrical switchgear', 'Electrical', '12 ea', '5 ea', '7 ea']], bills: [['PB-010', 'Building C framing', 'Jun 01, 2025', '$358,000', 'Submitted'], ['PB-009', 'Building B foundation', 'May 01, 2025', '$276,000', 'Paid'], ['PB-008', 'Building A rough-in', 'Apr 01, 2025', '$228,000', 'Paid'], ['PB-007', 'Mobilization', 'Mar 12, 2025', '$206,000', 'Paid']], people: [['Casey Hill', 'Framing', '8.0 h', '$264.00', 'Approved'], ['Drew Patel', 'Concrete', '8.5 h', '$314.50', 'Approved'], ['Skylar Ward', 'Electrical', '7.5 h', '$300.00', 'Pending'], ['Emerson Reed', 'Sitework', '7.0 h', '$224.00', 'Approved']] }
+    };
+    let currentUser = null;
+    const demoUserId = 'alex-morgan';
+    const addedProjects = [
+      ['plan-riverfront', 'Riverfront Logistics Hub', 'Chennai, India', 'Planning', 18500000, 22800000],
+      ['plan-school', 'Eastfield Public School', 'Jaipur, India', 'Planning', 9200000, 11500000],
+      ['plan-clinic', 'Meadowbrook Health Clinic', 'Kochi, India', 'Planning', 12800000, 15600000],
+      ['plan-warehouse', 'Orchid Cold Storage', 'Nashik, India', 'Planning', 7600000, 9400000],
+      ['active-solar', 'Suncrest Solar Park', 'Bikaner, India', 'Active', 34200000, 41800000],
+      ['active-terminal', 'Westgate Transit Terminal', 'Surat, India', 'Active', 27600000, 33500000],
+      ['active-tower', 'Parkview Office Tower', 'Hyderabad, India', 'Active', 48900000, 59200000],
+      ['active-water', 'Lakeview Water Treatment Plant', 'Mysuru, India', 'Active', 21400000, 26300000],
+      ['hold-harbor', 'Harborfront Apartments', 'Visakhapatnam, India', 'On Hold', 16400000, 20100000],
+      ['hold-market', 'Old Town Market Hall', 'Lucknow, India', 'On Hold', 8700000, 10800000],
+      ['complete-library', 'Central District Library', 'Indore, India', 'Completed', 6400000, 7800000],
+      ['complete-depot', 'Greenline Bus Depot', 'Pune, India', 'Completed', 11200000, 13700000],
+    ];
+    addedProjects.forEach(([id, name, location, status, budget, contract], index) => {
+      projects[id] = {
+        name, location, status, budget, contract,
+        billed: status === 'Completed' ? Math.round(contract * 0.94) : 0,
+        actual: status === 'Completed' ? Math.round(budget * 0.82) : 0,
+        committed: status === 'Active' ? Math.round(budget * 0.12) : 0,
+        margin: status === 'Completed' ? 18.5 : status === 'Active' ? 20.2 : 0,
+        holdReason: status === 'On Hold' ? (index === 8 ? 'Awaiting revised permit approval' : 'Client review of scope changes') : '',
+        memberUserIds: [demoUserId],
+        po: [], inventory: [], bills: [], people: [],
+      };
+    });
+    const savedProjects = JSON.parse(localStorage.getItem('fieldwork-projects') || '{}');
+    Object.assign(projects, savedProjects);
+    ['plaza', 'bridge', 'residential'].forEach(id => {
+      if (projects[id] && !projects[id].memberUserIds) projects[id].memberUserIds = [demoUserId];
+    });
+    const users = JSON.parse(localStorage.getItem('fieldwork-users') || 'null') || [
+      { id: demoUserId, name: 'Alex Morgan', username: 'alex.morgan', email: 'alex.morgan@fieldwork.example', role: 'Admin', projectIds: Object.keys(projects), active: true },
+      { id: 'owner-01', name: 'Jordan Ellis', email: 'jordan.ellis@fieldwork.example', role: 'Owner', projectIds: [], active: true },
+      { id: 'md-01', name: 'Priya Nair', email: 'priya.nair@fieldwork.example', role: 'Managing Director', projectIds: [], active: true },
+      { id: 'supervisor-01', name: 'Sam Rivera', email: 'sam.rivera@fieldwork.example', role: 'Supervisor', projectIds: ['plaza', 'active-solar'], active: true },
+      { id: 'cashier-01', name: 'Taylor Brooks', email: 'taylor.brooks@fieldwork.example', role: 'Cashier', projectIds: ['plaza'], active: true },
+    ];
+    const demoAdmin = users.find(user => user.id === demoUserId);
+    if (demoAdmin && !demoAdmin.username) demoAdmin.username = 'alex.morgan';
+    users.forEach(user => { if (!user.username) user.username = user.email.split('@')[0]; });
+    localStorage.setItem('fieldwork-users', JSON.stringify(users));
+    const currency = value => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value);
+    const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+    function displayMoney(value) {
+      const amount = Number(String(value).replace(/[^0-9.-]/g, ''));
+      return currency(Number.isFinite(amount) ? amount : 0);
+    }
+    Object.values(projects).forEach(project => {
+      project.po = project.po.map(row => {
+        if (!Array.isArray(row)) {
+          row.payments = row.payments || [];
+          return row;
+        }
+        const legacyTotal = Number(String(row[4]).replace(/[^0-9.-]/g, '')) || 0;
+        return {
+          id: row[0], vendor: row[1], item: row[2], orderDate: row[3],
+          total: legacyTotal, quantity: 1, unitPrice: legacyTotal,
+          status: row[5], payments: [],
+        };
+      });
+      project.bills = project.bills.map(row => [row[0], row[1], row[2], displayMoney(row[3]), row[4]]);
+      project.people = project.people.map(row => [row[0], row[1], row[2], displayMoney(row[3]), row[4]]);
+    });
+    const state = { project: null, view: 'projects', search: '' };
+    const resetCodes = new Map();
+    const content = document.getElementById('appContent');
+    const statusClass = status => ({ 'In transit': 'blue', Approved: 'green', Received: 'green', Pending: 'yellow', Submitted: 'blue', Paid: 'green', Active: 'green', Planning: 'blue', 'On Hold': 'yellow', Completed: 'green' }[status] || 'yellow');
+    const badge = status => `<span class="badge ${statusClass(status)}">${status}</span>`;
+    const normalizeIdentity = value => String(value).trim().toLowerCase();
+    const randomHex = byteLength => Array.from(crypto.getRandomValues(new Uint8Array(byteLength)), byte => byte.toString(16).padStart(2, '0')).join('');
+    async function hashPassword(password, salt = randomHex(16)) {
+      const material = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
+      const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: Uint8Array.from(salt.match(/.{2}/g), byte => parseInt(byte, 16)), iterations: 210000 }, material, 256);
+      return { salt, hash: Array.from(new Uint8Array(bits), byte => byte.toString(16).padStart(2, '0')).join('') };
+    }
+    async function passwordMatches(password, user) {
+      if (!user.passwordSalt || !user.passwordHash) return false;
+      return (await hashPassword(password, user.passwordSalt)).hash === user.passwordHash;
+    }
+    function persistUsers() { localStorage.setItem('fieldwork-users', JSON.stringify(users)); }
+    function applyAuthBranding() {
+      const brand = document.querySelector('#authScreen .auth-brand');
+      if (!brand) return;
+      brand.querySelector('.brand-mark').textContent = 'V';
+      brand.querySelector('.brand-name').textContent = 'Vridhi';
+      brand.querySelector('.brand-sub').textContent = 'Constructions & Designs';
+    }
+    function showLogin(message = '', success = false) {
+      document.getElementById('appShell').hidden = true;
+      const screen = document.getElementById('authScreen');
+      screen.hidden = false;
+      screen.innerHTML = `<div class="auth-panel"><div class="auth-brand"><div class="brand-mark">F</div><div><div class="brand-name">FIELDWORK</div><div class="brand-sub">Construction operations</div></div></div><div class="auth-body"><h1>Sign in</h1><p class="auth-copy">Use your username or work email to access your assigned projects.</p><form class="auth-form" id="loginForm"><label class="field">Username or work email<input name="identity" required autocomplete="username" autofocus></label><label class="field">Password<input name="password" type="password" required autocomplete="current-password"></label><button class="button primary auth-submit" type="submit">Sign in</button></form><div class="auth-actions"><span></span><button class="auth-link" id="forgotPasswordButton" type="button">Forgot password?</button></div><div class="auth-message ${success ? 'success' : ''}" role="status">${escapeHtml(message)}</div><div class="demo-credentials"><strong>First-run demo account</strong><br>Username: <code>alex.morgan</code><br>Password: <code>FieldworkDemo!26</code></div><div class="auth-warning">Demo only: passwords are hashed in this browser. This is not production authentication.</div></div></div>`;
+      applyAuthBranding();
+      document.getElementById('loginForm').addEventListener('submit', handleLogin);
+      document.getElementById('forgotPasswordButton').addEventListener('click', showResetRequest);
+    }
+    function showResetRequest() {
+      const screen = document.getElementById('authScreen');
+      screen.innerHTML = `<div class="auth-panel"><div class="auth-brand"><div class="brand-mark">F</div><div><div class="brand-name">FIELDWORK</div><div class="brand-sub">Account recovery</div></div></div><div class="auth-body"><h1>Reset your password</h1><p class="auth-copy">Enter your username or work email. In the real application, a short-lived reset link is sent to your verified email address.</p><form class="auth-form" id="resetRequestForm"><label class="field">Username or work email<input name="identity" required autocomplete="username"></label><button class="button primary auth-submit" type="submit">Request reset code</button></form><div class="auth-message" id="resetRequestMessage" role="status"></div><div class="auth-actions"><button class="auth-link" id="backToLoginButton" type="button">Back to sign in</button><button class="auth-link" id="enterResetCodeButton" type="button">I have a reset code</button></div><div class="auth-warning">Local demo only: a reset code appears on screen instead of being emailed.</div></div></div>`;
+      applyAuthBranding();
+      document.getElementById('resetRequestForm').addEventListener('submit', handleResetRequest);
+      document.getElementById('backToLoginButton').addEventListener('click', () => showLogin());
+      document.getElementById('enterResetCodeButton').addEventListener('click', showResetPassword);
+    }
+    function showResetPassword(identity = '') {
+      const screen = document.getElementById('authScreen');
+      screen.innerHTML = `<div class="auth-panel"><div class="auth-brand"><div class="brand-mark">F</div><div><div class="brand-name">FIELDWORK</div><div class="brand-sub">Account recovery</div></div></div><div class="auth-body"><h1>Choose a new password</h1><p class="auth-copy">Enter your username, the demo reset code, and a new password.</p><form class="auth-form" id="resetPasswordScreenForm"><label class="field">Username or work email<input name="identity" required autocomplete="username" value="${escapeHtml(identity)}"></label><label class="field">Reset code<input name="code" required autocomplete="one-time-code"></label><label class="field">New password<input name="password" type="password" minlength="8" required autocomplete="new-password"></label><label class="field">Confirm new password<input name="passwordConfirm" type="password" minlength="8" required autocomplete="new-password"></label><button class="button primary auth-submit" type="submit">Reset password</button></form><div class="auth-message" role="status"></div><div class="auth-actions"><button class="auth-link" id="backToLoginButton" type="button">Back to sign in</button></div><div class="auth-warning">Local demo only. Production reset codes must be single-use, emailed by the backend, and invalidated after use.</div></div></div>`;
+      applyAuthBranding();
+      document.getElementById('resetPasswordScreenForm').addEventListener('submit', handleResetPassword);
+      document.getElementById('backToLoginButton').addEventListener('click', () => showLogin());
+    }
+    async function handleLogin(event) {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      const identity = normalizeIdentity(form.get('identity'));
+      const user = users.find(candidate => normalizeIdentity(candidate.username || '') === identity || normalizeIdentity(candidate.email) === identity);
+      const message = event.currentTarget.parentElement.querySelector('.auth-message');
+      if (!user || user.active === false || !(await passwordMatches(String(form.get('password')), user))) {
+        message.textContent = 'Invalid username/password, or account is inactive.';
+        return;
+      }
+      currentUser = { id: user.id, name: user.name, role: user.role };
+      sessionStorage.setItem('fieldwork-auth-user-id', user.id);
+      state.project = null;
+      state.view = 'projects';
+      document.getElementById('authScreen').hidden = true;
+      document.getElementById('appShell').hidden = false;
+      document.querySelector('.user-chip strong').textContent = currentUser.name;
+      document.querySelector('.user-chip span').textContent = currentUser.role;
+      document.getElementById('headerAvatar').textContent = currentUser.name.split(/\s+/).map(part => part[0]).join('').slice(0, 2).toUpperCase();
+      document.querySelector('.user-chip .avatar').textContent = document.getElementById('headerAvatar').textContent;
+      document.getElementById('headerAvatar').title = currentUser.name;
+      render();
+    }
+    async function handleResetRequest(event) {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      const identity = normalizeIdentity(form.get('identity'));
+      const user = users.find(candidate => normalizeIdentity(candidate.username || '') === identity || normalizeIdentity(candidate.email) === identity);
+      const message = document.getElementById('resetRequestMessage');
+      if (!user || user.active === false) {
+        message.textContent = 'If the account exists and is active, a reset instruction will be available.';
+        return;
+      }
+      const code = String(crypto.getRandomValues(new Uint32Array(1))[0] % 1000000).padStart(6, '0');
+      resetCodes.set(user.id, { code, expiresAt: Date.now() + 15 * 60 * 1000 });
+      message.classList.add('success');
+      message.innerHTML = `Demo reset code: <strong>${code}</strong><br>Expires in 15 minutes. <button class="auth-link" id="useResetCodeButton" type="button">Enter code</button>`;
+      document.getElementById('useResetCodeButton').addEventListener('click', () => showResetPassword(user.username));
+    }
+    async function handleResetPassword(event) {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      const identity = normalizeIdentity(form.get('identity'));
+      const user = users.find(candidate => normalizeIdentity(candidate.username || '') === identity || normalizeIdentity(candidate.email) === identity);
+      const message = event.currentTarget.parentElement.querySelector('.auth-message');
+      const reset = user && resetCodes.get(user.id);
+      if (!user || user.active === false || !reset || reset.expiresAt < Date.now() || reset.code !== String(form.get('code')).trim()) {
+        message.textContent = 'The reset code is invalid or expired. Request a new code.';
+        return;
+      }
+      if (form.get('password') !== form.get('passwordConfirm')) {
+        message.textContent = 'The passwords do not match.';
+        return;
+      }
+      const credential = await hashPassword(String(form.get('password')));
+      user.passwordSalt = credential.salt;
+      user.passwordHash = credential.hash;
+      resetCodes.delete(user.id);
+      persistUsers();
+      showLogin('Password reset. Sign in with your new password.', true);
+    }
+    function titleBlock(eyebrow, title, subtitle, action = '') {
+      return `<div class="title-row"><div><div class="eyebrow">${eyebrow}</div><h1>${title}</h1><div class="subtitle">${subtitle}</div></div><div class="actions">${action}</div></div>`;
+    }
+    function kpi(label, value, symbol, tone, foot) {
+      return `<article class="kpi"><div class="kpi-top"><span>${label}</span><span class="kpi-symbol ${tone}">${symbol}</span></div><div class="kpi-value">${value}</div><div class="kpi-foot">${foot}</div></article>`;
+    }
+    function projectOptions() { return projects[state.project]; }
+    function canAccessProject(projectId) {
+      if (!currentUser) return false;
+      if (['Owner', 'Managing Director'].includes(currentUser.role)) return Boolean(projects[projectId]);
+      return Boolean(projects[projectId]?.memberUserIds?.includes(currentUser.id));
+    }
+    function canManageUsers() { return ['Owner', 'Admin'].includes(currentUser.role); }
+    function canAssignRole(role) {
+      return currentUser.role === 'Owner' || (currentUser.role === 'Admin' && ['Supervisor', 'Cashier'].includes(role));
+    }
+    function canAccessView(view) {
+      const permissions = {
+        Owner: ['dashboard', 'procurement', 'inventory', 'billing', 'attendance'],
+        'Managing Director': ['dashboard'],
+        Admin: ['dashboard', 'procurement', 'inventory', 'billing', 'attendance'],
+        Supervisor: ['dashboard', 'procurement', 'inventory', 'attendance'],
+        Cashier: ['dashboard', 'billing'],
+      };
+      return permissions[currentUser.role]?.includes(view) || false;
+    }
+    function projectsHome() {
+      const groups = [
+        { status: 'Planning', icon: '◷' },
+        { status: 'Active', icon: '↗' },
+        { status: 'On Hold', icon: 'Ⅱ' },
+        { status: 'Completed', icon: '✓' },
+      ];
+      const allProjects = Object.entries(projects).filter(([id]) => canAccessProject(id));
+      const cards = (status, entries) => entries.length ? `<div class="project-grid">${entries.map(([id, project]) => `<article class="project-card" role="button" tabindex="0" data-open-project="${escapeHtml(id)}" aria-label="Open ${escapeHtml(project.name)}"><div class="project-card-top"><h3>${escapeHtml(project.name)}</h3>${badge(project.status)}</div><p>${escapeHtml(project.location)}${project.status === 'On Hold' && project.holdReason ? ` · ${escapeHtml(project.holdReason)}` : ''}</p><div class="project-card-metrics"><div><div class="project-metric-label">Contract</div><div class="project-metric-value">${currency(project.contract)}</div></div><div><div class="project-metric-label">Actual cost</div><div class="project-metric-value">${currency(project.actual)}</div></div></div></article>`).join('')}</div>` : '<div class="portfolio-empty">No projects in this status.</div>';
+      return `${titleBlock('Portfolio', 'All projects', 'Select a project to open its dashboard and operational modules.', '<button class="button primary" data-action="new-project"><span class="plus">+</span>New project</button>')}
+        <div class="kpis portfolio-kpis">${kpi('Total projects', String(allProjects.length), '▦', 'sym-blue', 'Across all project statuses')}${kpi('Planning', String(allProjects.filter(([,p]) => p.status === 'Planning').length), '◷', 'sym-amber', 'Not yet active')}${kpi('Active', String(allProjects.filter(([,p]) => p.status === 'Active').length), '↗', 'sym-pine', 'Currently underway')}${kpi('On Hold', String(allProjects.filter(([,p]) => p.status === 'On Hold').length), 'Ⅱ', 'sym-coral', 'Paused projects')}${kpi('Completed', String(allProjects.filter(([,p]) => p.status === 'Completed').length), '✓', 'sym-blue', 'Closed projects')}</div>
+        ${groups.map(group => { const entries = allProjects.filter(([, project]) => project.status === group.status); return `<section class="portfolio-section"><h2 class="portfolio-heading">${group.icon} ${group.status} <span>${entries.length} project${entries.length === 1 ? '' : 's'}</span></h2>${cards(group.status, entries)}</section>`; }).join('')}`;
+    }
+    function usersHome() {
+      if (!canManageUsers()) return `${titleBlock('Administration', 'User administration', 'You do not have permission to manage users.')}`;
+      const roleDetails = [
+        ['Owner', 'Company-wide access. Manage users, roles, projects, and financial settings.'],
+        ['Managing Director', 'Company-wide dashboards and approvals. No user or role administration.'],
+        ['Admin', 'Manage users and project assignments. Access project operations only where explicitly assigned.'],
+        ['Supervisor', 'Assigned projects: operations, procurement, inventory, and timecard approval.'],
+        ['Cashier', 'Assigned projects: billing, invoices, receipts, and payment recording.'],
+      ];
+      const visibleUsers = users;
+      const activeUserCount = visibleUsers.filter(user => user.active !== false).length;
+      return `${titleBlock('Administration', 'User administration', 'Manage user accounts, role scope, and project assignments.', '<button class="button primary" data-action="add-user"><span class="plus">+</span>Add user</button>')}
+        <section class="role-matrix">${roleDetails.map(([role, detail]) => `<article class="role-item"><strong>${role}</strong><span>${detail}</span></article>`).join('')}</section>
+        <section class="panel table-panel"><div class="panel-head"><div><div class="panel-title">User directory</div><div class="panel-caption">${activeUserCount} active account${activeUserCount === 1 ? '' : 's'} · ${visibleUsers.length} total</div></div><input class="search" id="userSearch" placeholder="Search users" aria-label="Search users"></div>
+          <div class="table-scroll"><table class="users-table"><thead><tr><th>User</th><th>Role</th><th>Project access</th><th>Account</th><th>Actions</th></tr></thead><tbody>${visibleUsers.map(user => {
+            const companyWide = ['Owner', 'Managing Director'].includes(user.role);
+            const assigned = companyWide ? 'All projects' : (user.projectIds || []).map(id => projects[id]?.name).filter(Boolean).join(', ') || 'No projects assigned';
+            const isCurrentUser = user.id === currentUser.id;
+            const canEdit = !isCurrentUser && canAssignRole(user.role);
+            const accountStatus = user.active === false ? '<span class="badge red">Inactive</span>' : badge('Active');
+            const actions = isCurrentUser ? '<span class="sub-cell">Current user</span>' : `${canEdit ? `<button class="user-action" data-user-action="edit" data-user-id="${escapeHtml(user.id)}">Edit</button><button class="user-action" data-user-action="reset" data-user-id="${escapeHtml(user.id)}">Reset password</button>${user.active === false ? `<button class="user-action" data-user-action="reactivate" data-user-id="${escapeHtml(user.id)}">Reactivate</button>` : `<button class="user-action" data-user-action="deactivate" data-user-id="${escapeHtml(user.id)}">Deactivate</button>`}` : ''}${currentUser.role === 'Owner' || canEdit ? `<button class="user-action danger" data-user-action="delete" data-user-id="${escapeHtml(user.id)}">Delete</button>` : ''}`;
+            return `<tr><td><div class="main-cell">${escapeHtml(user.name)}</div><div class="sub-cell">${escapeHtml(user.email)}</div></td><td>${badge(user.role)}</td><td style="white-space:normal;min-width:160px">${escapeHtml(assigned)}</td><td>${accountStatus}</td><td>${actions}</td></tr>`;
+          }).join('')}</tbody></table></div></section>`;
+    }
+    function renderAssignmentOptions(selectedIds = []) {
+      document.getElementById('assignmentList').innerHTML = Object.entries(projects).map(([id, project]) => `<label><input type="checkbox" name="projectIds" value="${escapeHtml(id)}" ${selectedIds.includes(id) ? 'checked' : ''}>${escapeHtml(project.name)}</label>`).join('');
+      updateRoleAssignmentState();
+    }
+    function updateRoleAssignmentState() {
+      const companyWide = ['Owner', 'Managing Director'].includes(document.getElementById('userRole').value);
+      document.getElementById('assignmentList').hidden = companyWide;
+    }
+    function openUserForm(user = null) {
+      const form = document.getElementById('userForm');
+      form.reset();
+      const allowedRoles = currentUser.role === 'Owner' ? ['Admin', 'Supervisor', 'Cashier', 'Owner', 'Managing Director'] : ['Supervisor', 'Cashier'];
+      document.getElementById('userRole').innerHTML = allowedRoles.map(role => `<option>${role}</option>`).join('');
+      if (user && !allowedRoles.includes(user.role)) { toast('Your role cannot edit this account.'); return; }
+      form.elements.userId.value = user?.id || '';
+      form.elements.name.value = user?.name || '';
+      form.elements.email.value = user?.email || '';
+      form.elements.username.value = user?.username || '';
+      form.elements.role.value = user?.role || allowedRoles[0];
+      const passwordInput = form.elements.password;
+      const passwordConfirmInput = form.elements.passwordConfirm;
+      passwordInput.required = !user;
+      passwordConfirmInput.required = !user;
+      passwordInput.value = '';
+      passwordConfirmInput.value = '';
+      passwordInput.placeholder = user ? 'Leave blank to keep current password' : 'At least 8 characters';
+      document.getElementById('userPasswordField').hidden = Boolean(user);
+      document.getElementById('userPasswordConfirmField').hidden = Boolean(user);
+      if (user) {
+        passwordInput.required = false;
+        passwordConfirmInput.required = false;
+      }
+      document.getElementById('userDialogTitle').textContent = user ? 'Edit user' : 'Add user';
+      renderAssignmentOptions(user?.projectIds || []);
+      document.getElementById('userDialog').showModal();
+    }
+    function dashboard(project) {
+      const cost = project.actual;
+      const progress = Math.round(cost / project.budget * 100);
+      return `<div class="overview-sections">${titleBlock('Project overview', `<span class="project-title-line">${escapeHtml(project.name)}${projectStatusIcon(project.status)}</span>`, `${escapeHtml(project.location)} · Updated today`, '<button class="button" data-action="update-status">⚙ &nbsp;Project status</button><button class="button" data-action="export">⇩ &nbsp;Export report</button><button class="button primary" data-action="quick-entry"><span class="plus">+</span>Quick entry</button>')}
+        <div class="notice"><b>Sample data</b><span>Figures are illustrative for this prototype and are not connected to a live accounting system.</span></div>
+        ${project.status === 'Completed' ? '<div class="notice"><b>Completed</b><span>This project is marked complete. Change its status only if additional work is authorized.</span></div>' : ''}
+        <div class="kpis">
+          ${kpi('Contract value', currency(project.contract), '▧', 'sym-blue', '<span class="positive">+4.2%</span> revised contract')}
+          ${kpi('Actual cost', currency(cost), '↘', 'sym-coral', `${progress}% of approved budget used`)}
+          ${kpi('Open commitments', currency(project.committed), '◷', 'sym-amber', 'Purchase orders not yet received')}
+          ${kpi('Projected margin', `${project.margin}%`, '↗', 'sym-pine', '<span class="positive">On plan</span> · forecast at completion')}
+        </div>
+        ${projectStatusSection(project)}
+        <div class="grid-main">
+          <section class="panel"><div class="panel-head"><div><div class="panel-title">Budget vs. actual cost</div><div class="panel-caption">Monthly cumulative spend · INR</div></div><select class="range-select" aria-label="Chart date range"><option>Last 6 months</option><option>Last 12 months</option></select></div>
+            <div class="chart-wrap"><div class="chart-legend"><span class="legend-key"><i class="dot"></i>Actual cost</span><span class="legend-key"><i class="dot budget"></i>Budget pacing</span></div><div class="chart">
+              ${[['Jan',24,30],['Feb',35,41],['Mar',41,50],['Apr',55,61],['May',67,72],['Jun',75,83]].map(([month,actual,budget])=>`<div class="bar-group"><div class="bar actual" style="height:${actual}%"></div><div class="bar budget" style="height:${budget}%"></div><span class="bar-label">${month}</span></div>`).join('')}
+            </div><div class="chart-foot"><span>Budget baseline <strong>${currency(project.budget)}</strong></span><span>Spent to date <strong>${currency(cost)}</strong></span></div></div>
+          </section>
+          <section class="panel"><div class="panel-head"><div><div class="panel-title">Cost breakdown</div><div class="panel-caption">Actual cost by category</div></div><button class="button" data-view="procurement">Details&nbsp; →</button></div><div class="mix">
+            <div class="mix-row"><div class="mix-meta"><span>Materials</span><strong>${currency(cost * .63)}</strong></div><div class="track"><div class="fill material"></div></div></div>
+            <div class="mix-row"><div class="mix-meta"><span>Labor</span><strong>${currency(cost * .27)}</strong></div><div class="track"><div class="fill labor"></div></div></div>
+            <div class="mix-row"><div class="mix-meta"><span>Equipment &amp; other</span><strong>${currency(cost * .10)}</strong></div><div class="track"><div class="fill equipment"></div></div></div>
+            <div class="mix-total"><span>Total actual cost</span><span>${currency(cost)}</span></div>
+          </div></section>
+        </div>
+        ${planDocumentsSection(project)}
+        ${projectValueHistorySection(project)}
+        ${recentOrders(project)}</div>`;
+    }
+    function projectStatusIcon(status) {
+      const iconByStatus = { Planning: '◷', Active: '↗', 'On Hold': 'Ⅱ', Completed: '✓' };
+      const classByStatus = { Planning: 'planning', Active: 'active', 'On Hold': 'on-hold', Completed: 'completed' };
+      return `<span class="project-status-icon ${classByStatus[status] || ''}" role="img" aria-label="${escapeHtml(status)}" title="${escapeHtml(status)}">${iconByStatus[status] || '?'}</span>`;
+    }
+    function projectStatusSection(project) {
+      const history = [...(project.statusHistory || [])].sort((left, right) => new Date(right.changedAt) - new Date(left.changedAt));
+      const historyRows = history.length ? history.map(entry => `<article class="status-entry"><div class="status-entry-meta"><strong>${escapeHtml(entry.status)}</strong><br>${entry.previousStatus ? `${escapeHtml(entry.previousStatus)} → ` : ''}${escapeHtml(entry.changedByName || 'Unknown user')}<br>${new Date(entry.changedAt).toLocaleString()}${entry.holdReason ? `<br>Hold reason: ${escapeHtml(entry.holdReason)}` : ''}${entry.completionNote ? `<br>Closeout: ${escapeHtml(entry.completionNote)}` : ''}</div><div class="status-entry-comment">${escapeHtml(entry.comment || 'No comment provided.')}</div></article>`).join('') : '<div class="empty">No status comments recorded yet.</div>';
+      return `<section class="panel status-panel"><div class="panel-head"><div><div class="panel-title">Project status</div><div class="panel-caption">Status changes and user comments · newest first</div></div><button class="button" data-action="update-status">Update status</button></div><div class="status-history"><div class="status-current">${projectStatusIcon(project.status)}<span>Current status: <strong>${escapeHtml(project.status)}</strong></span></div>${historyRows}</div></section>`;
+    }
+    function planDocumentsSection(project) {
+      const documents = [...(project.planDocuments || [])].sort((left, right) => right.uploadedAt - left.uploadedAt);
+      const mayUpload = ['Planning', 'Active', 'On Hold'].includes(project.status);
+      const uploadButton = mayUpload ? '<button class="button primary" data-action="upload-plan"><span class="plus">+</span>Upload plan document</button>' : '';
+      const rows = documents.length ? documents.map(document => {
+        const canDelete = document.uploadedById === currentUser.id || ['Owner', 'Admin'].includes(currentUser.role);
+        const fileLink = document.dataUrl ? `<a class="button" href="${document.dataUrl}" download="${escapeHtml(document.fileName)}">Download</a>` : '<span class="sub-cell">File unavailable in this browser</span>';
+        return `<tr><td><div class="main-cell">${escapeHtml(document.fileName)}</div><div class="sub-cell">${escapeHtml(document.mimeType || 'Document')}</div></td><td>${new Date(document.uploadedAt).toLocaleString()}</td><td>${escapeHtml(document.uploadedByName)}</td><td style="white-space:normal;min-width:220px">${escapeHtml(document.comment)}</td><td>${fileLink}${canDelete ? `<button class="user-action danger" data-plan-delete="${escapeHtml(document.id)}" title="Delete document">Delete</button>` : ''}</td></tr>`;
+      }).join('') : '<tr><td colspan="5" class="empty">No plan documents have been uploaded.</td></tr>';
+      return `<section class="panel table-panel plan-documents"><div class="panel-head"><div><div class="panel-title">Plan documents</div><div class="panel-caption">Approval documents and updated plans · newest first</div></div>${uploadButton}</div><div class="table-scroll"><table><thead><tr><th>Document</th><th>Uploaded</th><th>Uploaded by</th><th>Comment</th><th>File</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
+    }
+    function projectValueHistorySection(project) {
+      const entries = [...(project.valueHistory || [])].sort((left, right) => right.changedAt - left.changedAt);
+      const rows = entries.length ? entries.map(entry => `<tr><td>${new Date(entry.changedAt).toLocaleString()}</td><td>${currency(entry.previousValue)}</td><td><strong>${currency(entry.newValue)}</strong></td><td>${escapeHtml(entry.changedByName)}</td><td><div class="main-cell">${escapeHtml(entry.fileName)}</div><div class="sub-cell">${escapeHtml(entry.comment)}</div></td></tr>`).join('') : '<tr><td colspan="5" class="empty">No plan-based estimate changes recorded.</td></tr>';
+      return `<section class="panel table-panel project-value-history"><div class="panel-head"><div><div class="panel-title">Project value history</div><div class="panel-caption">Estimate changes from uploaded plans · newest first</div></div></div><div class="table-scroll"><table><thead><tr><th>Change date</th><th>Existing value</th><th>New estimate</th><th>Changed by</th><th>Plan document / comment</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
+    }
+    function recentOrders(project) {
+      const newestFirstOrders = [...project.po].sort((left, right) => new Date(right.orderDate).getTime() - new Date(left.orderDate).getTime());
+      return `<section class="panel table-panel"><div class="panel-head"><div><div class="panel-title">Recent purchase orders</div><div class="panel-caption">Latest procurement activity for this project</div></div><button class="button" data-view="procurement">View all&nbsp; →</button></div><div class="table-scroll"><table><thead><tr><th>PO number</th><th>Vendor</th><th>Item</th><th>Order date</th><th>Total</th><th>Paid</th><th>Balance</th></tr></thead><tbody>${newestFirstOrders.slice(0,3).map(order=>poSummaryRow(order, false)).join('')}</tbody></table></div></section>`;
+    }
+    function procurement(project) {
+      const totals = projectPurchaseTotals(project);
+      const newestFirstOrders = [...project.po].sort((left, right) => new Date(right.orderDate).getTime() - new Date(left.orderDate).getTime());
+      return `${titleBlock('Purchasing', 'Procurement', `${project.name} · Purchase orders and vendor commitments`, '<button class="button primary" data-action="new-po"><span class="plus">+</span>New purchase order</button>')}
+        <div class="kpis">${kpi('Purchase orders', String(project.po.length), '↗', 'sym-blue', 'For this project')}${kpi('Total ordered', currency(totals.total), '▧', 'sym-blue', 'PO value')}${kpi('Total paid', currency(totals.paid), '✓', 'sym-pine', 'Payment ledger')}${kpi('Outstanding balance', currency(totals.balance), '!', totals.balance > 0 ? 'sym-coral' : 'sym-pine', totals.balance > 0 ? 'Vendor payments due' : 'All purchase orders settled')}</div>
+        <section class="panel table-panel"><div class="panel-head"><div><div class="panel-title">Purchase order register</div><div class="panel-caption">Sorted by order date, newest first · payment status does not affect order</div></div><div class="table-tools"><input class="search" id="tableSearch" placeholder="Search orders" aria-label="Search purchase orders"></div></div><div class="table-scroll"><table><thead><tr><th>PO number</th><th>Vendor</th><th>Item</th><th>Order date</th><th>Total</th><th>Paid</th><th>Balance</th><th>Actions</th></tr></thead><tbody>${newestFirstOrders.map(order=>poSummaryRow(order, true)).join('')}</tbody></table></div></section>`;
+    }
+    function purchaseOrderPaymentTotals(order) {
+      const paid = (order.payments || []).reduce((sum, payment) => sum + Number(payment.amount || 0), 0);
+      return { total: Number(order.total || 0), paid, balance: Math.max(0, Number(order.total || 0) - paid) };
+    }
+    function projectPurchaseTotals(project) {
+      return project.po.reduce((sum, order) => {
+        const values = purchaseOrderPaymentTotals(order);
+        sum.total += values.total;
+        sum.paid += values.paid;
+        sum.balance += values.balance;
+        return sum;
+      }, { total: 0, paid: 0, balance: 0 });
+    }
+    function paymentBadge(order) {
+      const { total, paid, balance } = purchaseOrderPaymentTotals(order);
+      if (balance <= 0) return '<span class="project-status-icon completed" role="img" aria-label="Paid" title="Paid">✓</span>';
+      if (paid > 0) return '<span class="project-status-icon planning" role="img" aria-label="Part paid" title="Part paid">◐</span>';
+      return '<span class="project-status-icon on-hold" role="img" aria-label="Pending payment" title="Pending payment">!</span>';
+    }
+    function poSummaryRow(order, showActions) {
+      const { total, paid, balance } = purchaseOrderPaymentTotals(order);
+      const actions = showActions ? `<div class="po-actions"><button class="icon-action" data-po-action="edit" data-po-id="${escapeHtml(order.id)}" title="${balance === 0 ? 'Fully paid — editing disabled' : 'Edit purchase order'}" aria-label="${balance === 0 ? 'Fully paid — editing disabled' : 'Edit purchase order'}" ${balance === 0 ? 'disabled aria-disabled="true"' : ''}>✎</button><button class="icon-action" data-po-action="pay" data-po-id="${escapeHtml(order.id)}" title="${balance === 0 ? 'Fully paid' : 'Add payment'}" aria-label="${balance === 0 ? 'Fully paid' : 'Add payment'}" ${balance === 0 ? 'disabled aria-disabled="true"' : ''}>＋</button><button class="icon-action" data-po-action="history" data-po-id="${escapeHtml(order.id)}" title="Payment history" aria-label="Payment history">◷</button></div>` : '';
+      return `<tr><td><div class="po-status-cell"><span class="main-cell">${escapeHtml(order.id)}</span>${paymentBadge(order)}</div></td><td class="main-cell">${escapeHtml(order.vendor)}</td><td class="main-cell">${escapeHtml(order.item)}</td><td>${escapeHtml(order.orderDate)}</td><td class="main-cell">${currency(total)}</td><td><strong class="payment-state ${balance === 0 ? 'paid' : paid > 0 ? 'partial' : 'unpaid'}">${currency(paid)}</strong></td><td><strong class="payment-state ${balance === 0 ? 'paid' : 'unpaid'}">${currency(balance)}</strong></td>${showActions ? `<td>${actions}</td>` : ''}</tr>`;
+    }
+    function openPurchaseOrderForm(order = null) {
+      if (order && purchaseOrderPaymentTotals(order).balance === 0) {
+        toast('Fully paid purchase orders cannot be edited.');
+        return;
+      }
+      const form = document.getElementById('purchaseOrderForm');
+      form.reset();
+      form.elements.purchaseOrderId.value = order?.id || '';
+      form.elements.vendor.value = order?.vendor || '';
+      form.elements.item.value = order?.item || '';
+      form.elements.quantity.value = order?.quantity ?? 1;
+      form.elements.unitPrice.value = order?.unitPrice ?? order?.total ?? '';
+      form.elements.orderDate.value = order?.orderDate || new Date().toISOString().slice(0, 10);
+      document.getElementById('purchaseOrderDialogTitle').textContent = order ? `Edit ${order.id}` : 'New purchase order';
+      document.getElementById('purchaseOrderDialog').showModal();
+    }
+    function openPurchasePaymentForm(order) {
+      if (purchaseOrderPaymentTotals(order).balance <= 0) {
+        toast('This purchase order is already fully paid.');
+        return;
+      }
+      const form = document.getElementById('purchasePaymentForm');
+      form.reset();
+      form.elements.purchaseOrderId.value = order.id;
+      form.elements.paymentDate.value = new Date().toISOString().slice(0, 10);
+      const amounts = purchaseOrderPaymentTotals(order);
+      document.getElementById('paymentOrderSummary').textContent = `${order.id} · ${order.vendor} · Total ${currency(amounts.total)} · Paid ${currency(amounts.paid)} · Balance ${currency(amounts.balance)}`;
+      form.elements.amount.max = amounts.balance.toFixed(2);
+      document.getElementById('purchasePaymentDialog').showModal();
+    }
+    function showPurchasePaymentHistory(order) {
+      const payments = [...(order.payments || [])].sort((left, right) => right.paidAt - left.paidAt);
+      const historyRows = payments.length ? payments.map(payment => {
+        const receipt = payment.receiptData ? `<a class="receipt-link" href="${payment.receiptData}" target="_blank" rel="noopener" download="${escapeHtml(payment.receiptName)}">${escapeHtml(payment.receiptName || 'Open attachment')}</a>${payment.receiptData.startsWith('data:image/') ? `<a href="${payment.receiptData}" target="_blank" rel="noopener"><img class="receipt-preview" src="${payment.receiptData}" alt="Payment attachment preview"></a>` : ''}` : 'No attachment';
+        return `<div class="payment-history-row"><strong data-label="Amount">${currency(payment.amount)}</strong><span data-label="Date">${escapeHtml(payment.paymentDate)}</span><span data-label="Reference">${escapeHtml(payment.reference || 'No reference')}</span><span data-label="Comment">${escapeHtml(payment.comment || 'No comment')}</span><span data-label="Recorded by">${escapeHtml(payment.paidByName)}</span><span data-label="Attachment">${receipt}</span></div>`;
+      }).join('') : '<div class="empty">No payments recorded for this PO yet.</div>';
+      const { total, paid, balance } = purchaseOrderPaymentTotals(order);
+      const dialog = document.getElementById('purchasePaymentHistoryDialog');
+      dialog.querySelector('[data-history-title]').textContent = `${order.id} · Payment history`;
+      dialog.querySelector('[data-history-summary]').textContent = `Total ${currency(total)} · Paid ${currency(paid)} · Balance ${currency(balance)}`;
+      dialog.querySelector('[data-payment-history]').innerHTML = `<div class="payment-history-row payment-history-head"><strong>Amount</strong><strong>Date</strong><strong>Reference</strong><strong>Comment</strong><strong>Recorded by</strong><strong>Attachment</strong></div>${historyRows}`;
+      dialog.showModal();
+    }
+    function inventory(project) {
+      return `${titleBlock('Materials', 'Inventory allocation', `${project.name} · Received stock and project consumption`, '<button class="button" data-action="allocate">⇄ &nbsp;Allocate stock</button><button class="button primary" data-action="receive"><span class="plus">+</span>Record receipt</button>')}
+        <div class="notice"><b>Inventory ledger</b><span>Received quantities and consumed quantities are shown separately to avoid counting open purchase orders as actual cost.</span></div>
+        <section class="panel table-panel"><div class="panel-head"><div><div class="panel-title">Project material register</div><div class="panel-caption">Procured items appear as on order; received stock remains separate from commitments</div></div><div class="table-tools"><input class="search" id="tableSearch" placeholder="Search materials" aria-label="Search materials"></div></div><div class="table-scroll"><table><thead><tr><th>Item ID</th><th>Material</th><th>Category</th><th>Ordered</th><th>Received</th><th>Consumed</th><th>Available</th></tr></thead><tbody>${project.inventory.map(row => {
+          const item = Array.isArray(row) ? { id: row[0], material: row[1], category: row[2], ordered: '—', received: row[3], consumed: row[4], available: row[5] } : row;
+          const quantity = Number(item.ordered);
+          const ordered = Number.isFinite(quantity) ? new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(quantity) : item.ordered;
+          return `<tr><td class="main-cell">${escapeHtml(item.id)}</td><td class="main-cell">${escapeHtml(item.material)}</td><td>${escapeHtml(item.category)}</td><td>${escapeHtml(ordered)}</td><td>${escapeHtml(item.received)}</td><td>${escapeHtml(item.consumed)}</td><td><strong>${escapeHtml(item.available)}</strong></td></tr>`;
+        }).join('')}</tbody></table></div></section>`;
+    }
+    function billing(project) {
+      return `${titleBlock('Client revenue', 'Progress billing', `${project.name} · Contract value ${currency(project.contract)}`, '<button class="button" data-action="change-order">+ &nbsp;Change order</button><button class="button primary" data-action="new-billing"><span class="plus">+</span>New application</button>')}
+        <div class="kpis">${kpi('Revised contract', currency(project.contract), '▧', 'sym-blue', 'Original + approved changes')}${kpi('Billed to date', currency(project.billed), '↗', 'sym-pine', `${Math.round(project.billed/project.contract*100)}% of contract value`)}${kpi('Retainage held', currency(project.billed*.1), '◷', 'sym-amber', '10% illustrative rate')}${kpi('Awaiting payment', currency(284000), '!', 'sym-coral', 'One submitted application')}</div>
+        <section class="panel table-panel"><div class="panel-head"><div><div class="panel-title">Billing applications</div><div class="panel-caption">Submitted progress billing and invoice history</div></div><button class="button">Schedule of values&nbsp; ↗</button></div><div class="table-scroll"><table><thead><tr><th>Application</th><th>Work completed</th><th>Submitted</th><th>Current due</th><th>Status</th></tr></thead><tbody>${project.bills.map(row=>`<tr><td class="main-cell">${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td class="main-cell">${row[3]}</td><td>${badge(row[4])}</td></tr>`).join('')}</tbody></table></div></section>`;
+    }
+    function attendance(project) {
+      return `${titleBlock('Field operations', 'Attendance & labor', `${project.name} · Supervisor-entered timecards mapped to cost codes`, '<button class="button" data-action="export-time">⇩ &nbsp;Export hours</button><button class="button primary" data-action="log-time"><span class="plus">+</span>Log hours</button>')}
+        <div class="kpis">${kpi('Hours logged today', '31.0 h', '◷', 'sym-blue', 'Across 4 employees')}${kpi('Labor cost today', currency(1026.25), '↘', 'sym-coral', 'Calculated from captured rates')}${kpi('Pending approval', '2 cards', '!', 'sym-amber', 'Supervisor review needed')}${kpi('Approved this week', '168.5 h', '✓', 'sym-pine', 'Mapped to 6 cost codes')}</div>
+        <section class="panel table-panel"><div class="panel-head"><div><div class="panel-title">Daily timecard log</div><div class="panel-caption">Sunday, June 22 · Standard and overtime hours reviewed separately</div></div><div class="table-tools"><input class="search" id="tableSearch" placeholder="Search employees" aria-label="Search timecards"><button class="button">Today&nbsp;⌄</button></div></div><div class="table-scroll"><table><thead><tr><th>Employee</th><th>Cost code</th><th>Hours</th><th>Labor cost</th><th>Status</th></tr></thead><tbody id="timeRows">${project.people.map(row=>`<tr><td class="main-cell">${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td class="main-cell">${row[3]}</td><td>${badge(row[4])}</td></tr>`).join('')}</tbody></table></div></section>`;
+    }
+    function render() {
+      const projectViews = ['dashboard', 'procurement', 'inventory', 'billing', 'attendance'];
+      if (projectViews.includes(state.view) && (!canAccessProject(state.project) || !canAccessView(state.view))) {
+        state.project = null;
+        state.view = 'projects';
+      }
+      const project = projects[state.project];
+      document.getElementById('crumbProject').textContent = projectViews.includes(state.view) ? project.name : state.view === 'users' ? 'User administration' : 'Projects';
+      const pages = { projects: projectsHome, dashboard: () => dashboard(project), procurement: () => procurement(project), inventory: () => inventory(project), billing: () => billing(project), attendance: () => attendance(project) };
+      pages.users = usersHome;
+      content.innerHTML = pages[state.view]();
+      document.querySelectorAll('.nav button').forEach(button => button.classList.toggle('active', button.dataset.view === state.view));
+      document.querySelectorAll('.project-module').forEach(button => { button.hidden = !state.project || !canAccessView(button.dataset.view); });
+      const usersNav = document.getElementById('usersNav');
+      usersNav.hidden = !canManageUsers();
+      const projectNavContext = document.getElementById('projectNavContext');
+      projectNavContext.hidden = !projectViews.includes(state.view);
+      projectNavContext.textContent = projectViews.includes(state.view) ? `Project context: ${project.name}` : '';
+      const search = document.getElementById('tableSearch');
+      if (search) search.addEventListener('input', () => {
+        const query = search.value.toLowerCase();
+        document.querySelectorAll('tbody tr').forEach(row => row.hidden = !row.textContent.toLowerCase().includes(query));
+      });
+    }
+    function toast(message) {
+      const node = document.getElementById('toast');
+      node.textContent = message;
+      node.classList.add('show');
+      clearTimeout(toast.timer);
+      toast.timer = setTimeout(() => node.classList.remove('show'), 2300);
+    }
+    document.querySelector('.nav').addEventListener('click', event => {
+      const button = event.target.closest('[data-view]');
+      if (!button) return;
+      if (button.dataset.view === 'users' && !canManageUsers()) return;
+      if (!['projects', 'users'].includes(button.dataset.view) && (!canAccessProject(state.project) || !canAccessView(button.dataset.view))) return;
+      state.view = button.dataset.view;
+      render();
+    });
+    content.addEventListener('click', event => {
+      const projectCard = event.target.closest('[data-open-project]');
+      if (projectCard) {
+        if (!canAccessProject(projectCard.dataset.openProject)) {
+          toast('You do not have access to this project.');
+          return;
+        }
+        state.project = projectCard.dataset.openProject;
+        state.view = 'dashboard';
+        render();
+        return;
+      }
+      const viewButton = event.target.closest('[data-view]');
+      if (viewButton) { state.view = viewButton.dataset.view; render(); return; }
+      const action = event.target.closest('[data-action]')?.dataset.action;
+      if (!action) return;
+      if (action === 'add-user') {
+        if (canManageUsers()) openUserForm();
+      } else if (action === 'new-po') {
+        openPurchaseOrderForm();
+      } else if (action === 'upload-plan') {
+        const project = projectOptions();
+        if (!project || !['Planning', 'Active', 'On Hold'].includes(project.status)) { toast('Plan uploads are not available for this project status.'); return; }
+        const planForm = document.getElementById('planDocumentForm');
+        planForm.reset();
+        planForm.elements.currentValue.value = currency(project.contract);
+        planForm.elements.newEstimate.value = '';
+        document.getElementById('planDocumentDialog').showModal();
+      } else if (action === 'new-project') {
+        document.getElementById('projectForm').reset();
+        document.getElementById('projectDialog').showModal();
+      } else if (action === 'update-status') {
+        const form = document.getElementById('statusForm');
+        form.reset();
+        form.dataset.originalStatus = projectOptions().status;
+        form.elements.status.value = projectOptions().status;
+        form.elements.statusComment.value = projectOptions().statusHistory?.at(-1)?.comment || '';
+        document.getElementById('holdReason').value = projectOptions().holdReason || '';
+        updateStatusFields();
+        document.getElementById('statusDialog').showModal();
+      } else if (action === 'log-time' || action === 'quick-entry') {
+        const dateInput = document.querySelector('#timeForm [name="date"]');
+        dateInput.value = new Date().toISOString().slice(0,10);
+        document.getElementById('timeDialog').showModal();
+      } else {
+        const labels = { export: 'Report export is a prototype action.', 'export-time': 'Timecard export is a prototype action.', filter: 'Filter controls are planned for the implementation phase.', allocate: 'Inventory allocation workflow is planned.', receive: 'Receipt workflow is planned.', 'change-order': 'Change order workflow is planned.', 'new-billing': 'Progress billing workflow is planned.' };
+        toast(labels[action] || 'This action is represented in the implementation plan.');
+      }
+    });
+    content.addEventListener('click', event => {
+      const button = event.target.closest('[data-po-action]');
+      if (!button) return;
+      const order = projectOptions()?.po.find(item => item.id === button.dataset.poId);
+      if (!order) return;
+      if (button.dataset.poAction === 'edit') openPurchaseOrderForm(order);
+      if (button.dataset.poAction === 'pay') openPurchasePaymentForm(order);
+      if (button.dataset.poAction === 'history') showPurchasePaymentHistory(order);
+    });
+    content.addEventListener('click', event => {
+      const button = event.target.closest('[data-user-action]');
+      const deleteDocument = event.target.closest('[data-plan-delete]');
+      if (deleteDocument) {
+        const project = projectOptions();
+        const documentId = deleteDocument.dataset.planDelete;
+        const planDocument = project?.planDocuments?.find(item => item.id === documentId);
+        if (!planDocument || (planDocument.uploadedById !== currentUser.id && !['Owner', 'Admin'].includes(currentUser.role))) { toast('You do not have permission to delete this document.'); return; }
+        const deleteForm = document.getElementById('deletePlanForm');
+        deleteForm.elements.documentId.value = documentId;
+        document.getElementById('deletePlanFileName').textContent = planDocument.fileName;
+        document.getElementById('deletePlanDialog').showModal();
+        return;
+      }
+      if (!button || !canManageUsers()) return;
+      const user = users.find(item => item.id === button.dataset.userId);
+      if (!user) return;
+      if (user.id === currentUser.id || (currentUser.role !== 'Owner' && !canAssignRole(user.role))) { toast('Your role cannot manage this account.'); return; }
+      if (button.dataset.userAction === 'edit') openUserForm(user);
+      if (button.dataset.userAction === 'reset') {
+        const code = String(crypto.getRandomValues(new Uint32Array(1))[0] % 1000000).padStart(6, '0');
+        resetCodes.set(user.id, { code, expiresAt: Date.now() + 15 * 60 * 1000 });
+        alert(`Demo reset code for ${user.username}: ${code}\nExpires in 15 minutes. Share this securely; production resets should be emailed by the backend.`);
+      }
+      if (button.dataset.userAction === 'deactivate') {
+        user.active = false;
+        localStorage.setItem('fieldwork-users', JSON.stringify(users));
+        render();
+        toast('User deactivated.');
+      }
+      if (button.dataset.userAction === 'reactivate') {
+        user.active = true;
+        localStorage.setItem('fieldwork-users', JSON.stringify(users));
+        render();
+        toast('User reactivated.');
+      }
+      if (button.dataset.userAction === 'delete') {
+        if (!confirm(`Delete ${user.name}'s account? This cannot be undone in the prototype.`)) return;
+        const index = users.indexOf(user);
+        users.splice(index, 1);
+        Object.values(projects).forEach(project => { project.memberUserIds = project.memberUserIds.filter(id => id !== user.id); });
+        localStorage.setItem('fieldwork-users', JSON.stringify(users));
+        localStorage.setItem('fieldwork-projects', JSON.stringify(projects));
+        render();
+        toast('User deleted and project access removed.');
+      }
+    });
+    content.addEventListener('keydown', event => {
+      const projectCard = event.target.closest('[data-open-project]');
+      if (projectCard && (event.key === 'Enter' || event.key === ' ')) {
+        event.preventDefault();
+        projectCard.click();
+      }
+    });
+    document.getElementById('closeDialog').addEventListener('click', () => document.getElementById('timeDialog').close());
+    document.getElementById('cancelDialog').addEventListener('click', () => document.getElementById('timeDialog').close());
+    document.getElementById('timeForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      const employee = String(form.get('employee')).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+      const hours = Number(form.get('hours'));
+      const cost = hours * Number(form.get('rate'));
+      const row = `<tr><td class="main-cell">${employee}</td><td>${form.get('costCode')}</td><td>${hours.toFixed(2)} h</td><td class="main-cell">${currency(cost)}</td><td>${badge('Pending')}</td></tr>`;
+      state.view = 'attendance';
+      render();
+      document.getElementById('timeRows').insertAdjacentHTML('afterbegin', row);
+      document.getElementById('timeDialog').close();
+      event.currentTarget.reset();
+      toast('Timecard added as pending approval.');
+    });
+    function updateStatusFields() {
+      const status = document.getElementById('statusChoice').value;
+      const originalStatus = document.getElementById('statusForm').dataset.originalStatus;
+      const statusChanged = status !== originalStatus;
+      const onHold = status === 'On Hold';
+      const completing = status === 'Completed';
+      document.getElementById('statusCommentField').hidden = !statusChanged;
+      document.getElementById('statusComment').required = statusChanged;
+      document.getElementById('holdReasonField').hidden = !onHold;
+      document.getElementById('holdReason').required = onHold;
+      document.getElementById('completionNoteField').hidden = !completing;
+      document.getElementById('completionConfirmField').hidden = !completing;
+      document.getElementById('confirmComplete').required = completing;
+      document.getElementById('statusDialogNote').textContent = !statusChanged
+        ? 'Choose a different status to record a status-change comment.'
+        : onHold
+        ? 'A status comment and hold reason are required.'
+        : completing
+          ? 'Add a status comment and confirm before marking the project completed.'
+          : 'A status-change comment is required.';
+    }
+    document.getElementById('statusChoice').addEventListener('change', updateStatusFields);
+    document.getElementById('deletePlanForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const documentId = String(new FormData(event.currentTarget).get('documentId'));
+      const project = projectOptions();
+      const planDocument = project?.planDocuments?.find(item => item.id === documentId);
+      if (!planDocument || (planDocument.uploadedById !== currentUser.id && !['Owner', 'Admin'].includes(currentUser.role))) {
+        document.getElementById('deletePlanDialog').close();
+        toast('You do not have permission to delete this document.');
+        return;
+      }
+      project.planDocuments = project.planDocuments.filter(item => item.id !== documentId);
+      project.valueHistory = (project.valueHistory || []).filter(item => item.documentId !== documentId);
+      localStorage.setItem('fieldwork-projects', JSON.stringify(projects));
+      document.getElementById('deletePlanDialog').close();
+      render();
+      toast('Plan document deleted.');
+    });
+    document.getElementById('userRole').addEventListener('change', updateRoleAssignmentState);
+    document.querySelector('#projectForm [name="planDocument"]').addEventListener('change', event => {
+      document.querySelector('#projectForm [name="planComment"]').required = event.target.files.length > 0;
+    });
+    document.getElementById('userSearch')?.addEventListener('input', event => {
+      const query = event.target.value.toLowerCase();
+      document.querySelectorAll('.panel tbody tr').forEach(row => { row.hidden = !row.textContent.toLowerCase().includes(query); });
+    });
+    document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => document.getElementById(button.dataset.close).close()));
+    document.getElementById('purchaseOrderForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const project = projectOptions();
+      if (!project || !currentUser) return;
+      const form = new FormData(event.currentTarget);
+      const orderId = String(form.get('purchaseOrderId'));
+      const quantity = Number(form.get('quantity'));
+      const unitPrice = Number(form.get('unitPrice'));
+      if (!Number.isFinite(quantity) || quantity <= 0 || !Number.isFinite(unitPrice) || unitPrice < 0) { toast('Enter a valid quantity and unit price.'); return; }
+      const existing = project.po.find(order => order.id === orderId);
+      const nextTotal = quantity * unitPrice;
+      const alreadyPaid = existing ? purchaseOrderPaymentTotals(existing).paid : 0;
+      if (nextTotal < alreadyPaid) { toast(`PO total cannot be less than the ${currency(alreadyPaid)} already paid.`); return; }
+      const order = existing || { id: `PO-${Date.now().toString().slice(-6)}`, payments: [] };
+      order.vendor = String(form.get('vendor')).trim();
+      order.item = String(form.get('item')).trim();
+      order.quantity = quantity;
+      order.unitPrice = unitPrice;
+      order.total = nextTotal;
+      order.orderDate = String(form.get('orderDate'));
+      order.status = purchaseOrderPaymentTotals(order).balance === 0 ? 'Paid' : alreadyPaid > 0 ? 'Partially paid' : 'Pending';
+      order.payments = order.payments || [];
+      if (!existing) {
+        order.inventoryItemId = `MAT-${Date.now().toString().slice(-6)}`;
+        project.po.unshift(order);
+      }
+      project.inventory = project.inventory || [];
+      let inventoryItem = project.inventory.find(item => !Array.isArray(item) && item.sourceOrderId === order.id);
+      if (!inventoryItem) {
+        inventoryItem = {
+          id: order.inventoryItemId || `MAT-${Date.now().toString().slice(-6)}`,
+          material: order.item,
+          category: 'Procurement',
+          ordered: quantity,
+          received: '0',
+          consumed: '0',
+          available: '0',
+          sourceOrderId: order.id,
+        };
+        order.inventoryItemId = inventoryItem.id;
+        project.inventory.push(inventoryItem);
+      } else {
+        inventoryItem.material = order.item;
+        inventoryItem.ordered = quantity;
+      }
+      localStorage.setItem('fieldwork-projects', JSON.stringify(projects));
+      render();
+      document.getElementById('purchaseOrderDialog').close();
+      toast(existing ? 'Purchase order updated.' : `Purchase order ${order.id} created.`);
+    });
+    document.getElementById('purchasePaymentForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const project = projectOptions();
+      const form = new FormData(event.currentTarget);
+      const order = project?.po.find(item => item.id === form.get('purchaseOrderId'));
+      if (!order || !currentUser) return;
+      const amount = Number(form.get('amount'));
+      const { balance } = purchaseOrderPaymentTotals(order);
+      if (!Number.isFinite(amount) || amount <= 0 || amount > balance) { toast(`Enter a payment greater than zero and no more than the ${currency(balance)} balance.`); return; }
+      const receiptFile = form.get('receipt');
+      if (receiptFile?.size > 1024 * 1024) { toast('Demo receipt upload limit is 1 MB.'); return; }
+      const savePayment = receiptData => {
+        order.payments = order.payments || [];
+        order.payments.push({
+          id: `pay-${Date.now()}-${randomHex(4)}`,
+          amount,
+          paymentDate: String(form.get('paymentDate')),
+          reference: String(form.get('reference') || '').trim(),
+          comment: String(form.get('comment') || '').trim(),
+          receiptName: receiptFile?.name || '',
+          receiptData: receiptData || '',
+          paidAt: Date.now(),
+          paidById: currentUser.id,
+          paidByName: currentUser.name,
+        });
+        const totals = purchaseOrderPaymentTotals(order);
+        order.status = totals.balance === 0 ? 'Paid' : 'Partially paid';
+        try {
+          localStorage.setItem('fieldwork-projects', JSON.stringify(projects));
+        } catch {
+          order.payments.pop();
+          toast('Browser storage is full. Use a smaller screenshot or remove stored demo data.');
+          return;
+        }
+        render();
+        document.getElementById('purchasePaymentDialog').close();
+        toast(totals.balance === 0 ? 'Payment recorded. Purchase order is fully paid.' : `Payment recorded. ${currency(totals.balance)} remains.`);
+      };
+      if (receiptFile && receiptFile.size > 0) {
+        const reader = new FileReader();
+        reader.onerror = () => toast('The payment receipt could not be read.');
+        reader.onload = () => savePayment(reader.result);
+        reader.readAsDataURL(receiptFile);
+      } else savePayment('');
+    });
+    document.getElementById('userForm').addEventListener('submit', async event => {
+      event.preventDefault();
+      if (!canManageUsers()) return;
+      const form = new FormData(event.currentTarget);
+      const role = String(form.get('role'));
+      if (!canAssignRole(role)) { toast('Your role cannot grant this role.'); return; }
+      const userId = String(form.get('userId'));
+      const username = String(form.get('username')).trim();
+      const email = String(form.get('email')).trim();
+      const password = String(form.get('password') || '');
+      const passwordConfirm = String(form.get('passwordConfirm') || '');
+      const duplicateIdentity = users.some(user => user.id !== userId && (normalizeIdentity(user.username || '') === normalizeIdentity(username) || normalizeIdentity(user.email) === normalizeIdentity(email)));
+      if (duplicateIdentity) { toast('That username or email is already in use.'); return; }
+      if (!userId && (password.length < 8 || password !== passwordConfirm)) { toast('Enter matching passwords with at least 8 characters.'); return; }
+      if (password && (password.length < 8 || password !== passwordConfirm)) { toast('Enter matching passwords with at least 8 characters.'); return; }
+      const projectIds = ['Owner', 'Managing Director'].includes(role) ? [] : form.getAll('projectIds').map(String);
+      if (!['Owner', 'Managing Director'].includes(role) && projectIds.length === 0) {
+        toast('Assign at least one project to this role.');
+        return;
+      }
+      const existing = users.find(user => user.id === userId);
+      const user = existing || { id: `user-${Date.now()}`, active: true };
+      user.name = String(form.get('name')).trim();
+      user.email = email;
+      user.username = username;
+      user.role = role;
+      user.projectIds = projectIds;
+      user.active = true;
+      if (password) {
+        const credential = await hashPassword(password);
+        user.passwordSalt = credential.salt;
+        user.passwordHash = credential.hash;
+      }
+      if (!existing) users.push(user);
+      users.forEach(member => {
+        if (member.id !== user.id && member.projectIds) member.projectIds = member.projectIds.filter(projectId => projects[projectId]);
+      });
+      Object.values(projects).forEach(project => {
+        project.memberUserIds = project.memberUserIds.filter(id => id !== user.id);
+        if (projectIds.includes(Object.keys(projects).find(id => projects[id] === project))) project.memberUserIds.push(user.id);
+      });
+      persistUsers();
+      localStorage.setItem('fieldwork-projects', JSON.stringify(projects));
+      render();
+      document.getElementById('userDialog').close();
+      toast(existing ? 'User updated.' : 'User added.');
+    });
+    document.getElementById('projectForm').addEventListener('submit', event => {
+      event.preventDefault();
+      if (!currentUser) return;
+      const form = new FormData(event.currentTarget);
+      const name = String(form.get('name')).trim();
+      const planFile = form.get('planDocument');
+      if (planFile?.size > 1024 * 1024) { toast('Demo upload limit is 1 MB per file.'); return; }
+      const id = `project-${Date.now()}`;
+      const initialContract = Number(form.get('contract'));
+      projects[id] = {
+        name,
+        location: String(form.get('location')).trim(),
+        memberUserIds: [currentUser.id],
+        status: 'Planning',
+        startDate: form.get('startDate'),
+        budget: Number(form.get('budget')),
+        contract: initialContract,
+        billed: 0,
+        actual: 0,
+        committed: 0,
+        margin: 0,
+        planDocuments: [],
+        po: [], inventory: [], bills: [], people: [],
+      };
+      if (planFile && planFile.size > 0) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const documentId = `plan-${Date.now()}`;
+          projects[id].planDocuments.push({
+            id: documentId,
+            fileName: planFile.name,
+            mimeType: planFile.type || 'application/octet-stream',
+            uploadedAt: Date.now(),
+            uploadedById: currentUser.id,
+            uploadedByName: currentUser.name,
+            comment: String(form.get('planComment') || '').trim(),
+            dataUrl: reader.result,
+          });
+          projects[id].valueHistory = [{
+            id: `value-${documentId}`,
+            documentId,
+            previousValue: initialContract,
+            newValue: initialContract,
+            changedAt: Date.now(),
+            changedById: currentUser.id,
+            changedByName: currentUser.name,
+            fileName: planFile.name,
+            comment: String(form.get('planComment') || '').trim(),
+            isInitialBaseline: true,
+          }];
+          saveNewProject(id, form);
+        };
+        reader.readAsDataURL(planFile);
+        return;
+      }
+      saveNewProject(id, form);
+    });
+    function saveNewProject(id, form) {
+      if (['Owner', 'Managing Director'].includes(currentUser.role)) projects[id].memberUserIds = [currentUser.id];
+      users.forEach(user => {
+        if (['Owner', 'Managing Director'].includes(user.role)) {
+          user.projectIds = [...new Set([...(user.projectIds || []), id])];
+          projects[id].memberUserIds.push(user.id);
+        }
+      });
+      const creator = users.find(user => user.id === currentUser.id);
+      if (creator && !creator.projectIds.includes(id)) creator.projectIds.push(id);
+      localStorage.setItem('fieldwork-users', JSON.stringify(users));
+      localStorage.setItem('fieldwork-projects', JSON.stringify(projects));
+      state.project = id;
+      state.view = 'dashboard';
+      render();
+      document.getElementById('projectDialog').close();
+      toast('Project created in Planning.');
+    }
+    document.getElementById('planDocumentForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const project = projectOptions();
+      if (!project || !['Planning', 'Active', 'On Hold'].includes(project.status)) { toast('Plan uploads are not available for this project status.'); return; }
+      const form = new FormData(event.currentTarget);
+      const file = form.get('planDocument');
+      if (!file || file.size === 0) { toast('Choose a plan document to upload.'); return; }
+      const newEstimate = Number(form.get('newEstimate'));
+      if (!Number.isFinite(newEstimate) || newEstimate < 0) { toast('Enter a valid new project estimate.'); return; }
+      if (file.size > 1024 * 1024) { toast('Demo upload limit is 1 MB per file.'); return; }
+      const allowedExtensions = /\.(pdf|png|jpe?g|docx?)$/i;
+      if (!allowedExtensions.test(file.name)) { toast('Upload a PDF, PNG, JPG, DOC, or DOCX file.'); return; }
+      const reader = new FileReader();
+      reader.onerror = () => toast('The selected document could not be read.');
+      reader.onload = () => {
+        project.planDocuments = project.planDocuments || [];
+        project.valueHistory = project.valueHistory || [];
+        const documentId = `plan-${Date.now()}-${randomHex(4)}`;
+        const previousValue = Number(project.contract);
+        project.planDocuments.push({
+          id: documentId,
+          fileName: file.name,
+          mimeType: file.type || 'application/octet-stream',
+          uploadedAt: Date.now(),
+          uploadedById: currentUser.id,
+          uploadedByName: currentUser.name,
+          comment: String(form.get('comment')).trim(),
+          dataUrl: reader.result,
+        });
+        if (newEstimate !== previousValue) project.valueHistory.push({
+          id: `value-${documentId}`,
+          documentId,
+          previousValue,
+          newValue: newEstimate,
+          changedAt: Date.now(),
+          changedById: currentUser.id,
+          changedByName: currentUser.name,
+          fileName: file.name,
+          comment: String(form.get('comment')).trim(),
+        });
+        if (newEstimate !== previousValue) project.contract = newEstimate;
+        try {
+          localStorage.setItem('fieldwork-projects', JSON.stringify(projects));
+        } catch {
+          project.planDocuments.pop();
+          project.valueHistory = project.valueHistory.filter(entry => entry.documentId !== documentId);
+          project.contract = previousValue;
+          toast('Browser storage is full. Remove an older demo document or use a smaller file.');
+          return;
+        }
+        render();
+        document.getElementById('planDocumentDialog').close();
+        toast('Plan document uploaded.');
+      };
+      reader.readAsDataURL(file);
+    });
+    document.getElementById('statusForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      const project = projectOptions();
+      const previousStatus = project.status;
+      const nextStatus = String(form.get('status'));
+      const comment = String(form.get('statusComment') || '').trim();
+      if (nextStatus !== previousStatus && !comment) { toast('Add a comment explaining the status change.'); return; }
+      if (nextStatus === previousStatus) {
+        document.getElementById('statusDialog').close();
+        return;
+      }
+      project.status = nextStatus;
+      project.holdReason = project.status === 'On Hold' ? String(form.get('holdReason')).trim() : '';
+      project.completionNote = project.status === 'Completed' ? String(form.get('completionNote')).trim() : '';
+      project.statusUpdatedAt = new Date().toISOString();
+      project.statusHistory = project.statusHistory || [];
+      project.statusHistory.push({
+        previousStatus,
+        status: nextStatus,
+        comment,
+        holdReason: project.holdReason,
+        completionNote: project.completionNote,
+        changedAt: project.statusUpdatedAt,
+        changedById: currentUser.id,
+        changedByName: currentUser.name,
+      });
+      localStorage.setItem('fieldwork-projects', JSON.stringify(projects));
+      render();
+      document.getElementById('statusDialog').close();
+      toast(project.status === 'On Hold' ? 'Project placed On Hold with reason recorded.' : `Project marked ${project.status}.`);
+    });
+    async function initializeAuth() {
+      const demoAdmin = users.find(user => user.id === demoUserId);
+      if (demoAdmin && !demoAdmin.passwordHash) {
+        const credential = await hashPassword('FieldworkDemo!26');
+        demoAdmin.passwordSalt = credential.salt;
+        demoAdmin.passwordHash = credential.hash;
+        persistUsers();
+      }
+      const sessionUserId = sessionStorage.getItem('fieldwork-auth-user-id');
+      const sessionUser = users.find(user => user.id === sessionUserId && user.active !== false);
+      if (sessionUser) {
+        currentUser = { id: sessionUser.id, name: sessionUser.name, role: sessionUser.role };
+        state.project = null;
+        state.view = 'projects';
+        document.getElementById('authScreen').hidden = true;
+        document.getElementById('appShell').hidden = false;
+        document.querySelector('.user-chip strong').textContent = currentUser.name;
+        document.querySelector('.user-chip span').textContent = currentUser.role;
+        const initials = currentUser.name.split(/\s+/).map(part => part[0]).join('').slice(0, 2).toUpperCase();
+        document.getElementById('headerAvatar').textContent = initials;
+        document.getElementById('headerAvatar').title = currentUser.name;
+        document.querySelector('.user-chip .avatar').textContent = initials;
+        render();
+        return;
+      }
+      sessionStorage.removeItem('fieldwork-auth-user-id');
+      showLogin();
+    }
+    document.getElementById('logoutButton').addEventListener('click', () => {
+      currentUser = null;
+      sessionStorage.removeItem('fieldwork-auth-user-id');
+      state.project = null;
+      state.view = 'projects';
+      showLogin('You have signed out.', true);
+    });
+    initializeAuth();
+  </script>
+</body>
+</html>

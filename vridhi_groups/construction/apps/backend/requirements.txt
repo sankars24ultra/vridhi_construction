@@ -1,0 +1,2 @@
+# Standard entry point for backend runtime dependencies.
+-r requirements-runtime.txt

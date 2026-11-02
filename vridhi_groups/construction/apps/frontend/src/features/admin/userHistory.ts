@@ -1,13 +1,14 @@
 const fieldNames: Record<string, string> = {
   name: 'Full name', username: 'Username', email: 'Email', phone: 'Contact number',
+  cashbook_permissions: 'Company Cashbook', company_audit_permissions: 'Company Audit Log', backup_permissions: 'Backup & Restore', record: 'Record transactions / results and mark invalid corrections',
   active: 'Account status', global_access: 'Global access', access: 'Access',
-  export_report: 'Export report', mode: 'Write access', add_user: 'Add/Edit users',
+  export_report: 'Download Report', mode: 'Write access', add_user: 'Add/Edit users',
   reset_password: 'Reset Password', activate_deactivate: 'Activate/Deactivate',
   delete_user: 'Delete users', history: 'History', overview: 'Overview',
   procurement: 'Procurement', inventory: 'Inventory', cashflow: 'Cash flow',
   labor: 'Labor and Wages', users: 'Users page', new_purchase_order: 'Create/Edit Purchase Order',
   edit_purchase_order: 'Edit Purchase Order', add_payment: 'Add Payment',
-  quick_entry: 'Quick Entry', upload_plan_document: 'Upload Plan Document', update_status: 'Update Status',
+  quick_entry: 'Quick Entry', upload_plan_document: 'Upload Plan Document', update_status: 'Update Status', archive_project: 'Archive / UnArchive Project',
   receive_stock: 'Receive Stock', use_stock: 'Use Stock', new_application: 'New Application', record_receipt: 'Record Receipt',
   new_labor_contract: 'New Labor Contract', add_worker: 'Add Worker', log_weekly_work: 'Log Weekly Work',
   pay_weekly_work: 'Pay Weekly Work', edit_worker: 'Edit Worker', deactivate_worker: 'Deactivate Worker',
@@ -30,6 +31,17 @@ function displayValue(value: unknown, key: string): string {
 
 export function userHistoryChanges(action: string, details: Record<string, unknown> | null, projectNames: Record<string, string> = {}): string[] {
   if (action === 'user_password_reset') return ['Password changed. Existing sessions were signed out.'];
+  if (['project_archived', 'project_unarchived', 'project_archive_blocked'].includes(action)) {
+    const reason = typeof details?.reason === 'string' ? details.reason : ''
+    const status = typeof details?.status === 'string' ? details.status : ''
+    const blockers = Array.isArray(details?.blockers) ? details.blockers.filter((item): item is string => typeof item === 'string') : []
+    return [
+      action === 'project_archived' ? 'Moved to Archived Projects. Business records became read-only.' : action === 'project_unarchived' ? 'Returned to Current Projects. Authorized changes are enabled again.' : 'Archive was not completed because outstanding items remained.',
+      ...blockers.map(item => `Blocker: ${item}`),
+      ...(reason ? [`Reason: ${reason}`] : []),
+      ...(status ? [`Project status: ${status}`] : []),
+    ]
+  }
   if (action === 'user_deleted') return ['Account deleted. Sign-in disabled; project and audit history retained.'];
   const changes: string[] = [];
   const before = objectValue(details?.before);
@@ -50,8 +62,8 @@ export function userHistoryChanges(action: string, details: Record<string, unkno
           if (!(projectId in newProjects)) changes.push(`Removed project: ${name}.`);
           if (projectId in newProjects) compare(objectValue(oldProjects[projectId]), objectValue(newProjects[projectId]), [name]);
         }
-      } else if (['global_permissions', 'users_permissions', 'audit_permissions'].includes(key)) {
-        compare(objectValue(oldValue), objectValue(newValue), [key === 'global_permissions' ? 'Global permissions' : key === 'audit_permissions' ? 'Audit Log' : 'Users page']);
+      } else if (['global_permissions', 'users_permissions', 'audit_permissions', 'cashbook_permissions', 'company_audit_permissions', 'backup_permissions'].includes(key)) {
+        compare(objectValue(oldValue), objectValue(newValue), [key === 'global_permissions' ? 'Global permissions' : key === 'cashbook_permissions' ? 'Company Cashbook' : key === 'company_audit_permissions' ? 'Company Audit Log' : key === 'backup_permissions' ? 'Backup & Restore' : key === 'audit_permissions' ? 'Audit Log' : 'Users page']);
       } else if (oldValue && typeof oldValue === 'object' || newValue && typeof newValue === 'object') {
         compare(objectValue(oldValue), objectValue(newValue), ['read', 'write', 'actions'].includes(key) ? path : [...path, fieldNames[key] || key]);
       } else if (oldValue !== newValue && !(created && (newValue === null || newValue === undefined || newValue === ''))) {

@@ -51,6 +51,17 @@ listeners. If source/configuration changes, stop the indicated owned PID before
 relaunching. Do not transfer `.tools/`, `.venv/`, `.run/` or `node_modules/`
 between machines. The optional existing Docker mode still needs Docker.
 
+### Temporary macOS launcher
+
+[startup_mac.command](../../startup_mac.command) uses already installed backend
+packages and the Node.js on PATH, without downloading Node or installing packages.
+It is a local workaround for a blocked Node download, not a fresh-machine installer.
+It warns when using a Node version outside the normal launcher's supported range.
+Existing database checks, migrations, port safeguards and readiness checks still
+apply. PostgreSQL must be running. Use `./startup_mac.command --check` for read-only
+installed-dependency checks or `--no-browser` for startup without opening a tab.
+It shares the normal launcher's logs, tracked services and explicit restart rules.
+
 ## Initial account and passwords
 
 An empty database seeds `administrator` with global/module settings and sample
@@ -76,20 +87,32 @@ credentials and cannot be replaced with a user-password hash.
 
 ## Backup / restore
 
-1. Record the application version and migration state.
-2. Create a PostgreSQL backup using approved `pg_dump` procedures.
-3. Back up `data/uploads/` separately at a consistent point.
-4. Protect backup access and retain encryption keys/configuration securely.
-5. Restore to an isolated database and upload directory.
-6. Apply the appropriate migrations and verify login, files and financial records.
+Use **Company > Backup & Restore** ([guide](14-backup-and-restore.md)):
 
-Deleting Docker volumes can destroy their contents. A persistent volume is not
-an independent backup. Never test restoration by overwriting the live database.
+1. Create a backup (or turn on the daily 9:00 PM backup) with a passphrase of at
+   least 8 characters, and store the passphrase separately.
+2. Save the `.vbak` file and copy it off this computer (Google Drive, Gmail, USB).
+3. To recover, a Global access user restores the file from the same page. The
+   current data is first saved to `data/backups/safety/`.
+
+If the app cannot start, use the command line from the construction folder:
+
+```bash
+python3 scripts/backup.py create [--out FILE]
+python3 scripts/backup.py restore FILE   # stop the app first
+```
+
+Backup needs PostgreSQL client tools (`pg_dump`/`pg_restore`) of the same or a
+newer major version than the server; Homebrew `postgresql@16` is detected
+automatically, and Docker mode uses the container's tools. Keep `.env` private and
+separate from backups. Deleting Docker volumes can destroy their contents; a
+persistent volume is not an independent backup.
 
 ## Troubleshooting
 
 | Symptom | Check / response |
 |---|---|
+| PostgreSQL connection refused | Confirm the configured host/port, not just that PostgreSQL is installed. Local Homebrew PostgreSQL normally uses 5432; the optional Docker server uses 5433. Changing servers requires valid credentials and does not transfer data. |
 | API unavailable | Database readiness, backend process, intended port and Vite proxy |
 | 405 on a newly added action | Confirm running backend loaded current routes; stale non-reloading process may need restart |
 | Invalid/expired CSRF token | Refresh session/bootstrap and retry; retain unsaved work; do not disable validation |
@@ -111,6 +134,11 @@ an independent backup. Never test restoration by overwriting the live database.
 Run the frontend build in `apps/frontend` and backend tests in the configured
 backend environment. Use targeted tests first, then the appropriate broader suite.
 Restart non-reloading services after code changes. Do not stop unrelated processes.
+
+The initial migration contains a fixed schema snapshot, not the current ORM
+metadata. Later revisions add their own tables/columns. Keep this separation when
+adding models so that migrating a completely empty PostgreSQL database remains
+supported; do not stamp an uncreated schema as migrated to bypass errors.
 
 Before production: configure HTTPS, secure cookies, restricted origins, deployment
 service supervision, least-privilege database access, backup/restore testing,

@@ -1,12 +1,16 @@
+import asyncio
 import secrets
 import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes.admin import router as admin_router
 from app.api.routes.audit import router as audit_router
+from app.api.routes.backup import maintenance, router as backup_router, scheduler_loop
+from app.api.routes.cashbook import router as cashbook_router
 from app.api.routes.labor import router as labor_router
 from app.api.routes.operations import router as operations_router
 from app.api.routes.procurement import router as procurement_router
@@ -26,10 +30,12 @@ async def lifespan(_: FastAPI):
     async with engine.begin() as connection:
         await connection.run_sync(Base.metadata.create_all)
     await seed_local_data()
+    scheduler = asyncio.create_task(scheduler_loop())
     try:
         yield
     finally:
         backend_logger.info({"event": "shutdown"})
+        scheduler.cancel()
         await engine.dispose()
 
 
@@ -46,6 +52,14 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type", "X-CSRF-Token", "Idempotency-Key"],
 )
+
+
+@app.middleware("http")
+async def maintenance_guard(request: Request, call_next):
+    path = request.url.path
+    if maintenance["active"] and path.startswith("/api/") and not path.startswith("/api/v1/backup/restore-jobs/") and path not in {"/api/v1/health", "/api/v1/ready", "/api/v1/client-logs"}:
+        return JSONResponse(status_code=503, content={"detail": maintenance["message"] or "System maintenance in progress", "code": "maintenance"})
+    return await call_next(request)
 
 
 @app.middleware("http")
@@ -79,3 +93,5 @@ app.include_router(operations_router)
 app.include_router(labor_router)
 app.include_router(admin_router)
 app.include_router(audit_router)
+app.include_router(cashbook_router)
+app.include_router(backup_router)

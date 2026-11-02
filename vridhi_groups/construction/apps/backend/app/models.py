@@ -3,7 +3,7 @@ from decimal import Decimal
 from enum import StrEnum
 from uuid import UUID, uuid4
 
-from sqlalchemy import BigInteger, Boolean, Date, DateTime, ForeignKey, JSON, Numeric, String, Text, UniqueConstraint, Uuid, func
+from sqlalchemy import BigInteger, Boolean, CheckConstraint, Date, DateTime, ForeignKey, Index, JSON, Numeric, String, Text, UniqueConstraint, Uuid, false, func, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -44,13 +44,93 @@ class User(Base, TimestampMixin):
     name: Mapped[str] = mapped_column(String(160))
     password_hash: Mapped[str] = mapped_column(Text)
     role: Mapped[str] = mapped_column(String(40), default="User")
-    global_access: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default=func.false())
+    global_access: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default=false())
     global_permissions: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     users_permissions: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     audit_permissions: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    cashbook_permissions: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    company_audit_permissions: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    backup_permissions: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     active: Mapped[bool] = mapped_column(Boolean, default=True)
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     memberships: Mapped[list["ProjectMembership"]] = relationship(back_populates="user")
+
+
+class CompanyCashOption(Base):
+    __tablename__ = "company_cash_options"
+    __table_args__ = (
+        UniqueConstraint("option_type", "kind", "parent", "normalized_name"),
+        CheckConstraint("(option_type = 'category' AND direction IS NULL) OR (option_type = 'type' AND direction IS NOT NULL AND direction IN ('in', 'out'))", name="ck_cash_option_direction"),
+    )
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True, default=uuid4)
+    option_type: Mapped[str] = mapped_column(String(16))
+    kind: Mapped[str] = mapped_column(String(32))
+    # Custom category owning a transaction type; empty for built-in categories.
+    parent: Mapped[str] = mapped_column(String(80), default="", server_default="")
+    direction: Mapped[str | None] = mapped_column(String(3), nullable=True)
+    name: Mapped[str] = mapped_column(String(80))
+    normalized_name: Mapped[str] = mapped_column(String(240))
+    created_by_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="RESTRICT"))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class CompanyCashEntry(Base):
+    __tablename__ = "company_cash_entries"
+    __table_args__ = (
+        CheckConstraint("amount > 0", name="ck_company_cash_positive"),
+        CheckConstraint("direction IN ('in', 'out')", name="ck_cash_entry_direction"),
+    )
+
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True, default=uuid4)
+    request_id: Mapped[UUID] = mapped_column(Uuid, unique=True)
+    transaction_date: Mapped[date] = mapped_column(Date, index=True)
+    kind: Mapped[str] = mapped_column(String(32))
+    custom_category: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    category: Mapped[str] = mapped_column(String(80))
+    direction: Mapped[str] = mapped_column(String(3))
+    amount: Mapped[Decimal] = mapped_column(Numeric(18, 2))
+    party: Mapped[str] = mapped_column(String(160))
+    description: Mapped[str] = mapped_column(String(500))
+    account: Mapped[str] = mapped_column(String(100))
+    payment_mode: Mapped[str] = mapped_column(String(24))
+    reference: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    project_id: Mapped[UUID | None] = mapped_column(ForeignKey("projects.id", ondelete="RESTRICT"), nullable=True)
+    recorded_by_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="RESTRICT"))
+    recorded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    voided_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    voided_by_id: Mapped[UUID | None] = mapped_column(ForeignKey("users.id", ondelete="RESTRICT"), nullable=True)
+    void_reason: Mapped[str | None] = mapped_column(String(500), nullable=True)
+
+
+class CompanyProjectResult(Base):
+    __tablename__ = "company_project_results"
+    __table_args__ = (Index("uq_company_project_result_active_date", "project_id", "as_of", unique=True, postgresql_where=text("voided_at IS NULL")),)
+
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True, default=uuid4)
+    request_id: Mapped[UUID] = mapped_column(Uuid, unique=True)
+    project_id: Mapped[UUID] = mapped_column(ForeignKey("projects.id", ondelete="RESTRICT"), index=True)
+    as_of: Mapped[date] = mapped_column(Date)
+    amount: Mapped[Decimal] = mapped_column(Numeric(18, 2))
+    basis: Mapped[str] = mapped_column(String(500))
+    recorded_by_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="RESTRICT"))
+    recorded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    voided_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    voided_by_id: Mapped[UUID | None] = mapped_column(ForeignKey("users.id", ondelete="RESTRICT"), nullable=True)
+    void_reason: Mapped[str | None] = mapped_column(String(500), nullable=True)
+
+
+class ProjectResultApproval(Base):
+    __tablename__ = "project_result_approvals"
+
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True, default=uuid4)
+    request_id: Mapped[UUID] = mapped_column(Uuid, unique=True)
+    project_id: Mapped[UUID] = mapped_column(ForeignKey("projects.id", ondelete="RESTRICT"), index=True)
+    as_of: Mapped[date] = mapped_column(Date)
+    amount: Mapped[Decimal] = mapped_column(Numeric(18, 2))
+    snapshot: Mapped[dict] = mapped_column(JSON)
+    note: Mapped[str] = mapped_column(String(500))
+    approved_by_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="RESTRICT"))
+    approved_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
 class AuthSession(Base):
@@ -87,7 +167,11 @@ class Project(Base, TimestampMixin):
     currency: Mapped[str] = mapped_column(String(3), default="INR")
     start_date: Mapped[date] = mapped_column(Date)
     estimated_end_date: Mapped[date | None] = mapped_column(Date)
+    archived_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), index=True)
+    archived_by_id: Mapped[UUID | None] = mapped_column(ForeignKey("users.id", ondelete="RESTRICT"))
+    archive_reason: Mapped[str | None] = mapped_column(String(500))
     created_by_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="RESTRICT"))
+    archived_by: Mapped["User | None"] = relationship(foreign_keys=[archived_by_id], lazy="selectin")
     memberships: Mapped[list["ProjectMembership"]] = relationship(back_populates="project")
     contracts: Mapped[list["Contract"]] = relationship(back_populates="project")
     purchase_orders: Mapped[list["PurchaseOrder"]] = relationship(back_populates="project")

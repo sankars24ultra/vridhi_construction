@@ -2,11 +2,11 @@
 
 [Documentation home](README.md)
 
-## How Export report works
+## How Download Report works
 
 1. Open the permitted module and confirm the project.
 2. Set the relevant filters and inspect the rows.
-3. Select Export report and wait while data/fonts are prepared.
+3. Select Download Report and wait while data/fonts are prepared.
 4. The browser opens its print dialog.
 5. Choose **Save as PDF** (or the OS PDF destination), choose all required pages,
    and inspect the preview. Landscape can help wide tables.
@@ -18,9 +18,10 @@ Cancel closes the dialog without saving; a recorded export event can still exist
 
 Print styles use white backgrounds and dark text even when Dark mode is enabled.
 Sidebar, top controls and personal Notes are excluded. The shared report header
-includes company name/logo, report title/date and project context where available.
-Its address is currently the literal placeholder **Company Address**; replace
-that implementation value before distributing official external reports.
+includes company name/logo, tagline, report title/date and project context where
+available; it does not print a company address. The Project Overview Report also
+shows the project status beside the project name, and an archived project's
+banner prints below the company header.
 
 ## Export scope is module-specific
 
@@ -33,6 +34,10 @@ that implementation value before distributing official external reports.
 | Labor and Wages | Prints rendered labor sections; expand relevant sections and check section pagination |
 | Users | Loads the directory through all API pages; prints currently search-filtered directory rows |
 | Audit Log | Fetches every page matching project, search and applied time interval; expands change details for print |
+| Company Cashbook | Fetches all matching transactions for the active financial tab/date context; preserves summary collapse state; matching approval rows are not limited to one visible page |
+| Borrowing details | Selected lender totals and all matching lender transaction history, not just the current page |
+| Company Audit Log | All matching activities, limited to Date & time, Username and Activity; no detail column |
+| Company activity popup | Selected activity summary plus displayed saved entry/event details; requires Company Audit Log download permission and Cashbook View for saved entries |
 
 Do not assume every PDF includes every database row simply because Audit Log
 and Procurement explicitly fetch full datasets. For modules that print rendered
@@ -41,7 +46,7 @@ needed. This document describes current behavior, not a new export-scope fix.
 
 Plan/contract Download icons retrieve original uploaded files; they are not
 report exports. The Audit API also retains a CSV option for technical clients,
-but the current Audit Log UI's Export report uses print/Save as PDF.
+but the current Audit Log UI's Download Report uses print/Save as PDF.
 
 ## Understand the Overview numbers
 
@@ -92,9 +97,15 @@ local time. The UI converts the selected interval into timezone-aware parameters
 To includes the selected ending minute. Newest-first ordering uses timestamp
 and audit ID as a tie-breaker.
 
-Record is the entity type; Reference is its internal ID, not necessarily a
-human-readable PO number. View changes describes recorded differences. Older
+Record is the entity type. Internal Audit ID and record Reference IDs are not
+shown as table columns; they appear in the details popup footer and the
+downloaded report for support use. The View eye icon opens recorded differences in a popup. Older
 events can lack full snapshots. Visit logging begins with the implemented
 tracking mechanism and cannot reconstruct historical browsing.
 
 Export activity describes a request, never a verified downloaded or saved file.
+
+Company Cashbook uses **Mark as invalid** for retained-record corrections,
+not deletion. Its cash, company spending, loan principal and approved projected
+profit/loss are distinct figures. See the [Cashbook training guide](12-company-cashbook-training.md)
+for a worked reconciliation and the precise approval basis.

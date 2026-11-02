@@ -42,6 +42,9 @@ class UserCreate(BaseModel):
     global_permissions: "ProjectPermissions | None" = None
     users_permissions: "ProjectModulePermissions | None" = None
     audit_permissions: "ProjectModulePermissions | None" = None
+    cashbook_permissions: "ProjectModulePermissions | None" = None
+    company_audit_permissions: "ProjectModulePermissions | None" = None
+    backup_permissions: "ProjectModulePermissions | None" = None
 
 
 class UserUpdate(BaseModel):
@@ -56,6 +59,9 @@ class UserUpdate(BaseModel):
     global_permissions: "ProjectPermissions | None" = None
     users_permissions: "ProjectModulePermissions | None" = None
     audit_permissions: "ProjectModulePermissions | None" = None
+    cashbook_permissions: "ProjectModulePermissions | None" = None
+    company_audit_permissions: "ProjectModulePermissions | None" = None
+    backup_permissions: "ProjectModulePermissions | None" = None
 
 
 class ProjectWritePermissions(BaseModel):

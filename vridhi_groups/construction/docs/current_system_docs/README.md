@@ -1,6 +1,8 @@
 # Vridhi: Current System Documentation
 
 Source-reviewed edition: 16 October 2026.
+Company Cashbook guide and illustrated training update: 30 October 2026.
+Project Archive guide and illustrated training update: 31 October 2026.
 
 This set explains the React/FastAPI application currently implemented in this
 workspace, not just the original HTML prototype. It is written for operators,
@@ -13,14 +15,19 @@ Examples are illustrative; project counts, balances, and usernames vary by datab
 |---|---|
 | New operator: how do I sign in and get started? | [Getting started](01-getting-started.md) |
 | What does each left menu do? | [Module guide](02-module-guide.md) |
+| How do I track company capital, spending and project results? | [Company Cashbook](11-company-cashbook.md) |
+| How do I train operators on Company Cashbook and Company Audit Log? | [Company Cashbook feature and training guide](12-company-cashbook-training.md); illustrated deck slides 46-63 |
 | How do I create projects and complete everyday tasks? | [Workflow walkthroughs](03-workflow-walkthroughs.md) |
+| How do I separate old projects without losing profit/loss history? | [Project Archive feature and training guide](13-project-archive.md); illustrated deck slides 64-75 |
+| How do I back up and restore all company data? | [Backup & Restore guide](14-backup-and-restore.md); illustrated deck slides 76-86 |
+| How do I back up all data and restore it on this or a new computer? | [Backup & Restore](14-backup-and-restore.md) |
 | How do user access and permissions work? | [Users and permissions](04-users-and-permissions.md) |
 | How do reports export, and what do financial numbers mean? | [Reports and calculations](05-reports-and-calculations.md) |
 | How do the frontend, API, and database fit together? | [Architecture and API map](06-architecture-and-api-map.md) |
 | Where is information stored? | [Data and persistence](07-data-and-persistence.md) |
 | How do I install, back up, or troubleshoot the application? | [Operations guide](08-operations-and-troubleshooting.md) |
 | What does this documentation verify, and what still needs checking? | [Evidence and acceptance checklist](09-evidence-and-acceptance.md) |
-| Can I train someone using slides? | [Illustrated training presentation](vridhi-system-training-illustrated.pptx), [original text deck](vridhi-system-training.pptx), and [slide outline](10-presentation-outline.md) |
+| Can I train someone using slides? | [Illustrated training presentation](training-illustrated.pptx) and [slide outline](10-presentation-outline.md) |
 
 ## The system in one minute
 
@@ -31,8 +38,14 @@ Examples are illustrative; project counts, balances, and usernames vary by datab
 4. Open **Audit Log** to review that project's recorded activities, if permitted.
 5. Open **Users** to manage accounts, if permitted. This directory is independent
    of project selection.
-6. Use **Notes** for temporary personal reminders, and **Export report** for the
+6. Use **Notes** for temporary personal reminders, and **Download Report** for the
    module's print/Save as PDF report.
+7. Open **Company Cashbook** for company-wide capital, cash movements, spending,
+   borrowings and approved projected project results. It has separate View/Record/Export
+   grants and is independent of project selection. See the
+   [cashbook guide](11-company-cashbook.md) for calculation boundaries.
+8. Use **Company Audit Log** for Cashbook activities, visits and report requests.
+   It has separate View/Download Report permissions; there is no Cashbook History tab.
 
 ## Important interpretation
 

@@ -4,6 +4,23 @@
 
 ## Menu and scope map
 
+The left menu has two groups, in this order:
+
+- **PROJECT:** Projects, Overview, Procurement, Inventory, Cash flow,
+  Labor and Wages, Audit Log.
+- **COMPANY:** Company Cashbook, Company Audit Log, Users.
+
+The workspace project selector stays above these groups. Project modules still
+require a selected project and their existing permissions. Company pages do not
+depend on the selected project; the COMPANY group is hidden if no company page is
+permitted. In collapsed and mobile navigation, a divider separates the groups.
+
+Browser refresh restores the selected project and page within the same tab.
+Project permission checks wait for account/project loading before redirecting;
+if access is no longer granted, the workspace falls back to an allowed page.
+Changing pages or selecting a different project starts the content at the top;
+ordinary data refreshes within the same page do not reset its scroll position.
+
 | Menu | Project required? | Main purpose |
 |---|---|---|
 | Projects | No | Choose a project; view portfolio; start New Project |
@@ -12,11 +29,19 @@
 | Inventory | Yes | Ordered/received/used materials and stock ledger |
 | Cash flow | Yes | Client billing applications and cash receipts |
 | Labor and Wages | Yes | Direct workers and subcontract labor |
-| Users | No | All-user directory, account lifecycle and permissions |
 | Audit Log | Yes | Recorded activity for the selected project |
+| Company Cashbook | No | Company capital, spending, loans, cash transfers and approved projected project results |
+| Company Audit Log | No | Company Cashbook activities, tab visits, corrections and report requests |
+| Users | No | All-user directory, account lifecycle and permissions |
 
 Only permitted project modules appear. Users requires its own page permission;
 Audit Log requires separate audit access plus access to the selected project.
+Company Cashbook has separate company-wide View/Record/Export grants. See the
+[cashbook guide](11-company-cashbook.md) for transaction boundaries, starting
+balances and profit/loss interpretation.
+Company Audit Log uses its own View and Download Report permissions. Cashbook
+contains four financial tabs, with no duplicate History tab. For workflows,
+examples and training exercises see the [Cashbook training guide](12-company-cashbook-training.md).
 
 ## Projects
 
@@ -30,6 +55,37 @@ Overview write authorization, so button visibility alone does not guarantee crea
 New projects accept name, location, approved budget, contract value, start date,
 Planning/Active initial status, and an optional initial plan file/comment.
 
+### Current Projects and Archived Projects
+
+Projects has exactly two tabs. **Current Projects** contains every non-archived
+project, including Planning, On Hold, Completed and Cancelled. **Archived Projects**
+contains only archived projects. Archive is a visibility/read-only setting, not
+a replacement status. Project search and 10/25/50/100-row pagination run on the
+server; summary tiles cover matching projects across all pages.
+
+Archived projects are excluded from the normal WORKSPACE selector. Open them
+through Archived Projects; existing project access and read/download permissions
+still apply. Their business records are read-only, including project-linked
+Company Cashbook entries and result approvals. No project is deleted.
+
+Overview's header actions are ordered **Download Report**, **Project status**,
+**Quick entry**, then **Archive project / UnArchive project**, subject to permissions.
+The archive action has a distinct background color in day and dark themes.
+Use **Archive project / UnArchive project** from Overview with the combined
+Overview action permission. A reason is mandatory. Only Completed or Cancelled
+projects can be archived; the action is hidden for Planning, Active and On Hold.
+Archive checks block unresolved vendor/worker/certified-claim payments,
+outstanding client billing, pending claim certification/addendum approval,
+remaining or unreceived inventory, and missing or stale projected profit/loss
+approval. The popup lists the blockers; resolve them and reopen it to check again.
+Approval is currently supported for INR projects only.
+
+UnArchive requires the same action permission and a reason, restores the project
+to Current Projects without changing status, and re-enables its normal authorized
+actions. Project Audit Log records **Archived project**, **UnArchived project** and
+**Archive request blocked** with the user, time, reason, status and any blockers. Archived
+projects keep contributing their latest approved projection once to company totals.
+
 ## Overview
 
 **Abstract:** a consolidated project snapshot, not a complete accounting statement.
@@ -42,8 +98,8 @@ Planning/Active initial status, and an optional initial plan file/comment.
 - Current project status and status-change history.
 - Project value history associated with revised plans.
 
-Permissioned actions: Export Report, Quick Entry, Upload Plan Document, Update
-Status. Quick Entry currently opens purchase-order creation; the actual save
+Permissioned actions: Download Report, Quick Entry, Upload Plan Document, Update
+Status, Archive / UnArchive Project. Quick Entry currently opens purchase-order creation; the actual save
 also requires Procurement create/edit permission.
 
 Users allowed only Overview can still export it. Restricted Procurement/Cash flow
@@ -141,14 +197,14 @@ project Audit Log: it includes actions by or affecting the selected user.
 **Abstract:** a project-scoped investigation trail for recorded user activities.
 
 Columns, in order:
-**Username | Date and time | User activity | Record | Details | Reference**.
+**Username | Date and time | User activity | Record | Details | View**.
 
 - Newest first, with timestamp/ID ordering.
 - Search and date/time range filter; 10 rows by default, then 20, 50, 100.
-- Expand View changes for readable recorded details.
+- Select the eye icon in the View column to open readable recorded details in a popup.
 - Visits such as "Visited Inventory" and exports such as "Exported report from
   Inventory (export requested)" are recorded.
-- Record identifies the entity type; Reference is its internal record ID.
+- Record identifies the entity type. Internal Audit ID and Reference appear only in the details popup and downloaded report.
 - Export prepares all matching records for the selected project, not just one page.
 
 Not every legacy event has detailed before/after values. This is application

@@ -1,6 +1,6 @@
 import { useRef, useState, type ClipboardEvent, type DragEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { ArrowDownLeft, ArrowUpRight, CircleDollarSign, Clock3, Download, FileText, Plus, Settings2 } from 'lucide-react'
+import { Archive, ArchiveRestore, ArrowDownLeft, ArrowUpRight, CircleDollarSign, Clock3, Download, FileText, Plus, Settings2 } from 'lucide-react'
 import { api, type Project, type PurchaseOrder } from '../../lib/api'
 import { currency, statusClass, todayISO } from '../../lib/format'
 import { EmptyState, FormActions, Kpi, MutationError, PageTitle, PanelHeading, QueryError } from '../../components/ui'
@@ -11,15 +11,24 @@ import { CostBreakdownDonut } from './CostBreakdownDonut'
 import { CompletionGauge } from './CompletionGauge'
 import { ExportHeader } from '../../components/ExportHeader'
 
-export function Overview({ project, projectId, canWrite = true, canQuickEntry = canWrite, canUploadPlan = canWrite, canUpdateStatus = canWrite, canExport = true, onNavigate, onNewPO, onRecordReceipt }: { project?: Project; projectId: string; canWrite?: boolean; canQuickEntry?: boolean; canUploadPlan?: boolean; canUpdateStatus?: boolean; canExport?: boolean; onNavigate: (view: View) => void; onNewPO: () => void; onRecordReceipt: () => void }) {
+export function Overview({ project, projectId, canWrite = true, canArchive = false, canQuickEntry = canWrite, canUploadPlan = canWrite, canUpdateStatus = canWrite, canExport = true, canViewCashbook = false, onNavigate, onNewPO, onRecordReceipt }: { project?: Project; projectId: string; canWrite?: boolean; canArchive?: boolean; canQuickEntry?: boolean; canUploadPlan?: boolean; canUpdateStatus?: boolean; canExport?: boolean; canViewCashbook?: boolean; onNavigate: (view: View) => void; onNewPO: () => void; onRecordReceipt: () => void }) {
   const queryClient = useQueryClient()
   const [printOrders, setPrintOrders] = useState<PurchaseOrder[] | null>(null)
   const [editingStatus, setEditingStatus] = useState(false)
   const [uploadingPlan, setUploadingPlan] = useState(false)
+  const [archiveOpen, setArchiveOpen] = useState(false)
+  const [archiveReason, setArchiveReason] = useState('')
+  const showArchiveAction = canArchive && Boolean(project?.archived_at || project?.status === 'Completed' || project?.status === 'Cancelled')
+  const readiness = useQuery({ queryKey: ['project', projectId, 'archive-readiness'], queryFn: () => api.archiveReadiness(projectId), enabled: archiveOpen && !project?.archived_at, staleTime: 0, retry: false })
+  const archive = useMutation({ mutationFn: () => api.archiveProject(projectId, !project?.archived_at, archiveReason, project?.version || 0), onSuccess: async () => {
+    setArchiveOpen(false)
+    setArchiveReason('')
+    await Promise.all([queryClient.invalidateQueries({ queryKey: ['projects'] }), queryClient.invalidateQueries({ queryKey: ['project', projectId] }), queryClient.invalidateQueries({ queryKey: ['company-cashbook'] })])
+  } })
   const canReadProcurement = project?.permissions?.procurement?.access === 'allow'
   const canReadCashFlow = project?.permissions?.cashflow?.access === 'allow'
   const receiptPermission = project?.permissions?.cashflow
-  const canRecordReceipt = canReadCashFlow && (receiptPermission?.write.mode === 'all' || receiptPermission?.write.actions.record_receipt === true)
+  const canRecordReceipt = !project?.archived_at && canReadCashFlow && (receiptPermission?.write.mode === 'all' || receiptPermission?.write.actions.record_receipt === true)
   const valueHistory = useQuery({ queryKey: ['project', projectId, 'value-history'], queryFn: () => api.valueHistory(projectId) })
   const documents = useQuery({ queryKey: ['project', projectId, 'documents'], queryFn: () => api.documents(projectId) })
   const dashboard = useQuery({ queryKey: ['project', projectId, 'dashboard'], queryFn: () => api.dashboard(projectId) })
@@ -61,9 +70,28 @@ export function Overview({ project, projectId, canWrite = true, canQuickEntry = 
       if (canReadProcurement) await orders.refetch()
     }
   }
+  const overviewSubtitle = `${project?.location || ''} · Updated ${dash?.as_of ? new Date(dash.as_of).toLocaleDateString('en-IN') : 'today'}`
   return <div className="overview-sections">
-    <PageTitle eyebrow="PROJECT OVERVIEW" title={project?.name || 'Project overview'} subtitle={`${project?.location || ''} · Updated ${dash?.as_of ? new Date(dash.as_of).toLocaleDateString('en-IN') : 'today'}`} action={<div className="overview-actions">{canUpdateStatus && <button className="button-secondary project-status-action" onClick={() => setEditingStatus(true)} disabled={!project?.eligible_statuses?.length}><Settings2 size={14} />Project status</button>}{canExport && <button className="button-secondary export-report-action" onClick={exportReport} disabled={!dash || exportQueries.some(query => query.isFetching || query.isError)}><Download size={14} />Export report</button>}{canQuickEntry && canReadProcurement && <button className="button-primary quick-entry-action" onClick={onNewPO}><Plus size={15} />Quick entry</button>}</div>} />
-    <ExportHeader reportTitle="Project Overview Report" projectName={project?.name} projectLocation={project?.location} asOf={dash?.as_of} />
+    <ExportHeader reportTitle="Project Overview Report" projectName={project?.name} projectLocation={project?.location} projectStatus={project?.status} asOf={dash?.as_of} />
+    {project?.archived_at && <div className="project-archive-banner"><strong>Archived project · Read-only</strong><span>Archived by {project.archived_by_username || 'Unknown user'} on {new Date(project.archived_at).toLocaleString('en-IN')}</span>{project.archive_reason && <span>Reason: {project.archive_reason}</span>}{canViewCashbook && <span>Financial history and approved profit / loss remain in Company Cashbook.</span>}</div>}
+    {archiveOpen && <ModalFrame className="project-archive-modal" title={project?.archived_at ? 'UnArchive project' : 'Archive project'} onClose={() => { if (!archive.isPending) setArchiveOpen(false) }}><form className="form-grid project-archive-form" onSubmit={event => { event.preventDefault(); archive.mutate() }}>
+      <dl className="full archive-project-details">
+        <div><dt>Selected Project</dt><dd>{project?.name || '—'}</dd></div>
+        <div><dt>Location</dt><dd>{project?.location || '—'}</dd></div>
+        <div><dt>Status</dt><dd><span className={`status-pill ${statusClass(project?.status || '')}`}>{project?.status || '—'}</span></dd></div>
+      </dl>
+      <p className="full archive-message">{project?.archived_at ? 'Return this project to Current Projects. Its status stays unchanged and normal permissions apply again.' : 'Move this project to Archived Projects. All business records become read-only; approved profit / loss is retained.'}</p>
+      {!project?.archived_at && <div className="full archive-readiness"><QueryError error={readiness.error} onRetry={() => void readiness.refetch()} />{readiness.isFetching && <p className="archive-checking">Checking outstanding items and approval...</p>}{readiness.data?.blockers.length ? <div className="archive-blockers" role="alert"><strong>Resolve these items before archiving:</strong><ul>{readiness.data.blockers.map(item => <li key={item}>{item}</li>)}</ul></div> : null}</div>}
+      <label className="field full archive-reason">Reason<textarea required maxLength={500} rows={2} value={archiveReason} onChange={event => setArchiveReason(event.target.value)} /></label>
+      <div className="full project-archive-error"><MutationError error={archive.error} /></div>
+      <FormActions busy={archive.isPending} disabled={!archiveReason.trim() || !project?.archived_at && (!readiness.data?.can_archive || readiness.isFetching || readiness.isError)} onCancel={() => setArchiveOpen(false)} submit={project?.archived_at ? 'UnArchive project' : 'Archive project'} />
+    </form></ModalFrame>}
+    <PageTitle eyebrow="PROJECT OVERVIEW" title={project?.name || 'Project overview'} titleBadge={project?.status && <span className={`status-pill project-status-badge ${statusClass(project.status)}`} aria-label={`Project status: ${project.status}`}><span className={`status-dot ${statusClass(project.status)}`} aria-hidden="true" />{project.status}</span>} subtitle={overviewSubtitle} action={<div className="overview-actions">
+      {canExport && <button className="button-secondary export-report-action" onClick={exportReport} disabled={!dash || exportQueries.some(query => query.isFetching || query.isError)}><Download size={14} />Download Report</button>}
+      {canUpdateStatus && <button className="button-secondary project-status-action" onClick={() => setEditingStatus(true)} disabled={!project?.eligible_statuses?.length}><Settings2 size={14} />Project status</button>}
+      {canQuickEntry && canReadProcurement && <button className="button-primary quick-entry-action" onClick={onNewPO}><Plus size={15} />Quick entry</button>}
+      {showArchiveAction && <button className="button-secondary project-archive-action" onClick={() => { archive.reset(); setArchiveOpen(true) }}>{project?.archived_at ? <ArchiveRestore size={15} /> : <Archive size={15} />}{project?.archived_at ? 'UnArchive project' : 'Archive project'}</button>}
+    </div>} />
     <div className="kpi-grid five"><Kpi label="Contract value" value={currency(dash?.approved_contract_value, dash?.currency)} note="Original and approved changes" icon={<FileText size={17} />} loading={dashboard.isLoading} /><Kpi label="Cash received" value={canReadCashFlow ? currency(receivedAmount, dash?.currency) : ''} note={canReadCashFlow ? cashFlow.isError ? 'Receipt data unavailable' : `${currency(billedOutstanding, dash?.currency)} billed outstanding` : ''} icon={<CircleDollarSign size={17} />} loading={canReadCashFlow && cashFlow.isLoading} /><Kpi label="Actual cost" value={currency(dash?.actual_cost, dash?.currency)} note={`Labor ${currency(dash?.cost_breakdown.find(item => item.category === 'Labor')?.amount || '0', dash?.currency)} (contract ${currency(dash?.labor_cost_breakdown?.contract_claims || '0', dash?.currency)} · direct ${currency(dash?.labor_cost_breakdown?.direct_workers || '0', dash?.currency)}) · ${contractValue ? Math.round(actual / contractValue * 100) : 0}% of contract`} icon={<ArrowDownLeft size={17} />} loading={dashboard.isLoading} /><Kpi label="Open commitments" value={currency(dash?.open_commitments, dash?.currency)} note="Outstanding procurement" icon={<Clock3 size={17} />} loading={dashboard.isLoading} /><Kpi label="Projected margin" value={`${dash?.margin_percent || '0'}%`} note="Based on current records" icon={<ArrowUpRight size={17} />} loading={dashboard.isLoading} /></div>
     <QueryError error={dashboard.error} onRetry={() => void dashboard.refetch()} />
     <div className="overview-grid">

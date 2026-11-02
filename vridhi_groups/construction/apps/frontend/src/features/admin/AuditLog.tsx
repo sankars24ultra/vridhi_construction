@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { ChevronLeft, ChevronRight, Download, Search, FilterX, CalendarRange } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Download, Eye, Search, FilterX, CalendarRange } from 'lucide-react'
 import { api, type ProjectAuditEntry } from '../../lib/api'
 import { ExportHeader } from '../../components/ExportHeader'
 import { EmptyState, PageTitle, PanelHeading, QueryError } from '../../components/ui'
 import { userHistoryChanges } from './userHistory'
 import { AuditDateRange } from '../../components/AuditDateRange'
+import { ModalFrame } from '../../components/ModalFrame'
+
+const hasAuditDetails = (entry: ProjectAuditEntry) => Boolean(entry.details) && !entry.action.startsWith('visit_') && !entry.action.startsWith('export_')
+const auditDetailSummary = (entry: ProjectAuditEntry) => entry.action.startsWith('visit_') ? 'Page opened' : entry.action.startsWith('export_') ? 'Export requested; browser save/print completion is not available.' : entry.details ? 'Change details recorded' : 'Detailed changes were not recorded'
 
 export function AuditLog({ projectId, projectName, canExport }: { projectId: string; projectName?: string; canExport: boolean }) {
   const [search, setSearch] = useState('')
@@ -29,6 +33,7 @@ export function AuditLog({ projectId, projectName, canExport }: { projectId: str
     return () => { document.removeEventListener('pointerdown', outside); document.removeEventListener('keydown', escape) }
   }, [filtersOpen])
   const [printRows, setPrintRows] = useState<ProjectAuditEntry[] | null>(null)
+  const [selectedEntry, setSelectedEntry] = useState<ProjectAuditEntry | null>(null)
   const startTime = fromTime && !Number.isNaN(new Date(fromTime).getTime()) ? new Date(fromTime).toISOString() : ''
   const endTime = toTime && !Number.isNaN(new Date(toTime).getTime()) ? new Date(toTime).toISOString() : ''
   const invalidRange = Boolean(startTime && endTime && startTime > endTime)
@@ -54,7 +59,7 @@ export function AuditLog({ projectId, projectName, canExport }: { projectId: str
   const pages = Math.max(1, Math.ceil(total / pageSize))
   return <div className="audit-log-view">
     <ExportHeader reportTitle="Project Audit Log" projectName={projectName} />
-    <PageTitle eyebrow="PROJECT ACTIVITY" title="Audit Log" subtitle={projectName || ''} action={canExport && <div className="overview-actions"><button className="button-secondary export-report-action" disabled={exportReport.isPending || invalidRange} onClick={() => exportReport.mutate()}><Download size={15} />{exportReport.isPending ? 'Preparing report...' : 'Export report'}</button></div>} />
+    <PageTitle eyebrow="PROJECT ACTIVITY" title="Audit Log" subtitle={projectName || ''} action={canExport && <div className="overview-actions"><button className="button-secondary export-report-action" disabled={exportReport.isPending || invalidRange} onClick={() => exportReport.mutate()}><Download size={15} />{exportReport.isPending ? 'Preparing report...' : 'Download Report'}</button></div>} />
     <section className="panel table-panel"><PanelHeading title="Activity history" meta={`${printRows?.length ?? total} records · Newest first`} action={<div className="audit-time-filters">
         <div ref={filterContainer} className="audit-filter-control">
           <span className={`row-action-tooltip user-badge-tooltip${filtersOpen ? ' audit-filter-tooltip-hidden' : ''}`} data-tooltip={fromTime || toTime ? 'Time range filter active' : 'Filter by time range'}><button ref={filterButton} type="button" className={`icon-button audit-filter-trigger${fromTime || toTime ? ' active' : ''}`} aria-label="Filter by time range" aria-expanded={filtersOpen} aria-controls="audit-time-range" onClick={() => setFiltersOpen(previous => !previous)}><CalendarRange size={17} />{(fromTime || toTime) && <span className="audit-filter-indicator" />}</button></span>
@@ -67,11 +72,20 @@ export function AuditLog({ projectId, projectName, canExport }: { projectId: str
       </div>} />
       {invalidRange && <div className="form-error" role="alert">From date and time must be before To date and time.</div>}
       {printRows && <p className="audit-report-filters">Period: {fromTime ? new Date(fromTime).toLocaleString('en-IN') : 'Beginning'} to {toTime ? new Date(toTime).toLocaleString('en-IN') : 'Present'}{search && ` · Search: ${search}`}</p>}
-      <div className="table-scroll"><table className="data-table"><thead><tr><th>Username</th><th>Date and time</th><th>User activity</th><th>Record</th><th>Details</th><th>Reference</th></tr></thead><tbody>
-        {!printRows && audit.isLoading ? <tr><td colSpan={6}><div className="loading-line" /></td></tr> : (printRows || audit.data?.items || []).length ? (printRows || audit.data?.items || []).map(entry => <tr key={entry.id}><td><strong>{entry.username}</strong><div className="muted-cell">{entry.name}</div></td><td>{new Date(entry.occurred_at).toLocaleString('en-IN')}</td><td>{entry.activity}</td><td>{entry.record_type}</td><td>{entry.action.startsWith('visit_') ? 'Page opened' : entry.action.startsWith('export_') ? 'Export requested; browser save/print completion is not available.' : entry.details ? <details open={printRows !== null || undefined}><summary>View changes</summary><ul className="user-history-details">{userHistoryChanges(entry.action, entry.details).map((change, index) => <li key={index}>{change}</li>)}</ul></details> : 'Detailed changes were not recorded'}<div className="muted-cell">Audit ID: {entry.id}</div></td><td>{entry.record_id || 'None'}</td></tr>) : <tr><td colSpan={6}><EmptyState title="No matching activities" note="" /></td></tr>}
+      <div className="table-scroll"><table className="data-table"><thead><tr><th>Username</th><th>Date and time</th><th>User activity</th><th>Record</th><th>Details</th><th className="audit-view-cell">View</th></tr></thead><tbody>
+        {!printRows && audit.isLoading ? <tr><td colSpan={6}><div className="loading-line" /></td></tr> : (printRows || audit.data?.items || []).length ? (printRows || audit.data?.items || []).map(entry => <tr key={entry.id}><td><strong>{entry.username}</strong><div className="muted-cell">{entry.name}</div></td><td>{new Date(entry.occurred_at).toLocaleString('en-IN')}</td><td>{entry.activity}</td><td>{entry.record_type}</td><td>{auditDetailSummary(entry)}{printRows && hasAuditDetails(entry) && <ul className="user-history-details">{userHistoryChanges(entry.action, entry.details!).map((change, index) => <li key={index}>{change}</li>)}</ul>}{printRows && <div className="muted-cell">Audit ID: {entry.id}{entry.record_id && ` · Reference: ${entry.record_id}`}</div>}</td><td className="audit-view-cell">{hasAuditDetails(entry) ? <span className="row-action-tooltip user-badge-tooltip" data-tooltip="View details"><button type="button" className="icon-button" aria-label={`View details for ${entry.activity}`} onClick={() => setSelectedEntry(entry)}><Eye size={16} /></button></span> : <span className="muted-cell" aria-label="No details">-</span>}</td></tr>) : <tr><td colSpan={6}><EmptyState title="No matching activities" note="" /></td></tr>}
       </tbody></table></div>
       <QueryError error={audit.error || exportReport.error} onRetry={() => void audit.refetch()} />
       <div className="register-pagination"><label>Rows per page <select aria-label="Audit rows per page" value={pageSize} onChange={event => { setPageSize(Number(event.target.value)); setPage(1) }}>{[10, 20, 50, 100].map(size => <option key={size} value={size}>{size}</option>)}</select></label><span>Page {page} of {pages}</span><div className="row-actions"><button className="icon-button" title="Previous audit page" aria-label="Previous audit page" disabled={page <= 1 || audit.isFetching} onClick={() => setPage(page - 1)}><ChevronLeft size={16} /></button><button className="icon-button" title="Next audit page" aria-label="Next audit page" disabled={page >= pages || audit.isFetching} onClick={() => setPage(page + 1)}><ChevronRight size={16} /></button></div></div>
     </section>
+    {selectedEntry && <ModalFrame title="Activity details" className="audit-detail-modal" onClose={() => setSelectedEntry(null)}>
+      <div className="audit-detail-body">
+        <dl className="audit-detail-meta"><div><dt>User</dt><dd>{selectedEntry.username}{selectedEntry.name && <span className="muted-cell">{selectedEntry.name}</span>}</dd></div><div><dt>Date and time</dt><dd>{new Date(selectedEntry.occurred_at).toLocaleString('en-IN')}</dd></div><div><dt>Activity</dt><dd>{selectedEntry.activity}</dd></div><div><dt>Record</dt><dd>{selectedEntry.record_type}</dd></div></dl>
+        <h3>Changes</h3>
+        <ul className="audit-detail-changes">{userHistoryChanges(selectedEntry.action, selectedEntry.details!).map((change, index) => <li key={index}>{change}</li>)}</ul>
+        <p className="muted-cell">Audit ID: {selectedEntry.id}{selectedEntry.record_id && ` · Reference: ${selectedEntry.record_id}`}</p>
+      </div>
+      <div className="form-actions"><button type="button" className="button-secondary" onClick={() => setSelectedEntry(null)}>Close</button></div>
+    </ModalFrame>}
   </div>
 }

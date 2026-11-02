@@ -9,7 +9,7 @@ function localDate(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
 
-function CompactTime({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
+export function CompactTime({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
   const [open, setOpen] = useState(false)
   const [draft, setDraft] = useState(value)
   const [mode, setMode] = useState<'hours' | 'minutes'>('hours')

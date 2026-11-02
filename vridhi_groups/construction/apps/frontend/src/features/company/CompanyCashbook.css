@@ -1,0 +1,264 @@
+.company-cashbook{display:flex;flex-direction:column;gap:18px;min-width:0}
+.company-cashbook .page-heading{margin-bottom:0}
+.cashbook-payment-status{display:inline-flex;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;white-space:nowrap}
+.cashbook-payment-status[data-status="Paid"]{background:#e6f3ed;color:#216346}
+.cashbook-payment-status[data-status="Partially paid"]{background:#fcf3df;color:#805510}
+.cashbook-payment-status[data-status="Unpaid"]{background:#fbede7;color:#a33d2b}
+.app-shell[data-theme=dark] .cashbook-payment-status[data-status="Paid"]{background:#183c30;color:#62d9a4}
+.app-shell[data-theme=dark] .cashbook-payment-status[data-status="Partially paid"]{background:#3c3020;color:#f7b955}
+.app-shell[data-theme=dark] .cashbook-payment-status[data-status="Unpaid"]{background:#3e2726;color:#ff9c89}
+.cashbook-filters,.cashbook-register-filters{display:flex;align-items:end;gap:10px;flex-wrap:wrap}
+.cashbook-filters label,.cashbook-register-filters label{display:flex;flex-direction:column;gap:5px;font-size:11px;font-weight:600}
+.cashbook-filters input,.cashbook-register-filters input,.cashbook-register-filters select{padding:9px;border:1px solid #d3dce5;background:#fff;color:#243244;border-radius:5px;max-width:100%;min-width:0}
+.cashbook-filters{row-gap:8px;justify-content:flex-end}
+.cashbook-date-field>svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);pointer-events:none;color:#607086}
+.cashbook-filters .cashbook-date-field input{padding-left:30px;height:36px}
+.app-shell[data-theme=dark] .cashbook-date-field>svg{color:#a9b3c4}
+.cashbook-toolbar{display:flex;align-items:flex-end;justify-content:space-between;gap:10px 14px;flex-wrap:wrap;border-top:1px solid #dfe5ec;padding-top:14px}
+.app-shell[data-theme=dark] .cashbook-toolbar{border-top-color:#384354}
+@media print{.cashbook-toolbar{border-top:0;padding-top:0}}
+.cashbook-toolbar .cashbook-period{flex:1 1 260px;padding-bottom:8px}
+.cashbook-toolbar .cashbook-filters{margin-left:auto}
+.cashbook-presets{display:flex;align-items:center;gap:8px}
+.cashbook-toolbar .cashbook-filters{gap:8px}
+.cashbook-presets .icon-button{width:36px;height:36px}
+.cashbook-help-tip::after{max-width:260px}
+.cashbook-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.cashbook-kpis .kpi-card{min-width:0}.cashbook-kpis .kpi-card strong{font-size:clamp(19px,2vw,28px);overflow-wrap:anywhere}
+.app-shell .kpi-grid.cashbook-kpis{margin:0}
+.app-shell .kpi-grid.cashbook-kpis .module-summary>strong{font-size:clamp(19px,2vw,26px)}
+.app-shell .kpi-grid.cashbook-kpis .module-summary:nth-child(1){--module-accent:#b88022;--module-tint:#fcf3df}
+.app-shell .kpi-grid.cashbook-kpis .module-summary:nth-child(3){--module-accent:#287454;--module-tint:#e6f3ed}
+.app-shell .kpi-grid.cashbook-kpis .module-summary:nth-child(4){--module-accent:#c4684d;--module-tint:#fbede7}
+.app-shell[data-theme=dark] .kpi-grid.cashbook-kpis .module-summary:nth-child(1){--module-accent:#f7b955;--module-tint:#3c3020}
+.app-shell[data-theme=dark] .kpi-grid.cashbook-kpis .module-summary:nth-child(3){--module-accent:#57d39c;--module-tint:#183c30}
+.app-shell[data-theme=dark] .kpi-grid.cashbook-kpis .module-summary:nth-child(4){--module-accent:#ff9c89;--module-tint:#3e2726}
+.cashbook-help,.cashbook-message{padding:14px 17px;border-radius:6px;border:1px solid #d6e3ef;background:#edf3f9;color:#435e79;font-size:12px;line-height:1.75}
+.cashbook-help ul{margin:8px 0;padding-left:20px}
+.cashbook-message{background:#e8f5ee;color:#216346;border-color:#badbc9}
+.cashbook-period,.cashbook-report-scope{font-size:11px;color:#607086;line-height:1.7;margin:0}
+.cashbook-report-scope{padding:12px 16px}
+.cashbook-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;padding:18px}
+@media(min-width:1101px){.cashbook-loan-metrics{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.cashbook-metrics>div{display:flex;flex-direction:column;gap:8px;min-width:0}.cashbook-metrics span{font-size:11px;color:#607086}.cashbook-metrics strong{font-size:17px;overflow-wrap:anywhere}
+.cashbook-sofar>.panel-heading{padding:10px 16px}
+.cashbook-sofar>.panel-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.cashbook-sofar.collapsed>.panel-heading{border-bottom:0}
+.cashbook-summary-toggle{flex:none}
+.cashbook-sofar .cashbook-metrics[hidden]{display:none!important}
+@media print{.cashbook-summary-toggle{display:none!important}}
+.cashbook-sofar .cashbook-metrics{padding:12px 16px;gap:12px 18px}
+.cashbook-sofar .cashbook-metrics>div{gap:3px}
+.cashbook-sofar .cashbook-metrics strong{font-size:15px;line-height:1.35}
+.cashbook-tabs{display:flex;gap:22px;border-bottom:1px solid #d3dce5;overflow-x:auto}
+.cashbook-tabs button{border:0;border-bottom:3px solid transparent;background:transparent;color:#607086;padding:12px 0;white-space:nowrap;font-size:12px}
+.cashbook-tabs button.selected{border-bottom-color:#285a8e;color:#285a8e;font-weight:700}
+.company-cashbook [role=tabpanel]{display:flex;flex-direction:column;gap:18px}
+.cashbook-register-filters{justify-content:flex-end;gap:12px;padding:14px 16px;background:#f5f8fc;border-block:1px solid #dfe5ec}
+.cashbook-register-filters label{flex:0 0 auto;min-width:0;color:#52657b}
+.cashbook-register-filters label:first-child{flex:0 1 240px;min-width:180px}
+.cashbook-register-filters label>svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none}
+.cashbook-register-filters input,.cashbook-register-filters select{height:36px;width:100%;padding-left:32px;font-size:11px;font-weight:400}
+.cashbook-register-filters .icon-button{width:36px;height:36px}
+.cashbook-register-panel>.panel-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:nowrap}
+.cashbook-register-panel>.panel-heading>div:first-child{flex:1 1 200px;min-width:200px}
+.cashbook-register-panel .cashbook-register-filters{display:flex;flex-wrap:nowrap;justify-content:flex-end;align-items:center;flex:0 1 auto;min-width:0;margin-left:auto;padding:0;border:0;background:transparent;gap:8px}
+.cashbook-register-panel .cashbook-register-filters>label{flex:0 0 150px;min-width:0}
+.cashbook-register-panel .cashbook-register-filters>label:first-child{flex:0 1 230px;min-width:170px}
+.cashbook-register-panel .cashbook-register-filters>label:is(:nth-child(2),:nth-child(5)){flex-basis:132px}
+.cashbook-register-panel .cashbook-register-filters>.row-action-tooltip:not(label){flex:none}
+.cashbook-register-panel .cashbook-register-filters .row-action-tooltip::after{bottom:auto;top:calc(100% + 7px)}
+.app-shell[data-theme=dark] .cashbook-register-panel .cashbook-register-filters{background:transparent}
+@media(max-width:1440px){.cashbook-register-panel>.panel-heading{flex-wrap:wrap}.cashbook-register-panel .cashbook-register-filters{flex-basis:100%}}
+@media(max-width:650px){.cashbook-register-panel .cashbook-register-filters{justify-content:flex-start;overflow-x:auto;padding-bottom:6px}.cashbook-register-panel .cashbook-register-filters>label{flex:0 0 130px}.cashbook-register-panel .cashbook-register-filters>label:first-child{flex-basis:160px}}
+.cashbook-register-filters input:focus-visible,.cashbook-register-filters select:focus-visible{outline:2px solid #397dcc;outline-offset:2px}
+.app-shell[data-theme=dark] .cashbook-register-filters{background:#1b2431;border-color:#384354}
+.app-shell[data-theme=dark] .cashbook-register-filters label{color:#a9b3c4}
+.cashbook-table td{vertical-align:top;white-space:normal;min-width:110px;max-width:310px;overflow-wrap:anywhere;font-size:12px}
+.cashbook-table td small{display:block;color:#607086;font-size:10px;line-height:1.6;margin-top:5px}
+.cashbook-activity-history{overflow:visible}
+.cashbook-activity-history>.panel-heading{flex-wrap:wrap;gap:12px}
+@media print{
+  body.cashbook-history-printing .company-cashbook>:not(.cashbook-activity-history):not(:has(.cashbook-activity-history)){display:none!important}
+  .cashbook-activity-history .audit-time-filters{display:none!important}
+}
+.cashbook-table td.numeric{white-space:nowrap;font-variant-numeric:tabular-nums}
+.cashbook-register-panel .cashbook-cell-line{display:block;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cashbook-register-panel .cashbook-print-project{display:none}
+.cashbook-entry-actions{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.app-shell .modal.cashbook-lender-modal{width:min(1120px,calc(100vw - 32px))}
+.app-shell .cashbook-lender-modal .row-action-tooltip:is(:hover,:focus-within)::after{opacity:1;visibility:visible;transform:translateY(0);transition:opacity .12s ease,transform .12s ease,visibility .12s}
+.cashbook-lender-toolbar{display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:12px 18px 0;flex-wrap:wrap}
+@media print{
+  body.cashbook-lender-printing .company-cashbook>:not(.modal-backdrop:has(.cashbook-lender-modal)){display:none!important}
+  body.cashbook-lender-printing .modal-backdrop:has(.cashbook-lender-modal){display:block!important;position:static!important;padding:0!important;inset:auto!important}
+  body.cashbook-lender-printing .modal.cashbook-lender-modal{width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;position:static!important;border:0!important;transform:none!important}
+  body.cashbook-lender-printing .cashbook-lender-modal .modal-heading{display:none!important}
+  body.cashbook-lender-printing .cashbook-lender-modal .cashbook-loan-metrics{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  body.cashbook-lender-printing .cashbook-lender-modal .modal-heading .eyebrow,.cashbook-lender-modal .cashbook-result-actions-column{display:none!important}
+  body.cashbook-lender-printing .cashbook-lender-modal .table-scroll{overflow:visible!important}
+}
+.cashbook-entry-actions .icon-button{width:32px;height:32px}
+.cashbook-entry-actions .cashbook-void-action{color:#af493e}
+.app-shell[data-theme=dark] .cashbook-entry-actions .cashbook-void-action{color:#f29e94}
+.cashbook-entry-details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 20px;margin:0;padding:18px}
+.cashbook-entry-details>div{min-width:0}
+.cashbook-entry-details dt{font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:#435e79}
+.cashbook-entry-details dd{margin:4px 0 0;font-size:13px;overflow-wrap:anywhere;white-space:pre-wrap}
+.app-shell[data-theme=dark] .cashbook-entry-details dt{color:#a9b3c4}
+.app-shell .modal.cashbook-void-modal{width:min(780px,calc(100vw - 32px));max-height:calc(100dvh - 32px)}
+.cashbook-void-modal .modal-heading{padding:12px 18px}
+.cashbook-void-modal .cashbook-entry-details{gap:8px 18px;padding:12px 18px;grid-template-columns:repeat(3,minmax(0,1fr))}
+.cashbook-void-modal .cashbook-entry-details dd{margin-top:2px;line-height:1.35}
+.cashbook-void-modal .form-grid{padding:10px 18px 14px;gap:8px}
+.cashbook-void-modal .field textarea{height:44px;min-height:44px}
+@media(max-width:650px){.cashbook-void-modal .cashbook-entry-details{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:500px){.cashbook-entry-details{grid-template-columns:1fr}}
+@media print{.cashbook-register-panel .cashbook-cell-line{max-width:none;overflow:visible;white-space:normal}.cashbook-register-panel .cashbook-print-project{display:block}.cashbook-entry-actions{display:none}}
+.cashbook-table details{font-size:11px;line-height:1.7}.cashbook-table summary{cursor:pointer}.cashbook-table dl{margin:8px 0}.cashbook-table dt{font-weight:600;text-transform:capitalize}.cashbook-table dd{margin:0 0 6px}
+.cash-in{color:#227457!important}.cash-out{color:#af493e!important}.cashbook-voided{opacity:.7}.cashbook-voided .numeric{text-decoration:line-through}
+.cash-balance{color:#285a8e!important}.cash-pending{color:#926114!important}
+.cashbook-metrics .cashbook-metric-number{font-size:inherit}
+.app-shell[data-theme=dark] .cash-balance{color:#82b6ed!important}
+.app-shell[data-theme=dark] .cash-pending{color:#f7b955!important}
+.cashbook-bottom{display:grid;grid-template-columns:1fr 1fr;gap:18px;min-width:0}
+.cashbook-bottom>.panel{display:flex;flex-direction:column;min-width:0}
+.cashbook-bottom>.panel>.register-pagination{margin-top:auto}
+.cashbook-breakdown{padding:5px 18px 18px}.cashbook-breakdown>div{display:flex;align-items:center;gap:14px;padding:12px 0;font-size:12px;border-bottom:1px solid #d3dce5}.cashbook-breakdown span{flex:1}.cashbook-breakdown meter{width:24%;height:10px}
+.app-shell[data-theme=dark] .cashbook-help{background:#1b2b3c;color:#c0d0e3;border-color:#364b61}
+.app-shell[data-theme=dark] .cashbook-message{background:#19362c;color:#a8e5c4;border-color:#37624c}
+.app-shell[data-theme=dark] .cashbook-filters input,.app-shell[data-theme=dark] .cashbook-register-filters input,.app-shell[data-theme=dark] .cashbook-register-filters select{background:#171b23;color:#f3f5f9;border-color:#384354}
+.app-shell[data-theme=dark] :is(.cashbook-period,.cashbook-report-scope,.cashbook-metrics span,.cashbook-table small,.cashbook-tabs button){color:#a9b3c4}
+.app-shell[data-theme=dark] .cashbook-tabs button.selected{color:#82b6ed;border-color:#82b6ed}
+.app-shell[data-theme=dark] .cash-in{color:#79d7aa!important}.app-shell[data-theme=dark] .cash-out{color:#f29e94!important}
+@media(max-width:1100px){.cashbook-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.cashbook-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.cashbook-bottom{grid-template-columns:1fr}}
+@media(max-width:650px){.cashbook-kpis{gap:9px}.cashbook-kpis .kpi-card{padding:12px}.cashbook-metrics{grid-template-columns:1fr}.cashbook-filters label{flex:1}.cashbook-filters input{width:100%}.cashbook-presets{flex-basis:100%}.cashbook-presets .button-secondary{flex:1}.cashbook-register-filters label{flex:1;min-width:120px}.cashbook-register-filters label:first-child{flex-basis:100%}.cashbook-tabs{gap:18px}.cashbook-table td{min-width:115px}.cashbook-breakdown>div{flex-wrap:wrap}.company-cashbook .overview-actions{flex-wrap:wrap}}
+@media print{.cashbook-filters,.cashbook-register-filters,.cashbook-tabs,.company-cashbook .register-pagination,.company-cashbook .text-action,.company-cashbook .overview-actions,.cashbook-message{display:none!important}.cashbook-kpis{grid-template-columns:repeat(5,minmax(0,1fr))}.cashbook-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.cashbook-table td{min-width:0;max-width:none;font-size:9px}.cashbook-table th{font-size:9px}.cashbook-help{background:#fff!important;color:#243244!important;border-color:#ccc!important}.cash-in{color:#227457!important}.cash-out{color:#af493e!important}.company-cashbook .table-scroll{overflow:visible}.cashbook-sofar,.cashbook-help{break-inside:avoid}.cashbook-table tr{break-inside:avoid}}
+.cashbook-updating{min-height:1.75em}
+.cashbook-project-tools{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.cashbook-approval-tools{padding:12px 16px}
+.panel-heading .cashbook-approval-tools{padding:0}
+.cashbook-project-tools .search-wrap{width:210px;max-width:100%}
+.cashbook-project-filter{position:relative;display:inline-flex;align-items:center}
+.cashbook-project-tools .row-action-tooltip::after{bottom:auto;top:calc(100% + 7px);transform:translateY(-3px)}
+.cashbook-project-tools .row-action-tooltip:is(:hover,:focus-within)::after{transform:translateY(0)}
+.cashbook-project-tools .row-action-tooltip.cashbook-project-filter::after{right:auto;left:0}
+.cashbook-project-filter>svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:#607086}
+.cashbook-project-filter select{height:36px;max-width:190px;padding:0 9px 0 32px;border:1px solid #d3dce5;border-radius:5px;background:#fff;color:#243244;font-size:11px}
+.cashbook-project-tools .icon-button{width:36px;height:36px}
+.app-shell .cashbook-project-tools .button-secondary{background:#fcf3df;border-color:#d6b56c;color:#805510}
+.app-shell .cashbook-project-tools .button-secondary:hover:not(:disabled){background:#f7e6bd}
+.app-shell[data-theme=dark] .cashbook-project-tools .button-secondary{background:#3c3020;border-color:#8c6b31;color:#f7b955}
+.app-shell[data-theme=dark] .cashbook-project-tools .button-secondary:hover:not(:disabled){background:#514025}
+.app-shell[data-theme=dark] .cashbook-project-filter select{background:#171b23;color:#f3f5f9;border-color:#384354}
+.app-shell[data-theme=dark] .cashbook-project-filter>svg{color:#a9b3c4}
+@media(max-width:650px){.cashbook-project-tools{justify-content:stretch}.cashbook-project-tools .search-wrap{width:100%}.cashbook-project-filter{flex:1}.cashbook-project-filter select{width:100%;max-width:none}}
+.cashbook-result-actions{display:flex;align-items:center;gap:6px}
+.cashbook-result-actions .icon-button{width:32px;height:32px}
+.cashbook-help section.cashbook-calculation{margin-top:10px;padding:10px 12px;border:1px solid #c9d8e7;border-radius:6px;background:#f7fafd}
+.cashbook-calculation-title{display:block;font-weight:700;color:#243244}
+.app-shell[data-theme=dark] .cashbook-help section.cashbook-calculation{background:#141b25;border-color:#364b61}
+.app-shell[data-theme=dark] .cashbook-calculation-title{color:#f3f5f9}
+.cashbook-calculation dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 0}
+.cashbook-calculation dl>div{min-width:0;padding:6px 10px;border:1px solid #d6e3ef;border-radius:6px;background:#fff;line-height:1.35}
+.cashbook-calculation dt{font-size:10px}
+.cashbook-calculation dd{margin:2px 0 0;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.cashbook-table td.cashbook-approval-date{white-space:nowrap}
+.cashbook-approval-table td{vertical-align:middle}
+.app-shell .modal.cashbook-history-modal{width:min(1120px,calc(100vw - 40px));max-width:calc(100vw - 40px)}
+.cashbook-history-modal .cashbook-approval-table th,.cashbook-history-modal .cashbook-approval-table td{padding:10px;min-width:0}
+.cashbook-history-modal .cashbook-approval-table{width:100%}
+.cashbook-approval-table tr.cashbook-approval-open>td{border-bottom:0}
+.cashbook-table tr.cashbook-approval-detail>td{max-width:none;padding-top:0;background:#f7fafd}
+.cashbook-approval-detail .cashbook-calculation{padding:10px 12px;border:1px solid #d6e3ef;border-radius:6px;background:#fff}
+.cashbook-approval-detail .cashbook-calculation dl{grid-template-columns:repeat(4,minmax(0,1fr))}
+.cashbook-table .cashbook-calculation dt{text-transform:none;font-weight:500;color:#607086}
+.cashbook-table .cashbook-calculation dd{margin:2px 0 0;font-size:13px}
+.app-shell[data-theme=dark] .cashbook-table tr.cashbook-approval-detail>td{background:#141b25}
+.app-shell[data-theme=dark] .cashbook-approval-detail .cashbook-calculation{background:#1b2431;border-color:#364b61}
+.app-shell[data-theme=dark] .cashbook-table .cashbook-calculation dt{color:#a9b3c4}
+@media(max-width:760px){.cashbook-approval-detail .cashbook-calculation dl{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.app-shell[data-theme=dark] .cashbook-calculation dl>div{background:#171b23;border-color:#364b61}
+@media print{.cashbook-project-tools,.cashbook-result-actions-column{display:none!important}}
+.cashbook-optional-field{white-space:nowrap}
+.cashbook-account-reference{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;min-width:0}
+.cashbook-account-reference>.field{min-width:0}
+.cashbook-account-hint{grid-column:1/-1;display:block;font-size:7px;white-space:nowrap;overflow-x:auto;scrollbar-width:none}
+.cashbook-account-hint::-webkit-scrollbar{display:none}
+.company-cashbook .cashbook-description-field textarea{height:44px;min-height:44px}
+.cashbook-option-field{display:flex;align-items:flex-end;gap:6px;min-width:0}
+.cashbook-option-field>.field{flex:1;min-width:0}
+.cashbook-option-field>.row-action-tooltip{flex:none}
+.cashbook-option-field .icon-button{width:32px;height:36px}
+.cashbook-option-field .row-action-tooltip::after{top:calc(100% + 7px);bottom:auto}
+.app-shell .cashbook-option-field .row-action-tooltip:is(:hover,:focus-within)::after{opacity:1;visibility:visible;transform:translateY(0)}
+@media(max-width:420px){.cashbook-optional-field{font-size:8px}}
+
+.cashbook-borrowing-tools{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:nowrap;min-width:0}
+.cashbook-borrowing-tools .cashbook-register-filters{display:contents}
+.cashbook-borrowing-tools .cashbook-register-filters label:first-child{flex:1 1 180px;min-width:80px}
+.cashbook-borrowing-tools .cashbook-register-filters label:nth-child(2){flex:0 1 170px;min-width:110px}
+.cashbook-borrowing-tools>.row-action-tooltip{flex:none}
+.cashbook-borrowing-tools .icon-button{width:36px;height:36px;flex:none}
+.cashbook-borrowing-tools .row-action-tooltip::after{bottom:auto;top:calc(100% + 7px)}
+.app-shell .cashbook-borrowing-tools .cashbook-record-loan{background:#e6f3ed;border-color:#badbc9;color:#216346}
+.app-shell .cashbook-borrowing-tools .cashbook-record-repayment{background:#fbede7;border-color:#e8c4b8;color:#a3442e}
+.app-shell[data-theme=dark] .cashbook-borrowing-tools .cashbook-record-loan{background:#183c30;border-color:#326b51;color:#57d39c}
+.app-shell[data-theme=dark] .cashbook-borrowing-tools .cashbook-record-repayment{background:#3e2726;border-color:#80504b;color:#ff9c89}
+@media(max-width:650px){.cashbook-borrowing-tools{width:100%;gap:6px}.cashbook-borrowing-tools .cashbook-register-filters label:nth-child(2){flex-basis:120px}.cashbook-borrowing-tools .icon-button{width:32px;height:36px}.cashbook-borrowing-tools .cashbook-register-filters select{padding-left:26px;padding-right:3px}}
+@media print{.cashbook-borrowing-tools{display:none!important}}
+.cashbook-loan-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;padding:18px;margin:0 0 16px;border:1px solid #d5dce5;border-radius:8px;background:#fff;box-shadow:0 2px 8px #233c2c08}
+.cashbook-loan-summary>div{display:flex;flex-direction:column;gap:8px;min-width:0}
+.cashbook-loan-summary dt{font-size:11px;color:#718096}
+.cashbook-loan-summary dd{margin:0;font-size:17px;font-weight:700;line-height:1.35;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;color:#283548}
+.cashbook-loan-summary dd.cash-in{color:#397a5d}
+.cashbook-loan-summary dd.cash-out{color:#af493e}
+.app-shell[data-theme=dark] .cashbook-loan-summary{background:var(--dark-surface);border-color:#63758c;box-shadow:0 3px 12px #00000020}
+.app-shell[data-theme=dark] .cashbook-loan-summary dt{color:#a9b3c4}
+.app-shell[data-theme=dark] .cashbook-loan-summary dd{color:#e5eaf2}
+.app-shell[data-theme=dark] .cashbook-loan-summary dd.cash-in{color:#62d9a4}
+.app-shell[data-theme=dark] .cashbook-loan-summary dd.cash-out{color:#ff9c89}
+@media(max-width:800px){.cashbook-loan-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}}
+@media(max-width:420px){.cashbook-loan-summary{padding:16px;gap:16px}}
+@media print{.cashbook-loan-summary{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:10px;padding:14px;box-shadow:none}}
+.app-shell .modal.cashbook-activity-modal{width:min(820px,calc(100vw - 32px))}
+.cashbook-activity-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:18px;padding:18px;border:1px solid #d6e3ef;border-radius:8px;background:#edf3f9}
+.cashbook-activity-summary>div:first-child{grid-column:1/-1}
+.cashbook-activity-summary dt{font-size:11px;font-weight:700;color:#435e79;text-transform:uppercase;letter-spacing:.04em}
+.cashbook-activity-summary dd{margin:5px 0 0;font-size:13px;font-weight:600;line-height:1.6;overflow-wrap:anywhere}
+.cashbook-activity-summary>div:first-child dd{font-size:16px}
+.cashbook-activity-content{padding:0 18px 20px}
+.cashbook-activity-content h3{margin:4px 0 14px;font-size:14px;line-height:1.5}
+.cashbook-activity-content .cashbook-entry-details,.cashbook-activity-content>.cashbook-history-details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px;margin:0;padding:0}
+.cashbook-activity-content .cashbook-entry-details>div,.cashbook-history-details>div{min-width:0;padding:12px 0;border-bottom:1px solid #e3e9f0}
+.cashbook-history-details{margin:0}
+.cashbook-history-details dt{font-size:11px;font-weight:700;text-transform:capitalize;color:#435e79;line-height:1.5}
+.cashbook-history-details dd{margin:5px 0 0;font-size:13px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.cashbook-history-details dd ul{margin:0;padding-left:18px}
+.cashbook-activity-content .cashbook-entry-details dd{line-height:1.6}
+.cashbook-activity-empty{font-size:13px;color:#435e79}
+.cashbook-activity-modal>.form-error{margin:0 18px 18px}
+.cashbook-activity-toolbar{display:flex;justify-content:flex-end;padding:14px 18px 0}
+.app-shell[data-theme=day] :is(.cashbook-activity-history,.cashbook-activity-toolbar) .export-report-action{background:#EAF2FB;border-color:#B8CADC;color:#285A8E}
+.app-shell[data-theme=day] :is(.cashbook-activity-history,.cashbook-activity-toolbar) .export-report-action:hover:not(:disabled){background:#DDEAF8;border-color:#96B2D1;color:#204A75}
+.app-shell[data-theme=dark] :is(.cashbook-activity-history,.cashbook-activity-toolbar) .export-report-action{background:#1C304C;border-color:#3E6290;color:#B4D8FF}
+.app-shell[data-theme=dark] :is(.cashbook-activity-history,.cashbook-activity-toolbar) .export-report-action:hover:not(:disabled){background:#263F60;border-color:#5685BC;color:#D5E9FF}
+@media print{
+  body.cashbook-activity-printing .company-cashbook>:not(.cashbook-activity-history):not(:has(.cashbook-activity-history)){display:none!important}
+  body.cashbook-activity-printing .cashbook-activity-history>:not(.modal-backdrop){display:none!important}
+  body.cashbook-activity-printing .cashbook-history-report>.export-company-header{display:none!important}
+  body.cashbook-activity-printing .modal-backdrop:has(.cashbook-activity-modal){display:block!important;position:static!important;padding:0!important;background:none!important;backdrop-filter:none!important}
+  body.cashbook-activity-printing .modal.cashbook-activity-modal{width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;position:static!important;border:0!important;box-shadow:none!important;background:#fff!important;color:#243244!important}
+  body.cashbook-activity-printing .cashbook-activity-modal .modal-heading,body.cashbook-activity-printing .cashbook-activity-toolbar{display:none!important}
+  body.cashbook-activity-printing .cashbook-activity-summary{background:#fff!important;border-color:#ccc!important}
+  body.cashbook-activity-printing .cashbook-activity-modal dt{color:#435e79!important}
+  body.cashbook-activity-printing .cashbook-entry-details>div,body.cashbook-activity-printing .cashbook-history-details>div{break-inside:avoid}
+}
+.app-shell[data-theme=dark] .cashbook-activity-summary{background:#1b2431;border-color:#384354}
+.app-shell[data-theme=dark] .cashbook-activity-summary dt,.app-shell[data-theme=dark] .cashbook-history-details dt,.app-shell[data-theme=dark] .cashbook-activity-empty{color:#a9b3c4}
+.app-shell[data-theme=dark] .cashbook-activity-content .cashbook-entry-details>div,.app-shell[data-theme=dark] .cashbook-history-details>div{border-color:#384354}
+@media(max-width:600px){
+  .cashbook-activity-summary{grid-template-columns:1fr;margin:12px;padding:14px;gap:12px}
+  .cashbook-activity-content{padding:0 14px 16px}
+  .cashbook-activity-content .cashbook-entry-details,.cashbook-activity-content>.cashbook-history-details{grid-template-columns:1fr}
+}

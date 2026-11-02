@@ -26,6 +26,7 @@ const projectModules = [
       { id: "quick_entry", label: "Quick Entry" },
       { id: "upload_plan_document", label: "Upload Plan Document" },
       { id: "update_status", label: "Update Status" },
+      { id: "archive_project", label: "Archive / UnArchive Project" },
     ],
   },
   {
@@ -86,6 +87,10 @@ function fullUsersPermissions(): ProjectPermissions["users"] {
   return { access: "allow", read: { export_report: true }, write: { mode: "all", actions: Object.fromEntries(usersActions.map((action) => [action.id, true])) } };
 }
 
+function fullCashbookPermissions(): ProjectPermissions["users"] {
+  return { access: "allow", read: { export_report: true }, write: { mode: "partial", actions: { record: true } } };
+}
+
 function defaultProjectPermissions(sharedAccess = false): ProjectPermissions {
   return Object.fromEntries(
     projectModules.map((module) => [
@@ -124,7 +129,7 @@ export function UserDetails({ user, projectNames }: { user: User; projectNames: 
   ];
   return <div className="user-details-view">
     <dl className="user-details-grid">
-      {[['Full name', user.name], ['Username', user.username], ['Email', user.email || 'Not provided'], ['Contact number', user.phone || 'Not provided'], ['Account status', user.active === false ? 'Inactive' : 'Active'], ['Access scope', user.global_access ? 'Global · All projects' : assignedIds.length ? 'Selected projects' : 'Users only'], ['Assigned projects', user.global_access ? 'All available projects' : assignedIds.map((id, index) => projectNames[id] || user.assigned_projects?.[index] || id).join(', ') || 'None']].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
+      {[['Full name', user.name], ['Username', user.username], ['Email', user.email || 'Not provided'], ['Contact number', user.phone || 'Not provided'], ['Account status', user.active === false ? 'Inactive' : 'Active'], ['Access scope', user.global_access ? 'Global · All projects' : assignedIds.length ? 'Selected projects' : 'Account-level pages'], ['Assigned projects', user.global_access ? 'All available projects' : assignedIds.map((id, index) => projectNames[id] || user.assigned_projects?.[index] || id).join(', ') || 'None']].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
     </dl>
     <h3>Users page permissions</h3>
     <div className="table-scroll"><table className="data-table"><thead><tr><th>Permission</th><th>Access</th></tr></thead><tbody>
@@ -133,7 +138,17 @@ export function UserDetails({ user, projectNames }: { user: User; projectNames: 
       {usersActions.map((action) => <tr key={action.id}><td>{action.label}</td><td>{usersPermission.access === "allow" && (usersPermission.write.mode === "all" || usersPermission.write.actions[action.id]) ? "Allowed" : "Blocked"}</td></tr>)}
     </tbody></table></div>
     <h3>Audit Log permissions</h3>
-    <div className="table-scroll"><table className="data-table"><thead><tr><th>Permission</th><th>Access</th></tr></thead><tbody><tr><td>Audit Log</td><td>{user.global_access || user.audit_permissions?.access === 'allow' ? 'Allowed' : 'Blocked'}</td></tr><tr><td>Export Report</td><td>{user.global_access || user.audit_permissions?.access === 'allow' && user.audit_permissions.read.export_report ? 'Allowed' : 'Blocked'}</td></tr></tbody></table></div>
+    <div className="table-scroll"><table className="data-table"><thead><tr><th>Permission</th><th>Access</th></tr></thead><tbody><tr><td>Audit Log</td><td>{user.global_access || user.audit_permissions?.access === 'allow' ? 'Allowed' : 'Blocked'}</td></tr><tr><td>Download Report</td><td>{user.global_access || user.audit_permissions?.access === 'allow' && user.audit_permissions.read.export_report ? 'Allowed' : 'Blocked'}</td></tr></tbody></table></div>
+    <h3>Company Cashbook permissions</h3>
+    <div className="table-scroll"><table className="data-table"><thead><tr><th>Permission</th><th>Access</th></tr></thead><tbody>{[
+      ['View company finances & history', user.global_access || user.cashbook_permissions?.access === 'allow'],
+      ['Record transactions, project results & mark invalid corrections', user.global_access || user.cashbook_permissions?.access === 'allow' && (user.cashbook_permissions.write.mode === 'all' || user.cashbook_permissions.write.actions.record)],
+      ['Download Report', user.global_access || user.cashbook_permissions?.access === 'allow' && user.cashbook_permissions.read.export_report],
+    ].map(([label, allowed]) => <tr key={String(label)}><td>{label}</td><td>{allowed ? 'Allowed' : 'Blocked'}</td></tr>)}</tbody></table></div>
+    <h3>Company Audit Log permissions</h3>
+    <div className="table-scroll"><table className="data-table"><thead><tr><th>Permission</th><th>Access</th></tr></thead><tbody><tr><td>View Company Audit Log</td><td>{user.global_access || user.company_audit_permissions?.access === 'allow' ? 'Allowed' : 'Blocked'}</td></tr><tr><td>Download Report</td><td>{user.global_access || user.company_audit_permissions?.access === 'allow' && user.company_audit_permissions.read.export_report ? 'Allowed' : 'Blocked'}</td></tr></tbody></table></div>
+    <h3>Backup & Restore permissions</h3>
+    <div className="table-scroll"><table className="data-table"><thead><tr><th>Permission</th><th>Access</th></tr></thead><tbody><tr><td>Create and save backups</td><td>{user.global_access || user.backup_permissions?.access === 'allow' ? 'Allowed' : 'Blocked'}</td></tr><tr><td>Restore from backup (Global access only)</td><td>{user.global_access ? 'Allowed' : 'Blocked'}</td></tr></tbody></table></div>
     {profiles.map((profile) => <section key={profile.name}>
       <h3>{profile.name}</h3>
       <div className="table-scroll"><table className="data-table"><thead><tr><th>Module</th><th>Access</th><th>Export</th><th>Write actions</th></tr></thead><tbody>
@@ -223,6 +238,9 @@ export function UsersView({
   const sharedPermissionEditor = globalAccess || sharedProjectAccess;
   const [usersPermissionDraft, setUsersPermissionDraft] = useState(defaultProjectPermissions().users);
   const [auditPermissionDraft, setAuditPermissionDraft] = useState(defaultProjectPermissions().users);
+  const [cashbookPermissionDraft, setCashbookPermissionDraft] = useState(defaultProjectPermissions().users);
+  const [companyAuditPermissionDraft, setCompanyAuditPermissionDraft] = useState(defaultProjectPermissions().users);
+  const [backupPermissionDraft, setBackupPermissionDraft] = useState(defaultProjectPermissions().users);
   const [globalPermissionDraft, setGlobalPermissionDraft] =
     useState<ProjectPermissions>(defaultProjectPermissions());
   const [userProjectIds, setUserProjectIds] = useState<string[]>([]);
@@ -258,6 +276,9 @@ export function UsersView({
     setSharedProjectAccess(false);
     setUsersPermissionDraft(defaultProjectPermissions().users);
     setAuditPermissionDraft(defaultProjectPermissions().users);
+    setCashbookPermissionDraft(defaultProjectPermissions().users);
+    setCompanyAuditPermissionDraft(defaultProjectPermissions().users);
+    setBackupPermissionDraft(defaultProjectPermissions().users);
     setGlobalPermissionDraft(defaultProjectPermissions());
     setUserProjectIds([]);
     setProjectPermissionDrafts({});
@@ -279,6 +300,9 @@ export function UsersView({
         ),
         global_access: globalAccess,
         audit_permissions: globalAccess ? { access: 'allow' as const, read: { export_report: true }, write: { mode: 'partial' as const, actions: {} } } : auditPermissionDraft,
+        cashbook_permissions: globalAccess ? fullCashbookPermissions() : cashbookPermissionDraft,
+        company_audit_permissions: globalAccess ? { access: 'allow' as const, read: { export_report: true }, write: { mode: 'partial' as const, actions: {} } } : companyAuditPermissionDraft,
+        backup_permissions: globalAccess ? { access: 'allow' as const, read: { export_report: true }, write: { mode: 'partial' as const, actions: {} } } : backupPermissionDraft,
         users_permissions: globalAccess ? fullUsersPermissions() : usersPermissionDraft,
         global_permissions: globalAccess ? { ...globalPermissionDraft, users: fullUsersPermissions() } : undefined,
       };
@@ -322,6 +346,9 @@ export function UsersView({
     setPasswordConfirm("");
     setGlobalAccess(target?.global_access || false);
     setAuditPermissionDraft(target?.global_access ? { access: 'allow', read: { export_report: true }, write: { mode: 'partial', actions: {} } } : target?.audit_permissions || defaultProjectPermissions().users);
+    setCashbookPermissionDraft(target?.global_access ? fullCashbookPermissions() : target?.cashbook_permissions || defaultProjectPermissions().users);
+    setCompanyAuditPermissionDraft(target?.global_access ? { access: 'allow', read: { export_report: true }, write: { mode: 'partial', actions: {} } } : target?.company_audit_permissions || defaultProjectPermissions().users);
+    setBackupPermissionDraft(target?.global_access ? { access: 'allow', read: { export_report: true }, write: { mode: 'partial', actions: {} } } : target?.backup_permissions || defaultProjectPermissions().users);
     setSharedProjectAccess(hasSharedProfile);
     const usersProfiles = [
       ...(target?.global_access ? [target.global_permissions?.users] : []),
@@ -427,7 +454,7 @@ export function UsersView({
         subtitle="Manage user accounts and project-specific permissions."
         action={
           <div className="overview-actions">
-          <button className="button-secondary export-report-action" onClick={exportUsers} disabled={!canExportUsers || users.isFetching || users.isError}><Download size={14} />Export report</button>
+          <button className="button-secondary export-report-action" onClick={exportUsers} disabled={!canExportUsers || users.isFetching || users.isError}><Download size={14} />Download Report</button>
           <button className="button-primary" disabled={!canManageUsers} onClick={() => openUserEditor()}>
             <Plus size={15} />
             Add user
@@ -490,7 +517,7 @@ export function UsersView({
                         {user.global_access ? (
                           <span className="status-pill complete">Global</span>
                         ) : (
-                          <span className="status-pill planning">{user.assigned_project_ids?.length ? "Project" : "Users only"}</span>
+                          <span className="status-pill planning">{user.assigned_project_ids?.length ? "Project" : "Account-level"}</span>
                         )}
                       </td>
                       <td>
@@ -568,8 +595,8 @@ export function UsersView({
                 setWizardStep(2);
                 return;
               }
-              if (!globalAccess && userProjectIds.length === 0 && usersPermissionDraft.access !== "allow") {
-                setUserFormError("Assign a project, enable Global access, or allow Users page access.");
+              if (!globalAccess && userProjectIds.length === 0 && usersPermissionDraft.access !== "allow" && cashbookPermissionDraft.access !== "allow" && companyAuditPermissionDraft.access !== "allow" && backupPermissionDraft.access !== "allow") {
+                setUserFormError("Assign a project, enable Global access, or allow Users / Company Cashbook / Company Audit Log access.");
                 return;
               }
               if (
@@ -708,6 +735,9 @@ export function UsersView({
                         setSharedProjectAccess(false);
                         if (event.target.checked) setUsersPermissionDraft(fullUsersPermissions());
                         if (event.target.checked) setAuditPermissionDraft({ access: 'allow', read: { export_report: true }, write: { mode: 'partial', actions: {} } });
+                        setCashbookPermissionDraft(event.target.checked ? fullCashbookPermissions() : defaultProjectPermissions().users);
+                        setCompanyAuditPermissionDraft(event.target.checked ? { access: 'allow' as const, read: { export_report: true }, write: { mode: 'partial' as const, actions: {} } } : defaultProjectPermissions().users);
+                        setBackupPermissionDraft(event.target.checked ? { access: 'allow' as const, read: { export_report: true }, write: { mode: 'partial' as const, actions: {} } } : defaultProjectPermissions().users);
                       }}
                     />
                     <span>
@@ -892,7 +922,7 @@ export function UsersView({
                                         }))
                                       }
                                     />
-                                    Export Report
+                                    Download Report
                                   </label>
                                 </div>
                                 <div className="project-permission-subsection">
@@ -978,10 +1008,30 @@ export function UsersView({
                     </details>
                   )}
                   <fieldset className="project-permission-editor full" disabled={globalAccess}>
+                    <legend>Company Cashbook permissions</legend>
+                    <p className="field-hint">{globalAccess ? "Global access includes all Company Cashbook permissions." : "Blocked by default. Recommended for global-access users only; allow others only when they need company-wide finances (all project names, results, transactions and history). You cannot grant permissions you do not have."}</p>
+                    <div className="project-permission-access"><strong>View</strong><label><input type="radio" name="cashbook-access" checked={cashbookPermissionDraft.access === 'allow'} onChange={() => setCashbookPermissionDraft(previous => ({ ...previous, access: 'allow' }))} />Allow</label><label><input type="radio" name="cashbook-access" checked={cashbookPermissionDraft.access === 'block'} onChange={() => setCashbookPermissionDraft(previous => ({ ...previous, access: 'block' }))} />Block</label></div>
+                    {cashbookPermissionDraft.access === 'allow' && <div className="project-permission-subsection">
+                      <label><input type="checkbox" checked={cashbookPermissionDraft.read.export_report} onChange={event => setCashbookPermissionDraft(previous => ({ ...previous, read: { export_report: event.target.checked } }))} />Download Report</label>
+                      <label><input type="checkbox" checked={cashbookPermissionDraft.write.mode === 'all' || cashbookPermissionDraft.write.actions.record === true} onChange={event => setCashbookPermissionDraft(previous => ({ ...previous, write: { mode: 'partial', actions: { record: event.target.checked } } }))} />Record transactions / results and mark invalid corrections</label>
+                    </div>}
+                  </fieldset>
+                  <fieldset className="project-permission-editor full" disabled={globalAccess}>
+                    <legend>Company Audit Log permissions</legend>
+                    <p className="field-hint">{globalAccess ? "Global access includes the Company Audit Log." : "Blocked by default. Allows the Company Audit Log menu: all Company Cashbook activity (entries, declarations, approvals, voids and report requests) across all dates. You cannot grant access you do not have."}</p>
+                    <div className="project-permission-access"><strong>View</strong><label><input type="radio" name="company-audit-access" checked={companyAuditPermissionDraft.access === 'allow'} onChange={() => setCompanyAuditPermissionDraft(previous => ({ ...previous, access: 'allow' }))} />Allow</label><label><input type="radio" name="company-audit-access" checked={companyAuditPermissionDraft.access === 'block'} onChange={() => setCompanyAuditPermissionDraft(previous => ({ ...previous, access: 'block' }))} />Block</label></div>
+                    {companyAuditPermissionDraft.access === 'allow' && <div className="project-permission-subsection"><label><input type="checkbox" checked={companyAuditPermissionDraft.read.export_report} onChange={event => setCompanyAuditPermissionDraft(previous => ({ ...previous, read: { export_report: event.target.checked } }))} />Download Report</label></div>}
+                  </fieldset>
+                  <fieldset className="project-permission-editor full" disabled={globalAccess}>
+                    <legend>Backup & Restore permissions</legend>
+                    <p className="field-hint">{globalAccess ? "Global access includes Backup and Restore." : "Blocked by default. Allows the Backup & Restore menu: create and save a full encrypted backup of all company data. Restore is always Global access only."}</p>
+                    <div className="project-permission-access"><strong>Backup</strong><label><input type="radio" name="backup-access" checked={backupPermissionDraft.access === 'allow'} onChange={() => setBackupPermissionDraft(previous => ({ ...previous, access: 'allow' }))} />Allow</label><label><input type="radio" name="backup-access" checked={backupPermissionDraft.access === 'block'} onChange={() => setBackupPermissionDraft(previous => ({ ...previous, access: 'block' }))} />Block</label></div>
+                  </fieldset>
+                  <fieldset className="project-permission-editor full" disabled={globalAccess}>
                     <legend>Audit Log permissions</legend>
                     <p className="field-hint">Review activity only in projects this user can access. Global access includes Audit Log and all-project report exports.</p>
                     <div className="project-permission-access"><strong>Access</strong><label><input type="radio" name="audit-access" checked={auditPermissionDraft.access === 'allow'} onChange={() => setAuditPermissionDraft(previous => ({ ...previous, access: 'allow' }))} />Allow</label><label><input type="radio" name="audit-access" checked={auditPermissionDraft.access === 'block'} onChange={() => setAuditPermissionDraft(previous => ({ ...previous, access: 'block' }))} />Block</label></div>
-                    {auditPermissionDraft.access === 'allow' && <div className="project-permission-subsection"><strong>Read</strong><label><input type="checkbox" checked={auditPermissionDraft.read.export_report} onChange={event => setAuditPermissionDraft(previous => ({ ...previous, read: { export_report: event.target.checked } }))} />Export Report</label></div>}
+                    {auditPermissionDraft.access === 'allow' && <div className="project-permission-subsection"><strong>Read</strong><label><input type="checkbox" checked={auditPermissionDraft.read.export_report} onChange={event => setAuditPermissionDraft(previous => ({ ...previous, read: { export_report: event.target.checked } }))} />Download Report</label></div>}
                   </fieldset>
                   <fieldset className="project-permission-editor full" disabled={globalAccess}>
                     <legend>Users page permissions</legend>

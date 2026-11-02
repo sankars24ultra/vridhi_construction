@@ -44,7 +44,7 @@ Prior conversation test counts are not presented here as a fresh test result.
   separate approved change-order engine.
 - Client data, uploaded files and operational backups are not automatically
   encrypted by password hashing.
-- The shared report header still has a company-address placeholder.
+- The shared report header prints no company address; add one in the application if official external PDFs require it.
 - Current records and sample data are not an audited financial baseline.
 
 These are scope notes observed during source review, not permission to silently
@@ -77,5 +77,17 @@ Run against a safe test database with known fixtures:
 14. Mobile: workspace selector does not cover menus; menus/tables scroll and
     popovers/dialogs remain usable.
 15. Restore: recover database plus uploads and open known linked documents.
+16. Archive: Current/Archived tabs remain exclusive beyond 100 projects; search,
+    pagination and summary counts agree. Archived projects are absent from the
+    normal workspace selector but reachable through their tab.
+17. Archive eligibility: Planning, Active and On Hold statuses, unpaid balances, pending claims/addenda,
+    remaining stock and missing/stale projection approvals produce specific blockers.
+18. Archive permissions: Partial Overview action, Global Permission and project
+    overrides enforce the combined Archive/UnArchive grant. All project business
+    writes, linked cashbook entries and approvals fail for archived projects;
+    permitted reads/downloads remain available.
+19. Financial preservation: archive/restore keeps company approved totals unchanged,
+    retains original status and history, and writes reasoned audit events. A stale
+    version cannot archive/restore; changed calculation basis requires reapproval.
 
 Record actual outcomes and evidence before estimating production completion.

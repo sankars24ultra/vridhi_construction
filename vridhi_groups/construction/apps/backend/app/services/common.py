@@ -1,7 +1,7 @@
 from decimal import Decimal
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import inspect, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -13,7 +13,14 @@ def money(value: Decimal | int | str) -> str:
 
 
 def user_dto(user: User) -> dict:
-    return {"id": str(user.id), "username": user.username, "email": user.email, "phone": user.phone, "name": user.name, "global_access": user.global_access, "global_permissions": user.global_permissions, "users_permissions": user.users_permissions, "audit_permissions": user.audit_permissions, "active": user.active}
+    return {"id": str(user.id), "username": user.username, "email": user.email, "phone": user.phone, "name": user.name, "global_access": user.global_access, "global_permissions": user.global_permissions, "users_permissions": user.users_permissions, "audit_permissions": user.audit_permissions, "cashbook_permissions": user.cashbook_permissions, "company_audit_permissions": user.company_audit_permissions, "backup_permissions": user.backup_permissions, "active": user.active}
+
+
+def archived_by_username(project: Project) -> str | None:
+    if not project.archived_by_id:
+        return None
+    archiver = inspect(project).attrs.archived_by.loaded_value
+    return archiver.username if isinstance(archiver, User) else None
 
 
 def project_dto(project: Project) -> dict:
@@ -23,6 +30,10 @@ def project_dto(project: Project) -> dict:
         "baseline_budget": money(project.baseline_budget), "currency": project.currency,
         "start_date": project.start_date.isoformat(), "estimated_end_date": project.estimated_end_date.isoformat() if project.estimated_end_date else None,
         "version": project.version,
+        "archived_at": project.archived_at.isoformat() if project.archived_at else None,
+        "archived_by_id": str(project.archived_by_id) if project.archived_by_id else None,
+        "archived_by_username": archived_by_username(project),
+        "archive_reason": project.archive_reason,
     }
 
 

@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
 import { ArrowUpRight } from 'lucide-react'
 
-export function PageTitle({ eyebrow, title, subtitle, action }: { eyebrow: string; title: string; subtitle: string; action?: ReactNode }) {
-  return <div className="page-heading"><div><span className="eyebrow">{eyebrow}</span><h1>{title}</h1><p>{subtitle}</p></div>{action}</div>
+export function PageTitle({ eyebrow, title, subtitle, action, titleBadge }: { eyebrow: string; title: string; subtitle: string; action?: ReactNode; titleBadge?: ReactNode }) {
+  return <div className="page-heading"><div><span className="eyebrow">{eyebrow}</span>{titleBadge ? <div className="page-title-row"><h1>{title}</h1>{titleBadge}</div> : <h1>{title}</h1>}<p>{subtitle}</p></div>{action}</div>
 }
 
 export function Kpi({ label, value, note, icon, loading }: { label: string; value: string; note: string; icon: ReactNode; loading?: boolean }) {

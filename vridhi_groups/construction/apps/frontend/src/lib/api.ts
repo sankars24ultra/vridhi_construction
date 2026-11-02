@@ -1,13 +1,14 @@
 import { logClientEvent, setLoggingCsrf } from './logging'
+import { cashQuery, cashHistoryQuery, type ApprovalInput, type CashFilters, type CashInput, type CashbookData, type ResultInput, type CashHistory, type CashOptionInput, type CashOption, type BorrowingInput, type CashbookPage, type CashActivityRecord } from './cashbook'
 
 export type Page<T> = { items: T[]; page: number; page_size: number; total: number }
 export type AuditModule = 'overview' | 'procurement' | 'inventory' | 'cashflow' | 'labor' | 'audit'
 export type ProjectAuditEntry = { id: string; username: string; name: string; occurred_at: string; activity: string; action: string; record_type: string; record_id: string | null; details: Record<string, unknown> | null }
 export type ProjectModulePermission = { access: 'allow' | 'block'; read: { export_report: boolean }; write: { mode: 'all' | 'partial'; actions: Record<string, boolean> } }
 export type ProjectPermissions = Record<'overview' | 'procurement' | 'inventory' | 'cashflow' | 'labor' | 'users', ProjectModulePermission>
-export type User = { id: string; username: string; email: string | null; phone?: string | null; name: string; global_access?: boolean; global_permissions?: ProjectPermissions | null; users_permissions?: ProjectModulePermission | null; audit_permissions?: ProjectModulePermission | null; active?: boolean; assigned_project_ids?: string[]; assigned_projects?: string[]; project_permissions?: Record<string, ProjectPermissions | null>; manageable_actions?: string[]; capabilities?: string[]; permissions?: Record<string, { read: boolean; write: boolean; export_report?: boolean; reset_password?: boolean; activate_deactivate?: boolean; delete_user?: boolean; history?: boolean }> }
+export type User = { id: string; username: string; email: string | null; phone?: string | null; name: string; global_access?: boolean; global_permissions?: ProjectPermissions | null; users_permissions?: ProjectModulePermission | null; audit_permissions?: ProjectModulePermission | null; cashbook_permissions?: ProjectModulePermission | null; company_audit_permissions?: ProjectModulePermission | null; backup_permissions?: ProjectModulePermission | null; active?: boolean; assigned_project_ids?: string[]; assigned_projects?: string[]; project_permissions?: Record<string, ProjectPermissions | null>; manageable_actions?: string[]; capabilities?: string[]; permissions?: Record<string, { read: boolean; write: boolean; export_report?: boolean; reset_password?: boolean; activate_deactivate?: boolean; delete_user?: boolean; history?: boolean; create?: boolean; restore?: boolean }> }
 export type UserHistoryEntry = { id: string; action: string; entity_type: string; entity_id: string | null; occurred_at: string; actor: string; details: Record<string, unknown> | null }
-export type Project = { id: string; name: string; location: string; status: string; eligible_statuses: string[]; baseline_budget: string; contract_value?: string; actual_cost?: string; hold_reason?: string | null; currency: string; start_date: string; version: number; permissions?: ProjectPermissions | null }
+export type Project = { id: string; name: string; location: string; status: string; eligible_statuses: string[]; baseline_budget: string; contract_value?: string; actual_cost?: string; hold_reason?: string | null; currency: string; start_date: string; version: number; permissions?: ProjectPermissions | null; archived_at?: string | null; archived_by_id?: string | null; archived_by_username?: string | null; archive_reason?: string | null }
 export type Session = { user: User; expires_at: string; csrf_token: string }
 export type RBACResource = { resource: 'overview' | 'procurement' | 'inventory' | 'cashflow' | 'users'; label: string; description: string }
 export type RBACMatrix = Record<string, Record<RBACResource['resource'], { read: boolean; write: boolean }>>
@@ -92,9 +93,37 @@ async function request<T>(path: string, init: RequestInit = {}, csrf?: string): 
   }
   return body as T
 }
+export type BackupJob = { id: string; kind: 'backup' | 'restore'; status: 'running' | 'ready' | 'done' | 'failed'; step?: string; error?: string | null; file_name?: string; file_bytes?: number; created_at: string; finished_at?: string | null; token?: string }
+export type BackupStatus = { can_restore: boolean; schedule: { enabled: boolean; time: string; passphrase_set: boolean; last_run_at: string | null; last_error: string | null }; last_saved_at: string | null; last_restore: { performed_at: string; performed_by: string } | null; stale: boolean; pending: { id: string; file: string; created_at: string; file_bytes: number } | null; active_job: BackupJob | null; busy: boolean }
+export type RestorePreview = { upload_id: string; file: string; preview: { created_at: string; created_by: string; app_name: string; revision: string; needs_upgrade: boolean; highlights: { label: string; count: number }[]; tables: number; rows: number; uploads: number; upload_bytes: number } }
 const json = (method: string, value?: unknown): RequestInit => ({ method, body: value === undefined ? undefined : JSON.stringify(value) })
 
 export const api = {
+  backupStatus: () => request<BackupStatus>('/backup/status'),
+  startBackup: (passphrase: string, csrf: string) => request<BackupJob>('/backup/jobs', json('POST', { passphrase }), csrf),
+  backupJob: (jobId: string) => request<BackupJob>(`/backup/jobs/${encodeURIComponent(jobId)}`),
+  confirmBackupSaved: (jobId: string, method: 'save_dialog' | 'download', csrf: string) => request<{ status: string }>(`/backup/jobs/${encodeURIComponent(jobId)}/saved`, json('POST', { method }), csrf),
+  discardBackup: (jobId: string, csrf: string) => request<{ status: string }>(`/backup/jobs/${encodeURIComponent(jobId)}`, json('DELETE'), csrf),
+  confirmPendingSaved: (method: 'save_dialog' | 'download', csrf: string) => request<{ status: string }>('/backup/pending/saved', json('POST', { method }), csrf),
+  updateBackupSchedule: (input: { enabled: boolean; time: string; passphrase?: string }, csrf: string) => request<{ status: string }>('/backup/schedule', json('PUT', input), csrf),
+  uploadRestoreFile: (file: File, passphrase: string, csrf: string) => { const body = new FormData(); body.append('file', file); body.append('passphrase', passphrase); return request<RestorePreview>('/backup/restore/uploads', { method: 'POST', body }, csrf) },
+  cancelRestore: (uploadId: string, csrf: string) => request<{ status: string }>(`/backup/restore/uploads/${encodeURIComponent(uploadId)}`, json('DELETE'), csrf),
+  applyRestore: (uploadId: string, csrf: string) => request<BackupJob>(`/backup/restore/uploads/${encodeURIComponent(uploadId)}/apply`, json('POST', { confirm: 'RESTORE' }), csrf),
+  restoreJob: (jobId: string, token: string) => request<BackupJob>(`/backup/restore-jobs/${encodeURIComponent(jobId)}?token=${encodeURIComponent(token)}`),
+  cashbook: (filters: CashFilters, page: number, pageSize: number) => request<CashbookData>(`/company-cashbook?${cashQuery(filters)}&page=${page}&page_size=${pageSize}`),
+  recordCompanyCash: (input: CashInput, csrf: string) => request<{ id: string }>('/company-cashbook/entries', json('POST', input), csrf),
+  recordBorrowing: (input: BorrowingInput, csrf: string) => request<{ ids: string[] }>('/company-cashbook/borrowings', json('POST', input), csrf),
+  addCashbookOption: (input: CashOptionInput, csrf: string) => request<{ items: CashOption[] }>('/company-cashbook/options', json('POST', input), csrf),
+  recordProjectResult: (input: ResultInput, csrf: string) => request<{ id: string }>('/company-cashbook/results', json('POST', input), csrf),
+  approveProjectResult: (input: ApprovalInput, csrf: string) => request<{ id: string }>('/company-cashbook/result-approvals', json('POST', input), csrf),
+  voidCashbookRecord: (type: 'entries' | 'results', id: string, reason: string, csrf: string) => request<{ status: string }>(`/company-cashbook/${type}/${id}/void`, json('POST', { reason }), csrf),
+  cashbookHistory: (page: number, pageSize: number, search: string, startTime: string, endTime: string) => request<CashHistory>(`/company-cashbook/history?page=${page}&page_size=${pageSize}&${cashHistoryQuery(search, startTime, endTime)}`),
+  companyAuditLog: (page: number, pageSize: number, search: string, startTime: string, endTime: string) => request<CashHistory>(`/company-cashbook/audit-log?page=${page}&page_size=${pageSize}&${cashHistoryQuery(search, startTime, endTime)}`),
+  exportCashbookHistory: (source: 'history' | 'audit-log', search: string, startTime: string, endTime: string, csrf: string) => request<CashHistory>(`/company-cashbook/${source}/export?${cashHistoryQuery(search, startTime, endTime)}`, json('POST'), csrf),
+  cashbookRecord: (recordId: string) => request<CashActivityRecord>(`/company-cashbook/records/${encodeURIComponent(recordId)}`),
+  exportCashbookActivity: (activityId: string, source: 'history' | 'audit-log', csrf: string) => request<void>(`/company-cashbook/activities/${encodeURIComponent(activityId)}/export?source=${source}`, json('POST'), csrf),
+  recordCashbookVisit: (page: CashbookPage, csrf: string) => request<void>('/company-cashbook/activities', json('POST', { page }), csrf),
+  exportCashbook: (filters: CashFilters, csrf: string) => request<CashbookData>(`/company-cashbook/export?${cashQuery(filters)}`, json('POST'), csrf),
   recordActivity: (projectId: string, module: AuditModule, activity: 'visit' | 'export') => request<void>(`/projects/${projectId}/activities`, json('POST', { module, activity })),
   projectAudit: (projectId: string, page: number, pageSize: number, search: string, startTime = '', endTime = '') => request<Page<ProjectAuditEntry>>(`/projects/${projectId}/audit-log?${new URLSearchParams({ page: String(page), page_size: String(pageSize), search, ...(startTime ? { start_time: startTime } : {}), ...(endTime ? { end_time: endTime } : {}) })}`),
   exportProjectAudit: async (projectId: string, search: string, startTime = '', endTime = '') => {
@@ -112,7 +141,17 @@ export const api = {
   me: () => request<User & { capabilities: string[] }>('/me'),
   login: (username: string, password: string, csrf: string) => request<Session>('/auth/login', json('POST', { username, password }), csrf).then(result => { setCsrf(result.csrf_token); return result }),
   logout: (csrf: string) => request<void>('/auth/logout', json('POST'), csrf),
-  projects: () => request<Page<Project>>('/me/projects?page=1&page_size=100'),
+  projects: async () => {
+    const first = await request<Page<Project>>('/me/projects?page=1&page_size=100&scope=all')
+    const items = [...first.items]
+    for (let page = 2; page <= Math.ceil(first.total / 100); page += 1) {
+      items.push(...(await request<Page<Project>>(`/me/projects?page=${page}&page_size=100&scope=all`)).items)
+    }
+    return { ...first, items }
+  },
+  projectPage: (scope: 'current' | 'archived', page: number, pageSize: number, search: string) => request<Page<Project> & { status_counts: Record<string, number> }>(`/me/projects?scope=${scope}&page=${page}&page_size=${pageSize}&search=${encodeURIComponent(search)}`),
+  archiveReadiness: (id: string) => request<{ blockers: string[]; can_archive: boolean; archived: boolean }>(`/projects/${id}/archive-readiness`),
+  archiveProject: (id: string, archived: boolean, reason: string, version: number) => request<Project>(`/projects/${id}/archive`, json('PATCH', { archived, reason, expected_version: version })),
   createProject: (input: { name: string; location: string; baseline_budget: string; contract_value: string; start_date: string; status: 'Planning' | 'Active'; plan_comment: string; plan_document: File | null }, csrf: string) => {
     const body = new FormData()
     body.set('name', input.name)
@@ -203,8 +242,8 @@ export const api = {
     }
     return { ...firstPage, items }
   },
-  createUser: (input: { name: string; email: string | null; phone: string | null; username: string; password: string; project_ids: string[]; project_permissions: Record<string, ProjectPermissions>; global_access: boolean; global_permissions?: ProjectPermissions; users_permissions?: ProjectModulePermission; audit_permissions?: ProjectModulePermission }, csrf: string) => request<User>('/users', json('POST', input), csrf),
-  updateUser: (userId: string, input: { name: string; email: string | null; phone: string | null; username: string; password?: string; project_ids: string[]; project_permissions: Record<string, ProjectPermissions>; global_access: boolean; global_permissions?: ProjectPermissions; users_permissions?: ProjectModulePermission; audit_permissions?: ProjectModulePermission }, csrf: string) => request<User>(`/users/${userId}`, json('PUT', input), csrf),
+  createUser: (input: { name: string; email: string | null; phone: string | null; username: string; password: string; project_ids: string[]; project_permissions: Record<string, ProjectPermissions>; global_access: boolean; global_permissions?: ProjectPermissions; users_permissions?: ProjectModulePermission; audit_permissions?: ProjectModulePermission; cashbook_permissions?: ProjectModulePermission; company_audit_permissions?: ProjectModulePermission; backup_permissions?: ProjectModulePermission }, csrf: string) => request<User>('/users', json('POST', input), csrf),
+  updateUser: (userId: string, input: { name: string; email: string | null; phone: string | null; username: string; password?: string; project_ids: string[]; project_permissions: Record<string, ProjectPermissions>; global_access: boolean; global_permissions?: ProjectPermissions; users_permissions?: ProjectModulePermission; audit_permissions?: ProjectModulePermission; cashbook_permissions?: ProjectModulePermission; company_audit_permissions?: ProjectModulePermission; backup_permissions?: ProjectModulePermission }, csrf: string) => request<User>(`/users/${userId}`, json('PUT', input), csrf),
   rolePermissions: () => request<RBACConfiguration>('/users/permissions'),
   saveRolePermissions: (matrix: RBACMatrix, csrf: string) => request<{ matrix: RBACMatrix }>('/users/permissions', json('PUT', { matrix }), csrf),
 }

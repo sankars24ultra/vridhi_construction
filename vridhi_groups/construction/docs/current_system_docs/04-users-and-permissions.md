@@ -30,7 +30,7 @@ mean the API ignores saved project overrides.
 ## Module configuration
 
 1. **Access: Allow / Block.** Block denies the page, not just its write buttons.
-2. **Read: Export Report.** A separate grant; read access alone does not grant export.
+2. **Read: Download Report.** A separate grant; read access alone does not grant export.
 3. **Write: All / Partial.** All permits applicable module actions; Partial permits
    only checked actions. With no checks, there is no partial write access.
 
@@ -45,6 +45,19 @@ mean the API ignores saved project overrides.
 Record eligibility still matters. A paid PO may not be editable; a missing active
 worker or unavailable stock can disable an otherwise authorized operation.
 Cross-module shortcuts may need the destination module's actual write permission.
+
+## Project archive action
+
+Overview includes one **Archive / UnArchive Project** action (`archive_project`).
+Configure it in either the project permission profile or the **Global Permission**
+profile; project-specific overrides still take precedence. With Write set to
+Partial, Update Status or Upload Plan alone does not grant archiving. Write All
+includes it, consistent with other Overview actions.
+
+Archived project business records are read-only even for users with Global access.
+Only the separately authorized UnArchive action can restore normal write behavior.
+Project access and read/report/file-download permissions remain in force. Project
+financial checks do not bypass the Global-only Company Cashbook result approval.
 
 ## Users page: separate account permission
 
@@ -71,9 +84,40 @@ because someone needs to view the directory.
 
 ## Audit Log: separate account permission, project-specific data
 
-Audit Access controls menu/list availability; Export Report controls its report.
+Audit Access controls menu/list availability; Download Report controls its report.
 The selected project must still be accessible to the account. An audit grant alone
 does not assign every project. Global access includes both audit capabilities.
+
+## Company Audit Log: separate account permission, company-wide data
+
+**Company Audit Log permissions** (View: Allow/Block) control the Company Audit
+Log menu, which lists all Company Cashbook activity (entries, declarations,
+approvals, voids and report requests) across all dates. It is blocked by default
+and independent of Company Cashbook access: a user can review the audit log
+without seeing the cashbook, and Cashbook users do not see the log unless it is
+allowed. Global access always includes it. You cannot grant it unless you have
+it. Accounts that already had Company Cashbook access when this permission was
+introduced kept the audit log. A user with only this permission needs no project
+assignment.
+
+The audit log's **View activity details** icon shows the logged event, including
+visits to the company finance tabs. There is no open-entry action.
+**Download Report** is a separate checkbox under Company Audit Log permissions;
+it defaults to off for non-global users. Global access includes report downloads.
+You cannot grant a report permission that you do not have. Company Cashbook no
+longer has a duplicate History tab; use the dedicated Company Audit Log menu
+with its own View and Download Report permissions.
+
+## Backup & Restore: separate account permission, Restore is Global only
+
+**Backup & Restore permissions** (Backup: Allow/Block) show the Company
+**Backup & Restore** menu and allow creating and saving a full encrypted backup of
+all company data. It is blocked by default, needs no project assignment, and you
+cannot grant it unless you have it. Global access always includes it.
+
+Daily backup settings and **Restore from backup** are always **Global access only**
+and cannot be granted, because a restore replaces every user's data. See
+[Backup & Restore](14-backup-and-restore.md).
 
 ## Editing accounts safely
 
@@ -93,7 +137,7 @@ does not assign every project. Global access includes both audit capabilities.
 | Need | Suggested configuration |
 |---|---|
 | Procurement entry clerk | Assigned project; Procurement Allow, Create/Edit checked; payment/export only if required |
-| Inventory reviewer | Inventory Allow; no writes; Export Report if needed |
+| Inventory reviewer | Inventory Allow; no writes; Download Report if needed |
 | Multi-project site operator | Shared selected projects; review/reduce the broad preset before saving |
 | User-support operator | No projects, Global off, Users Allow with only required lifecycle actions |
 | Project activity reviewer | Assigned project, Audit Allow, export only if needed; operational writes not required |

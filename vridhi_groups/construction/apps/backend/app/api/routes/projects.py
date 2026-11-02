@@ -3,6 +3,8 @@ from datetime import date, datetime, timezone
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from uuid import UUID
+from typing import Literal
+from pydantic import BaseModel, ConfigDict, Field
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import FileResponse
@@ -12,15 +14,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
 from app.db import get_db
 from app.models import BillingEntry, CashReceipt, Contract, LaborProgressClaim, LaborWorkEntry, PROJECT_STATUS_TRANSITIONS, Project, ProjectDocument, ProjectMembership, ProjectStatusHistory, ProjectValueHistory, PurchaseOrder, PurchaseOrderLine, User
-from app.security import current_user, require_csrf, require_permission, require_project_access
+from app.security import current_user, locked_project, require_csrf, require_permission, require_project_access
 from app.services.common import add_audit, dashboard_cost_summary, money, order_totals, project_dto, purchase_order_query
 
 router = APIRouter()
 
 
 @router.get("/api/v1/me/projects")
-async def list_projects(page: int = Query(1, ge=1), page_size: int = Query(25, ge=1, le=100), search: str | None = None, status_filter: str | None = Query(None, alias="status"), user: User = Depends(current_user), db: AsyncSession = Depends(get_db)) -> dict:
+async def list_projects(page: int = Query(1, ge=1), page_size: int = Query(25, ge=1, le=100), search: str | None = None, status_filter: str | None = Query(None, alias="status"), user: User = Depends(current_user), db: AsyncSession = Depends(get_db), scope: Literal["current", "archived", "all"] = "current") -> dict:
     query = select(Project).order_by(Project.name)
+    archive_filter = Project.archived_at.is_not(None) if scope == "archived" else Project.archived_at.is_(None)
+    if scope != "all":
+        query = query.where(archive_filter)
     if not user.global_access:
         query = query.join(ProjectMembership).where(ProjectMembership.user_id == user.id)
     if search:
@@ -29,6 +34,8 @@ async def list_projects(page: int = Query(1, ge=1), page_size: int = Query(25, g
         query = query.where(Project.status == status_filter)
     projects = list((await db.scalars(query.offset((page - 1) * page_size).limit(page_size))).all())
     count_query = select(func.count(Project.id))
+    if scope != "all":
+        count_query = count_query.where(archive_filter)
     if not user.global_access:
         count_query = count_query.join(ProjectMembership).where(ProjectMembership.user_id == user.id)
     if search:
@@ -69,7 +76,100 @@ async def list_projects(page: int = Query(1, ge=1), page_size: int = Query(25, g
               "actual_cost": money(actual_costs.get(project.id, Decimal("0"))), "hold_reason": hold_reasons.get(project.id),
               "permissions": ({**(user.global_permissions or {}), **(memberships[project.id].permissions or {})} if user.global_access and project.id in memberships else memberships[project.id].permissions if project.id in memberships else user.global_permissions if user.global_access else None)}
              for project in projects]
-    return {"items": items, "page": page, "page_size": page_size, "total": total}
+    summary_query = select(Project.status, func.count(Project.id)).group_by(Project.status)
+    if scope != "all":
+        summary_query = summary_query.where(archive_filter)
+    if not user.global_access:
+        summary_query = summary_query.join(ProjectMembership).where(ProjectMembership.user_id == user.id)
+    if search:
+        summary_query = summary_query.where(Project.name.ilike(f"%{search.strip()}%"))
+    if status_filter:
+        summary_query = summary_query.where(Project.status == status_filter)
+    counts = dict((await db.execute(summary_query)).all())
+    return {"items": items, "page": page, "page_size": page_size, "total": total, "status_counts": counts}
+
+
+class ProjectArchiveChange(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
+    archived: bool
+    reason: str = Field(min_length=1, max_length=500)
+    expected_version: int = Field(ge=1)
+
+
+async def archive_readiness(project: Project, user: User, db: AsyncSession) -> dict:
+    from app.api.routes.cashbook import overview_projection
+    from app.api.routes.labor import labor_ledger, list_labor_contracts
+    from app.api.routes.operations import billing_summary
+    from app.api.routes.procurement import project_inventory
+    from app.models import ProjectResultApproval
+    blockers = []
+    if project.status not in {"Completed", "Cancelled"}:
+        blockers.append("Only Completed or Cancelled projects can be archived.")
+    if not project.archived_at:
+        report = await dashboard(project=project, _=user, db=db)
+        if Decimal(report["open_commitments"]) > 0:
+            blockers.append(f"Outstanding vendor payments: {money(report['open_commitments'])} {project.currency}.")
+        billing = await billing_summary(project=project, db=db)
+        if Decimal(billing["outstanding_invoices"]) > 0:
+            blockers.append(f"Outstanding client billing: {billing['outstanding_invoices']} {project.currency}.")
+        ledger = await labor_ledger(project=project, _=user, db=db)
+        unpaid = sum((Decimal(worker["payable"]) for worker in ledger["workers"]), Decimal(0))
+        if unpaid > 0:
+            blockers.append(f"Outstanding worker payments: {money(unpaid)} {project.currency}.")
+        contracts = await list_labor_contracts(project=project, _=user, db=db)
+        for contract in contracts["contracts"]:
+            for claim in contract["claims"]:
+                if claim["status"] == "Certified" and Decimal(claim["payable"]) > 0:
+                    blockers.append(f"Unpaid certified claim {claim['claim_number']}: {claim['payable']} {project.currency}.")
+                elif claim["status"] == "Pending certification":
+                    blockers.append(f"Claim {claim['claim_number']} is awaiting certification.")
+            if any(item["status"] == "Pending approval" for item in contract["addenda"]):
+                blockers.append(f"Contract {contract['contract_number']} has an addendum awaiting approval.")
+        inventory = await project_inventory(project=project, db=db)
+        for item in inventory["items"]:
+            if Decimal(item["available_quantity"]) > 0:
+                blockers.append(f"Remaining inventory for {item['item']['name']}: {item['available_quantity']} {item['item']['unit_of_measure']}. Resolve the stock before archiving.")
+            if Decimal(item["open_order_quantity"]) > 0:
+                blockers.append(f"Unreceived ordered inventory for {item['item']['name']}: {item['open_order_quantity']} {item['item']['unit_of_measure']}.")
+        if project.currency == "INR":
+            projection = await overview_projection(db, project, user)
+            approval = await db.scalar(select(ProjectResultApproval).where(ProjectResultApproval.project_id == project.id).order_by(ProjectResultApproval.as_of.desc(), ProjectResultApproval.approved_at.desc(), ProjectResultApproval.id.desc()).limit(1))
+            if approval is None:
+                blockers.append("Approve the projected profit / loss in Company Cashbook before archiving.")
+            elif approval.snapshot.get("fingerprint") != projection["fingerprint"]:
+                blockers.append("The approved profit / loss is out of date. Refresh and approve the current projection.")
+        else:
+            blockers.append("Company Cashbook approval currently supports INR projects only.")
+    return {"blockers": blockers, "can_archive": not blockers, "archived": bool(project.archived_at)}
+
+
+@router.get("/api/v1/projects/{project_id}/archive-readiness")
+async def project_archive_readiness(project: Project = Depends(require_project_access), user: User = Depends(require_permission("overview", "read")), db: AsyncSession = Depends(get_db)):
+    return await archive_readiness(project, user, db)
+
+
+@router.patch("/api/v1/projects/{project_id}/archive", dependencies=[Depends(require_csrf)])
+async def change_project_archive(payload: ProjectArchiveChange, project: Project = Depends(require_project_access), user: User = Depends(require_permission("overview", "write")), db: AsyncSession = Depends(get_db)):
+    project = await locked_project(db, project.id)
+    if project.version != payload.expected_version:
+        raise HTTPException(status_code=409, detail="Project changed. Refresh and try again.")
+    if bool(project.archived_at) == payload.archived:
+        raise HTTPException(status_code=409, detail="This project is already archived." if payload.archived else "This project is already in Current Projects.")
+    if payload.archived:
+        readiness = await archive_readiness(project, user, db)
+        if readiness["blockers"]:
+            await add_audit(db, user, "project_archive_blocked", "Project", project.id, {"reason": payload.reason, "status": project.status, "blockers": readiness["blockers"]}, project_id=project.id)
+            await db.commit()
+            raise HTTPException(status_code=409, detail="Cannot archive this project:\n" + "\n".join(readiness["blockers"]))
+    previous = {"archived_at": project.archived_at.isoformat() if project.archived_at else None, "archive_reason": project.archive_reason}
+    project.archived_at = datetime.now(timezone.utc) if payload.archived else None
+    project.archived_by_id = user.id if payload.archived else None
+    project.archived_by = user if payload.archived else None
+    project.archive_reason = payload.reason if payload.archived else None
+    project.version += 1
+    await add_audit(db, user, "project_archived" if payload.archived else "project_unarchived", "Project", project.id, {"before": previous, "after": {"archived_at": project.archived_at.isoformat() if project.archived_at else None, "archive_reason": project.archive_reason}, "reason": payload.reason, "status": project.status}, project_id=project.id)
+    await db.commit()
+    return project_dto(project)
 
 
 @router.get("/api/v1/projects/{project_id}", dependencies=[Depends(require_permission("overview", "read"))])

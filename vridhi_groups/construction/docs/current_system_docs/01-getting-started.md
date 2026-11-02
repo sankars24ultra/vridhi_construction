@@ -67,12 +67,22 @@ unavailable because of its record state, not merely because of access settings.
 ## Read versus write
 
 - **Allow** lets you open a module; **Block** prevents access.
-- **Export Report** is a separate read capability.
+- **Download Report** is a separate read capability.
 - **Write All** authorizes all applicable module actions.
 - **Write Partial** authorizes only checked actions.
 - Actions may be hidden or disabled when permission or record eligibility is missing.
 
 See [permissions](04-users-and-permissions.md) before requesting broader access.
+
+## Left menu preference
+
+The left menu remembers whether it is collapsed or expanded in this browser,
+including after a page refresh.
+On desktop, navigation uses 40px rows with 13px text and 20px icons.
+Collapsed navigation uses 44px rows with 25px icons. Icons change to an amber
+color on hover or keyboard focus in both themes. The menu scrolls only
+when needed on shorter windows, rather than reducing item sizes or hiding items.
+Long selected project names wrap in the project picker rather than being clipped.
 
 ## Personal Notes
 

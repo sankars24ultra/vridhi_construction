@@ -56,7 +56,7 @@ def test_history_returns_details_and_page_metadata():
     user_id = uuid4()
     event = SimpleNamespace(id=uuid4(), action="user_updated", entity_type="User", entity_id=user_id, occurred_at=datetime.now(timezone.utc), details={"after": {"name": "Updated"}})
     database = SimpleNamespace(execute=AsyncMock(return_value=MagicMock(all=lambda: [(event, "Administrator", "admin")])), scalar=AsyncMock(return_value=12))
-    result = asyncio.run(user_history(user_id, page=2, page_size=5, search="updated", user=SimpleNamespace(), db=database))
+    result = asyncio.run(user_history(user_id, page=2, page_size=5, search="updated", user=SimpleNamespace(global_access=False), db=database))
     assert result["total"] == 12
     assert result["page"] == 2
     assert result["page_size"] == 5

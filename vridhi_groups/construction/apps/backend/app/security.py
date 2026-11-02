@@ -40,7 +40,61 @@ async def user_permission_matrix(user: User, db: AsyncSession) -> dict[str, dict
     matrix["users"] = {"read": users["access"] == "allow", "write": users["write"]["actions"]["add_user"], "export_report": users["read"]["export_report"], **users["write"]["actions"]}
     audit = getattr(user, "audit_permissions", None) or {}
     matrix["audit"] = {"read": bool(user.global_access or audit.get("access") == "allow"), "write": False, "export_report": bool(user.global_access or audit.get("access") == "allow" and audit.get("read", {}).get("export_report", False))}
+    matrix["cashbook"] = cashbook_grants(user)
+    matrix["company_audit"] = company_audit_grants(user)
+    matrix["backup"] = backup_grants(user)
     return matrix
+
+
+def company_audit_grants(user: User) -> dict[str, bool]:
+    profile = getattr(user, "company_audit_permissions", None) or {}
+    allowed = bool(user.global_access or profile.get("access") == "allow")
+    return {
+        "read": allowed,
+        "export_report": allowed and bool(user.global_access or profile.get("read", {}).get("export_report", False)),
+    }
+
+
+def require_company_audit(action: str = "read"):
+    async def dependency(user: User = Depends(current_user)) -> User:
+        if not company_audit_grants(user).get(action, False):
+            raise HTTPException(status_code=403, detail=f"Company Audit Log {action} permission is required")
+        return user
+    return dependency
+
+
+def backup_grants(user: User) -> dict[str, bool]:
+    profile = getattr(user, "backup_permissions", None) or {}
+    allowed = bool(user.global_access or profile.get("access") == "allow")
+    return {"read": allowed, "create": allowed, "restore": bool(user.global_access)}
+
+
+def require_backup(action: str = "create"):
+    async def dependency(user: User = Depends(current_user)) -> User:
+        if not backup_grants(user).get(action, False):
+            label = "Global access" if action == "restore" else "Backup permission"
+            raise HTTPException(status_code=403, detail=f"{label} is required")
+        return user
+    return dependency
+
+
+def cashbook_grants(user: User) -> dict[str, bool]:
+    profile = getattr(user, "cashbook_permissions", None) or {}
+    allowed = bool(user.global_access or profile.get("access") == "allow")
+    write = profile.get("write", {})
+    return {
+        "read": allowed,
+        "write": allowed and bool(user.global_access or write.get("mode") == "all" or write.get("actions", {}).get("record", False)),
+        "export_report": allowed and bool(user.global_access or profile.get("read", {}).get("export_report", False)),
+    }
+
+
+def require_cashbook(action: str = "read"):
+    async def dependency(user: User = Depends(current_user)) -> User:
+        if not cashbook_grants(user).get(action, False):
+            raise HTTPException(status_code=403, detail=f"Company Cashbook {action} permission is required")
+        return user
+    return dependency
 
 
 async def users_permission_profile(user: User, db: AsyncSession) -> dict:
@@ -103,7 +157,7 @@ async def current_user(
     return row[1]
 
 
-async def require_project_access(project_id: str, user: User = Depends(current_user), db: AsyncSession = Depends(get_db)):
+async def require_project_access(project_id: str, request: Request, user: User = Depends(current_user), db: AsyncSession = Depends(get_db)):
     from uuid import UUID
 
     try:
@@ -112,12 +166,28 @@ async def require_project_access(project_id: str, user: User = Depends(current_u
         raise HTTPException(status_code=404, detail="Project not found") from error
     from app.models import Project, ProjectMembership
 
-    project = await db.get(Project, parsed_id)
-    if project is None:
-        raise HTTPException(status_code=404, detail="Project not found")
     membership = await db.scalar(select(ProjectMembership.id).where(ProjectMembership.project_id == parsed_id, ProjectMembership.user_id == user.id))
     if membership is None and not user.global_access:
         raise HTTPException(status_code=404, detail="Project not found")
+    mutating = request.method in {"POST", "PUT", "PATCH", "DELETE"} and not request.url.path.endswith(("/activities", "/archive"))
+    project = await require_writable_project(db, parsed_id) if mutating else await db.get(Project, parsed_id)
+    if project is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return project
+
+
+async def locked_project(db: AsyncSession, project_id):
+    from app.models import Project
+    project = await db.scalar(select(Project).where(Project.id == project_id).with_for_update().execution_options(populate_existing=True))
+    if project is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return project
+
+
+async def require_writable_project(db: AsyncSession, project_id):
+    project = await locked_project(db, project_id)
+    if project.archived_at is not None:
+        raise HTTPException(status_code=409, detail="This project is archived and read-only. UnArchive it before changing records.")
     return project
 
 
@@ -159,6 +229,8 @@ def require_permission(resource: str, action: str):
                 allowed = False
         if not allowed:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Permission denied: {action} access to {resource}")
+        if action == "write" and project_id and resource != "users" and not request.url.path.endswith("/archive"):
+            await require_writable_project(db, project_id)
         return user
 
     return permission_dependency
@@ -166,6 +238,8 @@ def require_permission(resource: str, action: str):
 
 def project_write_action(resource: str, method: str, path: str, body: dict | None = None) -> str | None:
     if resource == "overview":
+        if path.endswith("/archive"):
+            return "archive_project"
         if path.endswith("/status"):
             return "update_status"
         if path.endswith("/documents") and method == "POST":

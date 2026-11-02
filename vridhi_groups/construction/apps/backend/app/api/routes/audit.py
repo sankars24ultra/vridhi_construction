@@ -37,13 +37,22 @@ async def record_activity(payload: ActivityCreate, request: Request, project: Pr
         if payload.module == "audit":
             permission = {"read": {"export_report": True}} if user.global_access else user.audit_permissions or {}
         if not permission.get("read", {}).get("export_report", False):
-            raise HTTPException(status_code=403, detail="Export Report permission is required")
+            raise HTTPException(status_code=403, detail="Download Report permission is required")
     await add_audit(db, user, f"{payload.activity}_{payload.module}", "Project", project.id, {"module": MODULES[payload.module], "activity": payload.activity, "request_id": getattr(request.state, "request_id", None), "export_status": "requested" if payload.activity == "export" else None}, project_id=project.id)
     await db.commit()
     return Response(status_code=204)
 
 
+ARCHIVE_ACTIVITY_LABELS = {
+    "project_archived": "Archived project",
+    "project_unarchived": "UnArchived project",
+    "project_archive_blocked": "Archive request blocked",
+}
+
+
 def activity_label(action: str) -> str:
+    if action in ARCHIVE_ACTIVITY_LABELS:
+        return ARCHIVE_ACTIVITY_LABELS[action]
     for module, label in MODULES.items():
         if action == f"visit_{module}":
             return f"Visited {label}"
@@ -72,7 +81,8 @@ async def project_audit_log(project: Project = Depends(require_project_access), 
     if search.strip():
         term = f"%{search.strip()}%"
         activity_term = search.strip().lower().replace("visited ", "visit_").replace("exported report from ", "export_").replace(" ", "_")
-        filters.append(or_(AuditEvent.action.ilike(term), AuditEvent.action.ilike(f"%{activity_term}%"), User.username.ilike(term), User.name.ilike(term), AuditEvent.entity_type.ilike(term), cast(AuditEvent.details, String).ilike(term)))
+        archive_actions = [action for action, label in ARCHIVE_ACTIVITY_LABELS.items() if search.strip().lower() in label.lower()]
+        filters.append(or_(AuditEvent.action.ilike(term), AuditEvent.action.ilike(f"%{activity_term}%"), User.username.ilike(term), User.name.ilike(term), AuditEvent.entity_type.ilike(term), cast(AuditEvent.details, String).ilike(term), AuditEvent.action.in_(archive_actions)))
     query = select(AuditEvent, User.username, User.name).outerjoin(User, User.id == AuditEvent.actor_id).where(*filters).order_by(AuditEvent.occurred_at.desc(), AuditEvent.id.desc())
     if not export:
         query = query.offset((page - 1) * page_size).limit(page_size)

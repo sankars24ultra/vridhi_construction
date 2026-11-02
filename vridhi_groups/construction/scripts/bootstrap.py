@@ -197,7 +197,7 @@ def ensure_backend():
     expected = digest([BACKEND / "requirements-runtime.txt"]) + subprocess.check_output(
         [str(python), "-c", "import sys; print(sys.version)"], text=True).strip()
     marker = venv / ".vridhi-requirements"
-    imports = "import fastapi,uvicorn,alembic,sqlalchemy,asyncpg,argon2,multipart,pydantic,pydantic_settings,email_validator,itsdangerous,dotenv"
+    imports = "import fastapi,uvicorn,alembic,sqlalchemy,asyncpg,argon2,multipart,pydantic,pydantic_settings,email_validator,itsdangerous,dotenv,cryptography"
     installed = subprocess.run([str(python), "-c", imports], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if not marker.exists() or marker.read_text() != expected or installed.returncode:
         announce("Installing backend runtime dependencies (test packages excluded)...")

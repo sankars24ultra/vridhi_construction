@@ -11,14 +11,40 @@ from app.db import get_db
 from app.models import AuditEvent, AuthSession, Contract, Project, ProjectMembership, User
 from pydantic import BaseModel, Field, StrictBool
 from app.schemas import UserCreate, UserUpdate
-from app.security import current_user, hash_password, require_csrf, require_permission, users_permission_profile
+from app.security import backup_grants, cashbook_grants, company_audit_grants, current_user, hash_password, require_csrf, require_permission, users_permission_profile
 from app.services.common import add_audit, money, project_dto, user_dto
 
 router = APIRouter()
 
 
 def user_history_snapshot(user: User, memberships: list | None = None) -> dict:
-    return {"username": user.username, "name": user.name, "email": user.email, "phone": user.phone, "active": user.active, "global_access": user.global_access, "global_permissions": user.global_permissions, "users_permissions": user.users_permissions, "audit_permissions": user.audit_permissions, "project_permissions": {str(link.project_id): link.permissions for link in memberships or []}}
+    return {"username": user.username, "name": user.name, "email": user.email, "phone": user.phone, "active": user.active, "global_access": user.global_access, "global_permissions": user.global_permissions, "users_permissions": user.users_permissions, "audit_permissions": user.audit_permissions, "cashbook_permissions": user.cashbook_permissions, "company_audit_permissions": user.company_audit_permissions, "backup_permissions": user.backup_permissions, "project_permissions": {str(link.project_id): link.permissions for link in memberships or []}}
+
+
+def validate_cashbook_grant(actor: User, profile: dict | None, previous: dict | None = None):
+    if profile == previous or actor.global_access:
+        return
+    requested = cashbook_grants(User(global_access=False, cashbook_permissions=profile))
+    available = cashbook_grants(actor)
+    if any(value and not available[key] for key, value in requested.items()):
+        raise HTTPException(status_code=403, detail="You cannot grant Company Cashbook permissions you do not have")
+
+
+def validate_company_audit_grant(actor: User, profile: dict | None, previous: dict | None = None):
+    if profile == previous or actor.global_access:
+        return
+    requested = company_audit_grants(User(global_access=False, company_audit_permissions=profile))
+    available = company_audit_grants(actor)
+    if any(value and not available[key] for key, value in requested.items()):
+        raise HTTPException(status_code=403, detail="You cannot grant Company Audit Log permissions you do not have")
+
+
+def validate_backup_grant(actor: User, profile: dict | None, previous: dict | None = None):
+    if profile == previous or actor.global_access:
+        return
+    requested = backup_grants(User(global_access=False, backup_permissions=profile))
+    if requested["create"] and not backup_grants(actor)["create"]:
+        raise HTTPException(status_code=403, detail="You cannot grant Backup permission you do not have")
 
 
 @router.get("/api/v1/users/{user_id}/history")
@@ -26,6 +52,8 @@ async def user_history(user_id: UUID, page: int = Query(1, ge=1), page_size: int
     if page_size not in {5, 10, 20, 50}:
         raise HTTPException(status_code=422, detail="Page size must be 5, 10, 20, or 50")
     filters = [or_((AuditEvent.entity_type == "User") & (AuditEvent.entity_id == user_id), AuditEvent.actor_id == user_id), ~AuditEvent.action.ilike("login%")]
+    if not cashbook_grants(user)["read"] and not company_audit_grants(user)["read"]:
+        filters.append(AuditEvent.entity_type != "CompanyCashbook")
     if search.strip():
         term = f"%{search.strip()}%"
         filters.append(or_(AuditEvent.action.ilike(term), AuditEvent.entity_type.ilike(term), User.name.ilike(term), User.username.ilike(term), cast(AuditEvent.details, String).ilike(term)))
@@ -93,6 +121,9 @@ async def delete_user(user_id: UUID, user: User = Depends(current_user), db: Asy
 
 @router.post("/api/v1/users", dependencies=[Depends(require_csrf), Depends(require_permission("users", "write"))], status_code=201)
 async def create_user(payload: UserCreate, user: User = Depends(current_user), db: AsyncSession = Depends(get_db)) -> dict:
+    validate_cashbook_grant(user, payload.cashbook_permissions.model_dump() if payload.cashbook_permissions else None)
+    validate_company_audit_grant(user, payload.company_audit_permissions.model_dump() if payload.company_audit_permissions else None)
+    validate_backup_grant(user, payload.backup_permissions.model_dump() if payload.backup_permissions else None)
     username = payload.username.strip()
     email = payload.email.strip() if payload.email else None
     if await db.scalar(select(User.id).where(func.lower(User.username) == username.lower())):
@@ -105,7 +136,7 @@ async def create_user(payload: UserCreate, user: User = Depends(current_user), d
         raise HTTPException(status_code=422, detail="Set a permission profile for global access")
     if set(payload.project_permissions) - project_ids:
         raise HTTPException(status_code=422, detail="Permission settings must match assigned projects")
-    if not project_ids and not payload.global_access and not (payload.users_permissions and payload.users_permissions.access == "allow"):
+    if not project_ids and not payload.global_access and not any(profile and profile.access == "allow" for profile in (payload.users_permissions, payload.cashbook_permissions, payload.company_audit_permissions, payload.backup_permissions)):
         raise HTTPException(status_code=422, detail="Assign at least one project to this user")
     if set(payload.project_permissions) != project_ids:
         raise HTTPException(status_code=422, detail="Set permissions for every assigned project")
@@ -128,6 +159,9 @@ async def create_user(payload: UserCreate, user: User = Depends(current_user), d
         global_permissions=payload.global_permissions.model_dump() if payload.global_permissions else None,
         users_permissions=payload.users_permissions.model_dump() if payload.users_permissions else None,
         audit_permissions=payload.audit_permissions.model_dump() if payload.audit_permissions else None,
+        cashbook_permissions=payload.cashbook_permissions.model_dump() if payload.cashbook_permissions else None,
+        company_audit_permissions=payload.company_audit_permissions.model_dump() if payload.company_audit_permissions else None,
+        backup_permissions=payload.backup_permissions.model_dump() if payload.backup_permissions else None,
         active=True,
         memberships=[ProjectMembership(project_id=project_id, permissions=payload.project_permissions.get(project_id).model_dump() if project_id in payload.project_permissions else None) for project_id in project_ids],
     )
@@ -152,6 +186,12 @@ async def update_user(user_id: UUID, payload: UserUpdate, user: User = Depends(c
     if payload.username.strip() != target.username:
         raise HTTPException(status_code=422, detail="Username cannot be changed after the account is created")
     before = user_history_snapshot(target, list(target.memberships))
+    if "cashbook_permissions" in payload.model_fields_set:
+        validate_cashbook_grant(user, payload.cashbook_permissions.model_dump() if payload.cashbook_permissions else None, target.cashbook_permissions)
+    if "company_audit_permissions" in payload.model_fields_set:
+        validate_company_audit_grant(user, payload.company_audit_permissions.model_dump() if payload.company_audit_permissions else None, target.company_audit_permissions)
+    if "backup_permissions" in payload.model_fields_set:
+        validate_backup_grant(user, payload.backup_permissions.model_dump() if payload.backup_permissions else None, target.backup_permissions)
     if payload.password and not (await users_permission_profile(user, db))["write"]["actions"]["reset_password"]:
         raise HTTPException(status_code=403, detail="Reset Password permission is required")
     username = payload.username.strip()
@@ -165,7 +205,16 @@ async def update_user(user_id: UUID, payload: UserUpdate, user: User = Depends(c
         raise HTTPException(status_code=422, detail="Set a permission profile for global access")
     if set(payload.project_permissions) - project_ids:
         raise HTTPException(status_code=422, detail="Permission settings must match assigned projects")
-    if not project_ids and not payload.global_access and not (payload.users_permissions and payload.users_permissions.access == "allow"):
+    cashbook_profile = payload.cashbook_permissions.model_dump() if payload.cashbook_permissions else None
+    if "cashbook_permissions" not in payload.model_fields_set:
+        cashbook_profile = target.cashbook_permissions
+    company_audit_profile = payload.company_audit_permissions.model_dump() if payload.company_audit_permissions else None
+    if "company_audit_permissions" not in payload.model_fields_set:
+        company_audit_profile = target.company_audit_permissions
+    backup_profile = payload.backup_permissions.model_dump() if payload.backup_permissions else None
+    if "backup_permissions" not in payload.model_fields_set:
+        backup_profile = target.backup_permissions
+    if not project_ids and not payload.global_access and not (payload.users_permissions and payload.users_permissions.access == "allow") and not (cashbook_profile and cashbook_profile.get("access") == "allow") and not (company_audit_profile and company_audit_profile.get("access") == "allow") and not (backup_profile and backup_profile.get("access") == "allow"):
         raise HTTPException(status_code=422, detail="Assign at least one project to this user")
     if set(payload.project_permissions) != project_ids:
         raise HTTPException(status_code=422, detail="Set permissions for every assigned project")
@@ -186,6 +235,9 @@ async def update_user(user_id: UUID, payload: UserUpdate, user: User = Depends(c
     target.global_permissions = payload.global_permissions.model_dump() if payload.global_permissions else None
     target.users_permissions = payload.users_permissions.model_dump() if payload.users_permissions else None
     target.audit_permissions = payload.audit_permissions.model_dump() if payload.audit_permissions else None
+    target.cashbook_permissions = cashbook_profile
+    target.company_audit_permissions = company_audit_profile
+    target.backup_permissions = backup_profile
     if payload.password:
         target.password_hash = hash_password(payload.password)
         await revoke_user_sessions(target.id, db)

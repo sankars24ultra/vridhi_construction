@@ -93,7 +93,7 @@ export function Inventory({ project, projectId, canWrite, canReceive = canWrite,
         action={
           <div className="overview-actions">
             {canExport && <button className="button-secondary export-report-action" onClick={exportReport} disabled={stock.isFetching || stock.isError}>
-              <Download size={14} />Export report
+              <Download size={14} />Download Report
             </button>}
             <button className="button-secondary inventory-stock-ledger-action" onClick={() => setHistoryTarget('ALL')}>
               <History size={14} />Stock ledger
@@ -770,4 +770,3 @@ function InventoryLedgerHistory({
     </div>
   )
 }
-

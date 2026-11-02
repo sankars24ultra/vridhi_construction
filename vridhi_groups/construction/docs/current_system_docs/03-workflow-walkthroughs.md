@@ -46,6 +46,22 @@ their change. The API checks the expected project version to prevent stale updat
 The history stores the submitted comment; put the essential explanation there,
 even when a separate hold-reason field is shown.
 
+## B.1. Archive or restore a project
+
+1. Ensure the project is Completed or Cancelled and resolve financial, stock and pending
+   approval items. Have a Global-access reviewer approve its latest Project
+   Profit & Loss calculation in Company Cashbook.
+2. In Overview, select **Archive project**. Read any listed blockers; resolve
+   them and reopen the dialog for a fresh check.
+3. Enter the mandatory reason and confirm. The project appears only under
+   **Archived Projects**, retains its status and financial history, and is read-only.
+4. To resume work, open it through Archived Projects, select **UnArchive project**
+   in Overview, enter a reason and confirm. It returns to Current Projects.
+
+Both actions require Overview's combined Archive / UnArchive permission, including
+the applicable Global Permission/project override. Archive is not project deletion
+or a declaration of final accounting profit.
+
 ## C. Upload a revised plan
 
 1. In Overview, select Upload Plan Document.
@@ -57,7 +73,7 @@ even when a separate hold-reason field is shown.
 Uploads are permitted in Planning, Active and On Hold, not Completed or Cancelled.
 The current implementation updates the contract estimate when the revised plan
 is saved; do not assume a separate approval queue for this project-value update.
-Download retrieves the original file; Export Report produces a report, not that file.
+Download retrieves the original file; Download Report produces a report, not that file.
 
 ## D. Order materials and pay the vendor
 
@@ -145,7 +161,7 @@ previous interval in place. Clear filters restores the unfiltered list.
 
 ## J. Export
 
-Choose Export report -> wait for preparation -> choose Save as PDF in the browser
+Choose Download Report -> wait for preparation -> choose Save as PDF in the browser
 print dialog -> inspect preview -> save. Use the module-specific scope notes in
 [Reports and calculations](05-reports-and-calculations.md); not every module
 automatically fetches all table pages.

@@ -437,7 +437,7 @@ export function LaborWages({
                 }
               >
                 <BriefcaseBusiness size={14} />
-                Export report
+                Download Report
               </button>
             )}
             {canAction("new_labor_contract") && (

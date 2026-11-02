@@ -58,12 +58,16 @@ or combine quantities with different units without conversion.
 
 | Location | Contents | Included in database backup? |
 |---|---|---|
-| PostgreSQL | Business records, hashes, sessions, permission JSON, audit | Yes, when database is backed up |
-| `data/uploads/` | Plan documents, PO images, labor supporting files | No; back up separately |
+| PostgreSQL | Business records, hashes, sessions, permission JSON, audit | Yes (sessions excluded) |
+| `data/uploads/` | Plan documents, PO images, labor supporting files | Yes |
+| `data/backups/` | Daily-backup settings and machine key, waiting daily backup (`pending/`), last pre-restore safety copy (`safety/`), temporary work folders | No; not a backup location |
 | `data/logs/` | Daily backend/frontend diagnostic JSONL | No; apply a separate retention policy |
 | Browser session storage | Personal notes, workspace location | No; temporary |
 | Browser local storage | Theme preference | No |
 | `.env` | Connection settings and service secrets | No; preserve securely, not in public docs |
+
+"Included in database backup" refers to the **Backup & Restore** `.vbak` file;
+see [Backup & Restore](14-backup-and-restore.md).
 
 Relative upload configuration is anchored to the construction project root, not
 the terminal's current directory. Stored random filenames should not be renamed:
@@ -97,5 +101,9 @@ permissions and deletion-marker revisions. Use `alembic heads` rather than hardc
 a revision number into operational automation.
 
 A recoverable backup needs the database and original upload files from a
-consistent period, plus secure configuration/redeployment instructions. Test a
-restore into a separate environment; do not treat a Docker volume as a backup.
+consistent period. **Backup & Restore** produces exactly that in one encrypted
+`.vbak` file: a `pg_dump` taken from a single database snapshot plus every upload,
+with record counts, the migration revision and SHA-256 checksums. Restore loads the
+file into a staging database, verifies it, applies newer migrations, then swaps it
+in. Keep `.env` and redeployment instructions separately; do not treat a Docker
+volume as a backup. See [Backup & Restore](14-backup-and-restore.md).

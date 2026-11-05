@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Company Cashbook | Vridhi design preview</title>
+<style>
+:root{font-family:"Avenir Next","Segoe UI",sans-serif;color:#243244;background:#f3f5f8;font-size:14px;--blue:#285a8e;--line:#dce3eb;--muted:#69798c;--green:#227457;--red:#af493e}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #e8b34e;outline-offset:2px}button{border:1px solid var(--line);border-radius:7px;background:white;padding:9px 13px;color:inherit}button:hover{background:#edf3fa}.primary{background:var(--blue);border-color:var(--blue);color:white}.primary:hover{background:#214c79}.layout{display:grid;grid-template-columns:224px minmax(0,1fr);min-height:100vh}aside{background:#172c43;color:#c5d0dd;padding:27px 15px;display:flex;flex-direction:column;gap:7px}.brand{color:white;font-size:24px;font-weight:800;letter-spacing:3px;padding:0 12px}.brand small{display:block;font-size:9px;letter-spacing:1.6px;font-weight:500;margin:6px 0 34px}.nav-label{font-size:10px;letter-spacing:1.5px;color:#8da2b9;padding:12px}.nav{display:flex;align-items:center;gap:11px;padding:12px;border-radius:7px;font-size:13px}.nav svg{width:19px;height:19px;flex-shrink:0}.nav.active{color:#fff;background:#315877;border-left:3px solid #e7b45c;padding-left:9px}.sidebar-note{margin-top:auto;padding:18px 12px;font-size:11px;color:#91a6bd;line-height:1.8}.topbar{background:#fff;border-bottom:1px solid var(--line);padding:16px 30px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px}.avatar{border-radius:50%;background:#e8eef5;padding:9px;color:var(--blue);font-weight:700}.top-right{display:flex;align-items:center;gap:10px}.scope{color:var(--blue);font-weight:700}.preview{padding:10px 30px;background:#fff5da;border-bottom:1px solid #eddba7;color:#775d25;font-size:12px}main{padding:27px 30px;max-width:1600px;margin:auto}.heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:22px}h1{font-size:27px;margin:6px 0 8px;letter-spacing:-.7px}p{color:var(--muted);line-height:1.6;margin:0}.eyebrow{font-size:10px;letter-spacing:1.7px;color:var(--blue);font-weight:800}.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:18px}.card,.panel{background:#fff;border:1px solid var(--line);border-radius:10px}.card{padding:18px}.card label{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}.card strong{display:block;font-size:27px;margin:13px 0 6px;letter-spacing:-.6px;font-variant-numeric:tabular-nums}.card small{color:var(--muted);font-size:11px}.card.balance{background:#203e5c;border-color:#203e5c;color:white}.balance label,.balance small{color:#c3d6e8}.positive{color:var(--green)}.negative{color:var(--red)}.explain{background:#edf3f9;border:1px solid #d6e3ef;border-radius:8px;color:#46617d;padding:12px 15px;font-size:12px;line-height:1.6;margin-bottom:22px}.tabs{display:flex;gap:24px;border-bottom:1px solid var(--line);margin-bottom:20px;overflow-x:auto}.tab{border:0;border-bottom:3px solid transparent;border-radius:0;background:transparent;padding:12px 0;white-space:nowrap;color:var(--muted)}.tab.selected{color:var(--blue);font-weight:700;border-bottom-color:var(--blue)}.toolbar{display:flex;justify-content:space-between;gap:12px;padding:17px;border-bottom:1px solid var(--line);flex-wrap:wrap}.toolbar h2{font-size:15px;margin:0 0 4px}.toolbar p{font-size:11px}.filters{display:flex;gap:8px;flex-wrap:wrap}input,select,textarea{border:1px solid var(--line);border-radius:6px;background:#fff;padding:9px;color:#243244;min-width:0}input[type=search]{width:210px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;white-space:nowrap;text-align:left}th{background:#f7f9fc;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.6px;padding:13px 16px}td{padding:16px;border-bottom:1px solid #edf0f4;font-size:12px}td small{display:block;color:var(--muted);font-size:10px;margin-top:5px}.number{text-align:right;font-variant-numeric:tabular-nums;font-weight:650}.pill{display:inline-block;font-size:10px;border-radius:5px;padding:5px 8px;background:#eef2f6;color:#576b80}.pill.in{background:#e7f4ed;color:var(--green)}.pill.out{background:#fbeeea;color:var(--red)}.pill.capital{background:#eeebfa;color:#7157a0}.panel-footer{display:flex;justify-content:space-between;gap:12px;padding:14px 17px;font-size:11px;color:var(--muted);flex-wrap:wrap}.lower{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;margin-top:20px}.section-title{font-size:14px;margin:0 0 17px}.inset{padding:20px}.bar-row{display:grid;grid-template-columns:155px 1fr 85px;gap:12px;align-items:center;font-size:11px;margin:17px 0}.track{background:#edf1f6;height:7px;border-radius:10px}.fill{height:100%;border-radius:10px;background:#6c8dae}.bar-row .number{font-size:11px}.legend{font-size:11px;line-height:1.8;color:var(--muted)}.account{display:flex;justify-content:space-between;padding:15px 0;border-bottom:1px solid var(--line);font-size:12px}.account:last-child{border:0}.account small{display:block;color:var(--muted);font-size:10px;margin-top:5px}.hidden{display:none!important}.results-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:18px}.results-summary .card strong{font-size:23px}.help{font-size:11px;color:var(--muted);line-height:1.7}.footer-note{margin-top:22px;font-size:11px;color:var(--muted);line-height:1.8}dialog{border:1px solid var(--line);border-radius:12px;width:min(620px,calc(100vw - 28px));padding:0;max-height:90vh;overflow:auto;box-shadow:0 24px 80px #172c4344}dialog::backdrop{background:#14253880}.dialog-head{padding:22px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px}dialog h2{font-size:20px;margin:0 0 6px}.dialog-body{padding:22px 24px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:17px}.field{display:flex;flex-direction:column;gap:7px;font-size:12px}.wide{grid-column:1/-1}.field label{font-weight:600}.dialog-footer{display:flex;justify-content:flex-end;gap:9px;margin-top:22px}.choice{background:#f3f6fa;padding:12px;border-radius:7px;font-size:11px;color:var(--muted);line-height:1.7}.toast{position:fixed;bottom:22px;right:22px;max-width:calc(100vw - 44px);background:#203e5c;color:#fff;padding:15px 20px;border-radius:9px;box-shadow:0 8px 25px #0002;z-index:5;font-size:12px}.close{padding:3px 8px;font-size:20px;align-self:flex-start}svg{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.icon{width:15px;height:15px;vertical-align:-3px;margin-right:5px}
+@media(min-width:1450px){main{padding:32px 42px}.card strong{font-size:30px}}@media(max-width:1100px){.layout{grid-template-columns:190px minmax(0,1fr)}main{padding:24px 20px}.cards{grid-template-columns:repeat(2,1fr)}.lower{grid-template-columns:1fr}.heading{flex-wrap:wrap}.topbar{padding:15px 20px}}@media(max-width:650px){.layout{display:block}aside{padding:14px;display:block}.brand{font-size:19px}.brand small{margin:4px 0 13px}.nav-label,.nav:not(.active),.sidebar-note{display:none}.nav.active{padding:9px 12px}.topbar{padding:12px 16px}.top-right .user-name{display:none}.preview{padding:10px 16px;font-size:11px}main{padding:22px 14px}h1{font-size:24px}.cards{gap:9px}.card{padding:14px}.card strong{font-size:22px}.card label{font-size:11px}.card small{font-size:10px}.actions{width:100%}.filters{width:100%}.filters>*{flex:1;min-width:120px}input[type=search]{width:100%}.toolbar{padding:14px}.results-summary{grid-template-columns:1fr}.tabs{gap:19px}.bar-row{grid-template-columns:120px 1fr 75px;gap:7px}.form-grid{grid-template-columns:1fr}.wide{grid-column:auto}.dialog-body,.dialog-head{padding:18px}}
+@media print{aside,.preview,.actions,.filters,.tabs,.top-right,.footer-note,dialog,.toast{display:none!important}.layout{display:block}main{padding:10px}.topbar{padding:10px}.cards{grid-template-columns:repeat(4,1fr)}.card.balance{background:white;color:#243244}.balance label,.balance small{color:#69798c}.table-wrap{overflow:visible}table{white-space:normal}th,td{padding:9px 6px}.lower{break-inside:avoid}.panel{break-inside:auto}body{background:white}.print-note{display:block!important}}
+</style>
+</head>
+<body>
+<svg style="display:none" aria-hidden="true"><symbol id="wallet" viewBox="0 0 24 24"><path d="M20 8H5a3 3 0 0 1 0-6h13v6M3 5v14a2 2 0 0 0 2 2h15V8M20 12h-6v5h6"/><path d="M17 14.5h.01"/></symbol><symbol id="grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol><symbol id="building" viewBox="0 0 24 24"><path d="M4 21V5l8-3v19M12 9h8v12M2 21h20M7 7h2M7 11h2M7 15h2M15 12h2M15 16h2"/></symbol><symbol id="box" viewBox="0 0 24 24"><path d="m3 7 9-4 9 4v11l-9 4-9-4ZM3 7l9 5 9-5M12 12v10M7 5l10 5"/></symbol><symbol id="users" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21v-3a7 7 0 0 1 14 0v3M16 3a4 4 0 0 1 0 8M18 14a5 5 0 0 1 4 5v2"/></symbol><symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol><symbol id="report" viewBox="0 0 24 24"><path d="M14 2H5v20h14V7ZM14 2v6h5M8 12h8M8 16h8"/></symbol></svg>
+<div class="layout">
+<aside aria-label="Application menu preview">
+ <div class="brand">VRIDHI<small>CONSTRUCTIONS &amp; DESIGNS</small></div>
+ <div class="nav-label">WORKSPACE</div>
+ <div class="nav"><svg><use href="#building"/></svg>Projects</div>
+ <div class="nav"><svg><use href="#grid"/></svg>Overview</div>
+ <div class="nav"><svg><use href="#box"/></svg>Procurement</div>
+ <div class="nav"><svg><use href="#box"/></svg>Inventory</div>
+ <div class="nav"><svg><use href="#wallet"/></svg>Cash flow</div>
+ <div class="nav"><svg><use href="#users"/></svg>Labor and Wages</div>
+ <div class="nav-label">COMPANY</div>
+ <div class="nav active" aria-current="page"><svg><use href="#wallet"/></svg>Company Cashbook</div>
+ <div class="nav"><svg><use href="#users"/></svg>Users</div>
+ <div class="nav"><svg><use href="#clock"/></svg>Audit Log</div>
+ <div class="sidebar-note">COMPANY-WIDE REGISTER<br>Separate from project cash flow.<br><br>Navigation shown for context only.</div>
+</aside>
+<div>
+ <header class="topbar"><span class="scope"><svg class="icon"><use href="#building"/></svg>All company transactions</span><div class="top-right"><span class="pill">Company-wide · INR</span><span class="user-name">Administrator</span><span class="avatar">AD</span></div></header>
+ <div class="preview"><strong>DESIGN PREVIEW</strong> · Synthetic sample data. Nothing connects to your database. Entries added here disappear on reload.</div>
+ <main>
+ <div class="heading"><div><div class="eyebrow">COMPANY FINANCE</div><h1>Company Cashbook</h1><p>One place for capital, company spending and actual project cash movements.</p></div><div class="actions"><button id="export" title="Print or save the active view as PDF"><svg class="icon"><use href="#report"/></svg>Export report</button><button class="primary" id="add">+ Record transaction</button></div></div>
+ <div class="cards">
+  <div class="card"><label>Opening balance <span>01 OCT</span></label><strong>₹5,00,000</strong><small>Company bank + cash in hand</small></div>
+  <div class="card"><label>Money in <span class="positive">↙</span></label><strong class="positive" id="total-in"></strong><small>Capital + project cash received</small></div>
+  <div class="card"><label>Money out <span class="negative">↗</span></label><strong class="negative" id="total-out"></strong><small>Company payments + project funding</small></div>
+  <div class="card balance"><label>Closing balance <svg class="icon"><use href="#wallet"/></svg></label><strong id="closing"></strong><small>Opening + money in − money out</small></div>
+ </div>
+ <div class="explain"><strong>Cash is not profit.</strong> Owner capital is funding, not income. Project profit/loss is shown separately; only actual money transferred to or from a project changes this cashbook.</div>
+ <div class="tabs" role="tablist" aria-label="Cashbook views"><button id="tab-transactions" class="tab selected" role="tab" aria-selected="true" aria-controls="transactions" data-tab="transactions">Cash transactions</button><button id="tab-results" class="tab" role="tab" aria-selected="false" aria-controls="results" data-tab="results">Project profit &amp; loss</button><button id="tab-capital" class="tab" role="tab" aria-selected="false" aria-controls="capital" data-tab="capital">Owner capital</button></div>
+ <section id="transactions" role="tabpanel" aria-labelledby="tab-transactions">
+ <div class="panel">
+  <div class="toolbar"><div><h2>Transaction register</h2><p>01–31 October 2026 · Posted entries · All company accounts</p></div><div class="filters"><input id="search" type="search" placeholder="Search reference, party, description" aria-label="Search transactions"><select id="direction" aria-label="Filter cash direction"><option value="">All directions</option><option>Money in</option><option>Money out</option></select><select id="category" aria-label="Filter category"><option value="">All categories</option></select></div></div>
+  <div class="table-wrap"><table><thead><tr><th>Date / reference</th><th>Transaction</th><th>Party / purpose</th><th>Account / mode</th><th class="number">Money in</th><th class="number">Money out</th></tr></thead><tbody id="rows"></tbody></table></div>
+  <div class="panel-footer"><span id="row-count"></span><span id="filtered-total"></span></div>
+ </div>
+ <div class="lower">
+  <div class="panel inset"><h2 class="section-title">Where company expenses went</h2><p class="help">Company-only spending · Excludes project funding and owner withdrawals</p><div id="expense-bars"></div></div>
+  <div class="panel inset"><h2 class="section-title">Keep the books clear</h2><div class="account"><div>Company labor &amp; building work<small>Office/site owned by company, furniture, plumbing</small></div><span class="pill">Company expense</span></div><div class="account"><div>Cash sent to a project<small>Working capital / funding, not company overhead</small></div><span class="pill">Transfer</span></div><div class="account"><div>Cash received from a project<small>Return of funds, not automatically project profit</small></div><span class="pill">Transfer</span></div><p class="help" style="margin-top:15px">Project labor, vendor and client entries stay in their project modules. Do not copy those payments here as new company expenses.</p></div>
+ </div>
+ </section>
+ <section id="results" class="hidden" role="tabpanel" aria-labelledby="tab-results">
+ <div class="explain"><strong>Illustrative management results—not cash entries.</strong> These are sample profit/loss figures for review. The calculation basis and whether actual project results are calculated or entered must be agreed before implementation. This is not a consolidated company profit &amp; loss statement.</div>
+ <div class="results-summary"><div class="card"><label>Profitable projects</label><strong class="positive">₹5,00,000</strong><small>2 projects · sample cumulative result</small></div><div class="card"><label>Loss-making projects</label><strong class="negative">₹80,000</strong><small>1 project · sample cumulative result</small></div><div class="card"><label>Net project result</label><strong>₹4,20,000</strong><small>Excludes company overhead and owner capital</small></div></div>
+ <div class="panel"><div class="toolbar"><div><h2>Project results vs. cash transfers</h2><p>Results: cumulative to 31 October 2026 · Cash transfers: October only</p></div></div><div class="table-wrap"><table><thead><tr><th>Project</th><th>Status</th><th class="number">Project profit / loss</th><th class="number">Cash received by company</th><th class="number">Cash sent to project</th></tr></thead><tbody id="project-rows"></tbody></table></div><div class="panel-footer">Positive project results do not increase the company cash balance until money is actually received.</div></div>
+ </section>
+ <section id="capital" class="hidden" role="tabpanel" aria-labelledby="tab-capital">
+ <div class="explain"><strong>Owner / partner capital.</strong> Record principal invested in the company and actual owner withdrawals. These change cash but are not company operating income or expenses.</div>
+ <div class="panel"><div class="toolbar"><div><h2>Owner capital movements</h2><p>October 2026 only · Not lifetime ownership balances or partner equity shares</p></div></div><div class="table-wrap"><table><thead><tr><th>Date / reference</th><th>Owner / partner</th><th>Movement</th><th>Account</th><th class="number">Amount</th></tr></thead><tbody id="capital-rows"></tbody></table></div><div class="panel-footer"><span id="capital-total"></span><span>Opening cash is not assumed to be owner capital.</span></div></div>
+ </section>
+ <p class="footer-note">Proposed scope: a company-wide menu independent of the selected project, with separate view / record / export permissions and transaction history. No automatic import, bank reconciliation, tax accounting or project P&amp;L formula is implied by this preview.</p>
+ <p class="print-note hidden">VRIDHI · Company Cashbook design preview · Synthetic sample data · October 2026 · INR</p>
+ </main>
+</div>
+</div>
+<dialog id="entry"><div class="dialog-head"><div><div class="eyebrow">COMPANY CASHBOOK</div><h2>Record cash transaction</h2><p class="help">Preview only. This will not save to the application.</p></div><button class="close" id="close" aria-label="Close dialog">×</button></div>
+<form id="form" class="dialog-body"><div class="form-grid">
+ <div class="field"><label for="date">Transaction date *</label><input id="date" type="date" value="2026-10-30" min="2026-10-01" max="2026-10-31" required></div>
+ <div class="field"><label for="kind">Transaction type *</label><select id="kind" required><option>Owner capital</option><option>Company expense</option><option>Project cash received</option><option>Project funding</option><option>Owner withdrawal</option><option>Other receipt</option></select></div>
+ <div class="field"><label for="amount">Amount *</label><input id="amount" type="number" min="0.01" max="100000000" step="0.01" placeholder="0.00" required></div>
+ <div class="field"><label for="expense-category">Category *</label><select id="expense-category"></select></div>
+ <div class="field"><label for="party">Paid to / received from *</label><input id="party" maxlength="100" placeholder="Owner, supplier or worker name" required></div>
+ <div class="field"><label for="account">Company account *</label><select id="account"><option>Company bank · Bank transfer</option><option>Cash in hand · Cash</option><option>Company bank · UPI</option><option>Company bank · Cheque</option></select></div>
+ <div class="field wide hidden" id="project-field"><label for="project">Linked project *</label><select id="project"><option value="">Select a project</option><option>Greenfield Residence</option><option>Lakeview Villas</option><option>Orchid Commercial</option></select></div>
+ <div class="field wide"><label for="description">Description *</label><textarea id="description" rows="2" maxlength="240" placeholder="What was the money received or paid for?" required></textarea></div>
+ <div class="field wide"><label for="reference">Bank / receipt reference</label><input id="reference" maxlength="80" placeholder="UTR, cheque or receipt number (optional)"></div>
+ <div class="choice wide" id="entry-hint"></div>
+ </div><div class="dialog-footer"><button type="button" id="cancel">Cancel</button><button type="submit" class="primary">Add sample entry</button></div></form></dialog>
+<div id="toast" class="toast hidden" role="status"></div>
+<script>
+const money = n => new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:2}).format(n);
+const opening=500000;
+let entries=[
+ {date:'2026-10-30',ref:'CC-010',kind:'Company expense',category:'Miscellaneous',party:'City Services',description:'Office internet and utilities',account:'Company bank · UPI',amount:12000},
+ {date:'2026-10-28',ref:'CC-009',kind:'Project cash received',category:'Project transfer',party:'Greenfield Residence',description:'Cash returned to company',account:'Company bank · Bank transfer',amount:300000,project:'Greenfield Residence'},
+ {date:'2026-10-25',ref:'CC-008',kind:'Company expense',category:'Plumbing',party:'Aqua Plumbing',description:'Company office plumbing repairs',account:'Company bank · UPI',amount:18000},
+ {date:'2026-10-23',ref:'CC-007',kind:'Company expense',category:'Company labor',party:'Ravi & team',description:'Labor for company-owned building',account:'Cash in hand · Cash',amount:45000},
+ {date:'2026-10-20',ref:'CC-006',kind:'Project funding',category:'Project transfer',party:'Lakeview Villas',description:'Working capital sent to project',account:'Company bank · Bank transfer',amount:250000,project:'Lakeview Villas'},
+ {date:'2026-10-17',ref:'CC-005',kind:'Owner withdrawal',category:'Owner withdrawal',party:'Partner A',description:'Owner drawings',account:'Company bank · Bank transfer',amount:50000},
+ {date:'2026-10-14',ref:'CC-004',kind:'Company expense',category:'Furniture',party:'Workspace Furnishings',description:'Office desks and chairs',account:'Company bank · Bank transfer',amount:85000},
+ {date:'2026-10-10',ref:'CC-003',kind:'Company expense',category:'Company purchases',party:'Prime Equipment',description:'Company office equipment',account:'Company bank · Bank transfer',amount:120000},
+ {date:'2026-10-06',ref:'CC-002',kind:'Owner capital',category:'Capital contribution',party:'Partner B',description:'Additional company capital',account:'Company bank · Bank transfer',amount:500000},
+ {date:'2026-10-02',ref:'CC-001',kind:'Owner capital',category:'Capital contribution',party:'Partner A',description:'Principal invested in company',account:'Company bank · Bank transfer',amount:1000000}
+];
+const isIn=e=>['Owner capital','Project cash received','Other receipt'].includes(e.kind);
+const sum=items=>items.reduce((total,e)=>total+e.amount,0);
+const el=id=>document.getElementById(id);
+function cell(row,text,cls=''){const td=document.createElement('td');td.textContent=text;td.className=cls;row.append(td);return td}
+function sub(td,text){const small=document.createElement('small');small.textContent=text;td.append(small)}
+function render(){
+ const incoming=sum(entries.filter(isIn)),outgoing=sum(entries.filter(e=>!isIn(e)));
+ el('total-in').textContent=money(incoming);el('total-out').textContent=money(outgoing);el('closing').textContent=money(opening+incoming-outgoing);
+ const selected=el('category').value;
+ el('category').replaceChildren(new Option('All categories',''),...Array.from(new Set(entries.map(e=>e.category))).sort().map(v=>new Option(v,v)));
+ el('category').value=selected;
+ const query=el('search').value.toLowerCase(),direction=el('direction').value;
+ const filtered=entries.filter(e=>(!selected||e.category===selected)&&(!direction||direction===(isIn(e)?'Money in':'Money out'))&&[e.ref,e.party,e.description,e.category].join(' ').toLowerCase().includes(query));
+ el('rows').replaceChildren();
+ for(const e of filtered){
+  const row=document.createElement('tr');sub(cell(row,new Date(e.date+'T12:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})),e.ref);
+  const kind=cell(row,'');const badge=document.createElement('span');badge.className='pill '+(e.kind==='Owner capital'?'capital':isIn(e)?'in':'out');badge.textContent=e.kind;kind.append(badge);sub(kind,e.category);
+  sub(cell(row,e.party),e.description);cell(row,e.account);
+  cell(row,isIn(e)?money(e.amount):'—','number positive');cell(row,!isIn(e)?money(e.amount):'—','number negative');el('rows').append(row);
+ }
+ if(!filtered.length){const row=document.createElement('tr');const td=cell(row,'No matching transactions. Change the search or filters.');td.colSpan=6;el('rows').append(row)}
+ el('row-count').textContent=`Showing ${filtered.length} of ${entries.length} sample transactions`;
+ el('filtered-total').textContent=`Filtered money in: ${money(sum(filtered.filter(isIn)))} · Money out: ${money(sum(filtered.filter(e=>!isIn(e))))}`;
+ const expenses=entries.filter(e=>e.kind==='Company expense'),total=sum(expenses),categories=[...new Set(expenses.map(e=>e.category))];
+ el('expense-bars').replaceChildren();
+ for(const category of categories){const amount=sum(expenses.filter(e=>e.category===category));const row=document.createElement('div');row.className='bar-row';const label=document.createElement('span');label.textContent=category;const track=document.createElement('div');track.className='track';const fill=document.createElement('div');fill.className='fill';fill.style.width=(amount/total*100)+'%';track.append(fill);const value=document.createElement('span');value.className='number';value.textContent=money(amount);row.append(label,track,value);el('expense-bars').append(row)}
+ el('project-rows').replaceChildren();
+ for(const [name,status,result] of [['Greenfield Residence','Completed',320000],['Lakeview Villas','Active',180000],['Orchid Commercial','Completed',-80000]]){
+  const row=document.createElement('tr');cell(row,name);cell(row,status);cell(row,money(result),'number '+(result>=0?'positive':'negative'));cell(row,money(sum(entries.filter(e=>e.project===name&&e.kind==='Project cash received'))),'number');cell(row,money(sum(entries.filter(e=>e.project===name&&e.kind==='Project funding'))),'number');el('project-rows').append(row);
+ }
+ const capital=entries.filter(e=>['Owner capital','Owner withdrawal'].includes(e.kind));el('capital-rows').replaceChildren();
+ for(const e of capital){const row=document.createElement('tr');sub(cell(row,e.date),e.ref);cell(row,e.party);cell(row,e.kind);cell(row,e.account);cell(row,money(e.amount),'number '+(isIn(e)?'positive':'negative'));el('capital-rows').append(row)}
+ el('capital-total').textContent=`Contributions: ${money(sum(capital.filter(isIn)))} · Withdrawals: ${money(sum(capital.filter(e=>!isIn(e))))}`;
+}
+document.querySelectorAll('[data-tab]').forEach(button=>button.onclick=()=>{
+ document.querySelectorAll('[data-tab]').forEach(b=>{b.classList.toggle('selected',b===button);b.setAttribute('aria-selected',String(b===button))});
+ for(const id of ['transactions','results','capital'])el(id).classList.toggle('hidden',id!==button.dataset.tab);
+});
+for(const id of ['search','direction','category'])el(id).addEventListener(id==='search'?'input':'change',render);
+const options={'Owner capital':['Capital contribution'],'Company expense':['Company purchases','Company labor','Furniture','Plumbing','Building maintenance','Miscellaneous'],'Project cash received':['Project transfer'],'Project funding':['Project transfer'],'Owner withdrawal':['Owner withdrawal'],'Other receipt':['Other company receipt']};
+function updateForm(){
+ const kind=el('kind').value,project=kind.startsWith('Project');
+ el('expense-category').replaceChildren(...options[kind].map(v=>new Option(v,v)));
+ el('project-field').classList.toggle('hidden',!project);el('project').required=project;
+ el('entry-hint').textContent=(['Owner capital','Project cash received','Other receipt'].includes(kind)?'Money in — increases company cash. ':'Money out — reduces company cash. ')+(project?'This is a cash transfer, not a profit/loss entry.':kind==='Owner capital'?'Owner principal is capital funding, not operating income.':kind==='Owner withdrawal'?'Owner drawings are not company operating expenses.':'Record company-level activity only; do not duplicate payments already recorded in project modules.');
+}
+el('kind').onchange=updateForm;
+el('add').onclick=()=>{el('form').reset();updateForm();el('entry').showModal()};
+el('cancel').onclick=el('close').onclick=()=>el('entry').close();
+el('form').onsubmit=event=>{
+ event.preventDefault();
+ const amount=Number(el('amount').value);
+ if(!Number.isFinite(amount)||amount<=0)return;
+ entries.unshift({date:el('date').value,ref:'CC-'+String(entries.length+1).padStart(3,'0'),kind:el('kind').value,category:el('expense-category').value,party:el('party').value.trim(),description:el('description').value.trim(),account:el('account').value,amount,project:el('kind').value.startsWith('Project')?el('project').value:undefined});
+ entries.sort((a,b)=>b.date.localeCompare(a.date));el('search').value='';el('direction').value='';el('category').value='';
+ render();el('entry').close();el('tab-transactions').click();
+ el('toast').textContent='Sample entry added to this preview only. Reloading clears your changes.';el('toast').classList.remove('hidden');setTimeout(()=>el('toast').classList.add('hidden'),5500);
+};
+el('export').onclick=()=>window.print();
+updateForm();render();
+</script>
+</body>
+</html>

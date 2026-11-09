@@ -688,12 +688,17 @@ function InventoryLedgerHistory({
   projectId: string
   targetItem?: InventoryRow['item']
 }) {
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
   const query = useQuery({
     queryKey: ['project', projectId, 'inventory-transactions', targetItem?.id],
     queryFn: () => api.inventoryTransactions(projectId, targetItem?.id)
   })
 
   const transactions = query.data?.items || []
+  const totalPages = Math.max(1, Math.ceil(transactions.length / pageSize))
+  const currentPage = Math.min(page, totalPages)
+  const paginatedTransactions = transactions.slice((currentPage - 1) * pageSize, currentPage * pageSize)
 
   return (
     <div className="inventory-history-content">
@@ -728,7 +733,7 @@ function InventoryLedgerHistory({
                 <td colSpan={targetItem ? 6 : 7}><div className="loading-line" /></td>
               </tr>
             ) : transactions.length ? (
-              transactions.map(tx => {
+              paginatedTransactions.map(tx => {
                 const isReceipt = tx.transaction_type === 'receipt'
                 return (
                   <tr key={tx.id}>
@@ -766,6 +771,47 @@ function InventoryLedgerHistory({
             )}
           </tbody>
         </table>
+      </div>
+      <div className="register-pagination">
+        <label>
+          Rows per page
+          <select
+            aria-label="Stock movements per page"
+            value={pageSize}
+            onChange={event => {
+              setPageSize(Number(event.target.value))
+              setPage(1)
+            }}
+          >
+            {[10, 20, 50, 100].map(size => (
+              <option key={size} value={size}>{size}</option>
+            ))}
+          </select>
+        </label>
+        <span>
+          {transactions.length ? `${(currentPage - 1) * pageSize + 1}–${Math.min(currentPage * pageSize, transactions.length)} of ${transactions.length}` : '0 of 0'}
+        </span>
+        <div className="register-page-controls">
+          <button
+            className="icon-button"
+            title="Previous page"
+            aria-label="Previous page"
+            disabled={query.isLoading || currentPage <= 1}
+            onClick={() => setPage(Math.max(1, currentPage - 1))}
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <span>Page {currentPage} of {totalPages}</span>
+          <button
+            className="icon-button"
+            title="Next page"
+            aria-label="Next page"
+            disabled={query.isLoading || currentPage >= totalPages}
+            onClick={() => setPage(Math.min(totalPages, currentPage + 1))}
+          >
+            <ChevronRight size={16} />
+          </button>
+        </div>
       </div>
     </div>
   )

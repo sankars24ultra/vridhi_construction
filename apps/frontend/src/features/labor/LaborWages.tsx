@@ -436,7 +436,7 @@ export function LaborWages({
                   contractsQuery.isError
                 }
               >
-                <BriefcaseBusiness size={14} />
+                <Download size={14} />
                 Download Report
               </button>
             )}

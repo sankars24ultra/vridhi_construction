@@ -186,11 +186,9 @@ function UserHistoryTable({ user, projectNames }: { user: User; projectNames: Re
 
 export function UsersView({
   currentUser,
-  projectId,
   csrf,
 }: {
   currentUser: User;
-  projectId: string;
   csrf: string;
 }) {
   const queryClient = useQueryClient();
@@ -406,7 +404,7 @@ export function UsersView({
       target?.global_permissions || (hasSharedProfile ? firstProfile : null) || defaultProjectPermissions(),
     );
     setUserProjectIds(ids);
-    setActivePermissionProjectId(ids[0] || projectId);
+    setActivePermissionProjectId(ids[0] || "");
     setProjectPermissionDrafts(
       Object.fromEntries(
         ids.map((id) => [
@@ -866,14 +864,15 @@ export function UsersView({
                                         (id) => id !== project.id,
                                       ),
                                 );
-                                if (add)
+                                if (add) {
                                   setProjectPermissionDrafts((previous) => ({
                                     ...previous,
                                     [project.id]:
                                       previous[project.id] ||
                                       defaultProjectPermissions(),
                                   }));
-                                else if (
+                                  if (!activePermissionProjectId) setActivePermissionProjectId(project.id);
+                                } else if (
                                   activePermissionProjectId === project.id
                                 )
                                   setActivePermissionProjectId(

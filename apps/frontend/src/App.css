@@ -1265,3 +1265,13 @@ html,body,#root{height:100%;min-height:100%;background:#f3f6f2}.app-shell{height
 @media(max-width:860px){.backup-sections{grid-template-columns:1fr}}
 @media(max-width:560px){.backup-form{grid-template-columns:1fr;padding:0 14px}.backup-panel>.form-error,.backup-panel>.backup-success,.backup-panel>.backup-progress,.backup-panel>.backup-ready,.backup-panel>.backup-preview,.backup-panel>.backup-restore-status{margin:0 14px}}
 @media screen{.app-shell[data-theme=dark] .backup-health{background:#16261f;border-color:#2f5546;color:#9fd6b9}.app-shell[data-theme=dark] .backup-health.stale{background:#2c2414;border-color:#6b5524;color:#f0cd85}.app-shell[data-theme=dark] .backup-pending-banner{background:#172334;border-color:#34506f;border-left-color:#91c5ff;color:#b9d8fb}.app-shell[data-theme=dark] :is(.backup-progress,.backup-preview-details){background:var(--dark-bg);border-color:var(--dark-line);color:var(--dark-text)}.app-shell[data-theme=dark] :is(.backup-success,.backup-ready){background:#16261f;border-color:#2f5546;color:#9fd6b9}.app-shell[data-theme=dark] :is(.backup-ready strong,.backup-preview-details dd,.backup-toggle){color:var(--dark-text)}.app-shell[data-theme=dark] :is(.backup-ready span,.backup-preview-details dt){color:var(--dark-muted)}.app-shell[data-theme=dark] .backup-restore-warning{background:#3a2320;border-color:#7c4436;color:#f4b49b}.app-shell[data-theme=dark] .backup-passphrase-set{color:#9fd6b9}}
+@media screen {
+  .app-shell :is(.page-content, .modal),
+  .app-shell :is(.page-content, .modal) :is(div, p, span, small, label, legend, input, select, textarea, option, th, td, dt, dd, li, a, summary) {
+    font-weight: 600 !important;
+  }
+  .app-shell :is(.page-content, .modal) :is(h1, h2, h3, h4, h5, h6, th, strong, b, legend, summary),
+  .app-shell :is(.page-content, .modal) :is(h1, h2, h3, h4, h5, h6, th, strong, b, legend, summary) * {
+    font-weight: 700 !important;
+  }
+}

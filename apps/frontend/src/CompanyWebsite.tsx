@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { ArrowDown, ArrowRight, ArrowUpRight, Armchair, BriefcaseBusiness, Building2, Check, ClipboardList, Clock, Hammer, HardHat, House, Layers3, Lightbulb, LockKeyhole, LogIn, Mail, MapPin, MessageSquare, Moon, Phone, Ruler, Sun, X, type LucideIcon } from 'lucide-react'
+import { ArrowDown, ArrowRight, ArrowUpRight, Armchair, BriefcaseBusiness, Building2, Check, ClipboardList, Clock, Hammer, HardHat, House, Lightbulb, LockKeyhole, LogIn, Mail, MapPin, MessageSquare, Moon, Phone, Ruler, Sun, X, type LucideIcon } from 'lucide-react'
 import vridhiLogo from '../../../images/logo-transparent.png'
 import './CompanyWebsite.css'
 
 const serviceContent = [
-  { title: 'Construction', icon: Building2, summary: 'Build a new home or business space, or thoughtfully improve an existing one.', detail: 'Explore construction support for new builds, renovations and extensions, with the work shaped around the agreed plans and the way you want your space to work.', areas: ['New residential and commercial spaces', 'Renovation and extension possibilities', 'Site preparation, construction and finishing'] },
-  { title: 'Design & planning', icon: Layers3, summary: 'Shape the look and function of your space, inside and out.', detail: 'From early design guidance to considered plans, explore layouts, materials, interiors and practical details for a new space or one ready for change.', areas: ['Early ideas and design direction', 'Layouts, materials and interior design', 'Planning for new builds and existing spaces'] },
-  { title: 'Project coordination', icon: HardHat, summary: 'Keep people, decisions and progress connected as your project takes shape.', detail: 'For a home, business space or another agreed project, clear coordination helps connect the plan with site activity and the conversations that move the work forward.', areas: ['Coordinating agreed project stages', 'Progress reviews and upcoming decisions', 'Clear communication about changes and next steps'] },
+  { title: 'Structural & Architecture Design', icon: Ruler, headline: 'Plan with purpose.', summary: 'Bring structural needs and architectural ideas together in a considered design.', detail: 'Explore design support for a new build, extension or renovation, shaped around your site, goals and project requirements.', includeTitle: 'Design possibilities', areas: ['Architectural concepts and spatial planning', 'Structural design considerations', 'Layouts shaped around your needs and site'] },
+  { title: 'Plan Approvals', icon: ClipboardList, headline: 'Move forward with clarity.', summary: 'Get guidance on preparing plans and navigating the approval process.', detail: 'Discuss the drawings, documents and application steps that may be needed for your project under applicable local requirements.', includeTitle: 'Approval support may include', areas: ['Reviewing plan submission requirements', 'Preparing and coordinating relevant documents', 'Liaising through the applicable approval process'] },
+  { title: 'Building Construction & Renovation', icon: Building2, headline: 'Build, renew and reimagine.', summary: 'Create a new space or give an existing property a thoughtful new direction.', detail: 'Explore construction and renovation for homes and other spaces, with scope, materials and stages discussed before work begins.', includeTitle: 'Project possibilities', areas: ['New building construction', 'Renovation and extension work', 'Finishes and agreed project stages'] },
+  { title: 'Home Transformation Ideas', icon: Lightbulb, headline: 'See what your home could become.', summary: 'Explore practical ideas to make your home feel more personal and work better for you.', detail: 'From rethinking a room to refreshing the feel of your home, start with your priorities, available space and preferred style.', includeTitle: 'Ideas to explore', areas: ['Room layouts and better use of space', 'Style, colour and material direction', 'Ideas for comfort, storage and everyday living'] },
+  { title: 'Interior & Exterior Works', icon: Armchair, headline: 'Bring every detail together.', summary: 'Connect the look and feel of your interiors with the character of your exterior.', detail: 'Discuss finishes and improvements inside and outside your property, tailored to the agreed design, requirements and scope.', includeTitle: 'Ways to enhance your space', areas: ['Interior finishes and detailing', 'Exterior improvements and finishing', 'Materials and details that complement your design'] },
+  { title: 'All Types of Fabrication', icon: Hammer, headline: 'Made for your project.', summary: 'Explore custom fabrication for functional, structural and decorative needs.', detail: 'Discuss fabrication requirements, materials, measurements and finishes for elements designed to suit your project.', includeTitle: 'Fabrication possibilities', areas: ['Gates, railings and custom metalwork', 'Structural and functional elements', 'Decorative details and project-specific solutions'] },
 ]
 const steps = [
   { title: 'Your Aspirations', text: 'Every space starts with a conversation. Explore your ideas, priorities and the way you want to live or work.', image: 'A project conversation with inspiration boards, a site map and a planning notebook.', activities: ['Discuss your lifestyle, business needs and design inspiration.', 'Review available site information and practical constraints.', 'Explore your budget range, priorities and preferred timing.'], outcome: 'A shared project brief to guide the next discussion.', involvement: 'Bring your ideas, site details and the questions that matter to you.' },
@@ -144,6 +147,95 @@ function WebsiteJourney() {
   )
 }
 
+function ServiceLayoutComparison() {
+  const [selectedService, setSelectedService] = useState<number | null>(null)
+  const [closingDetails, setClosingDetails] = useState(false)
+  const detailRef = useRef<HTMLDivElement>(null)
+  const restoreOverviewRef = useRef(false)
+  const service = selectedService === null ? null : serviceContent[selectedService]
+
+  useEffect(() => {
+    const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'
+    if (selectedService === null) {
+      if (restoreOverviewRef.current) {
+        document.querySelector<HTMLAnchorElement>('.website-header a[href="#services"]')?.click()
+        restoreOverviewRef.current = false
+      }
+      return
+    }
+    detailRef.current?.scrollIntoView({
+      block: 'nearest',
+      behavior,
+    })
+  }, [selectedService])
+
+  return (
+    <section className="website-service-comparison" aria-labelledby="website-service-comparison-title">
+        <div className="website-service-comparison-content">
+          <div className="website-alternative-heading">
+            <div><p className="website-eyebrow">WHAT WE DO</p><h2 id="website-service-comparison-title">From first plans<br />to finishing details.</h2></div>
+            <p>Explore structural and architectural design, plan approvals, building construction and renovation, home transformation ideas, interior and exterior works, and fabrication—all discussed around your project’s needs.</p>
+        </div>
+        <div className="website-alternative-grid website-service-comparison-grid" aria-label="Services offered">
+          {serviceContent.map(({ title, icon: Icon, headline, summary }, index) => (
+            <article className={`website-alternative-card${selectedService === index ? ' is-selected' : ''}`} key={title}>
+              <div className="website-alternative-visual" aria-hidden="true"><Icon size={42} strokeWidth={1.4} /></div>
+              <div className="website-alternative-body">
+                <p className="website-eyebrow">{title}</p>
+                <h3>{headline}</h3>
+                <p><strong>{summary}</strong></p>
+                <button
+                  className="website-service-card-select"
+                  type="button"
+                  aria-pressed={selectedService === index}
+                  aria-controls="website-service-comparison-detail"
+                  onClick={() => {
+                    if (selectedService === index) {
+                      if (closingDetails) return
+                      restoreOverviewRef.current = true
+                      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                        setSelectedService(null)
+                      } else {
+                        setClosingDetails(true)
+                      }
+                    } else {
+                      restoreOverviewRef.current = false
+                      setClosingDetails(false)
+                      setSelectedService(index)
+                    }
+                  }}
+                >
+                  <span>{selectedService === index ? 'Hide service details' : 'View service details'}</span>
+                  <ArrowDown size={16} aria-hidden="true" />
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+        <div
+          className={`website-service-comparison-detail${closingDetails ? ' is-closing' : ''}`}
+          id="website-service-comparison-detail"
+          ref={detailRef}
+          hidden={!service}
+          aria-live="polite"
+          onAnimationEnd={event => {
+            if (event.target !== event.currentTarget || event.animationName !== 'website-service-detail-exit') return
+            setClosingDetails(false)
+            setSelectedService(null)
+          }}
+        >
+          {service && (
+            <>
+              <div><p className="website-eyebrow">{service.title}</p><h4>{service.headline}</h4><p>{service.detail}</p></div>
+              <div><h5>{service.includeTitle}</h5><ul>{service.areas.map(item => <li key={item}><Check size={16} aria-hidden="true" />{item}</li>)}</ul></div>
+            </>
+          )}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default function CompanyWebsite() {
   const websiteRef = useRef<HTMLDivElement>(null)
   const legalDialogRef = useRef<HTMLDialogElement>(null)
@@ -191,6 +283,10 @@ export default function CompanyWebsite() {
       if (section.id === 'about') {
         const clientSection = website.querySelector<HTMLElement>('.website-client-values')
         if (clientSection) relatedSections.push(clientSection)
+      }
+      if (!event.isTrusted) {
+        for (const relatedSection of relatedSections) relatedSection.classList.add('website-revealed')
+        return
       }
       for (const relatedSection of relatedSections) {
         relatedSection.classList.add('website-revealed')
@@ -283,26 +379,9 @@ export default function CompanyWebsite() {
           </div>
           <p className="website-draft-note"><span className="website-draft-mark" aria-hidden="true">*</span> Proposed client approach · Service scope and commitments are subject to discussion and written agreement.</p>
         </section>
-        <section className="website-section website-services-alternative" id="services" aria-labelledby="website-services-alternative-title">
-          <div className="website-alternative-heading">
-            <div><p className="website-eyebrow">WHAT WE DO</p><h2 id="website-services-alternative-title">One vision.<br />Thoughtfully connected.</h2></div>
-            <div><p>Whether you’re planning a new home or business space, rethinking an existing one, exploring interiors or seeking early design guidance, we can discuss how our services may support your project.</p></div>
-          </div>
-          <div className="website-alternative-grid">
-            {serviceContent.map(({ title, icon: Icon, summary, detail, areas }, index) => (
-              <article className="website-alternative-card" key={title}>
-                <div className="website-alternative-visual" aria-hidden="true"><Icon size={42} strokeWidth={1.4} /><span>0{index + 1}</span></div>
-                <div className="website-alternative-body">
-                  <p className="website-eyebrow">{title}</p>
-                  <h3>{['Bring your plans to life.', 'Make room for your ideas.', 'Keep every stage connected.'][index]}</h3>
-                  <p><strong>{summary}</strong></p>
-                  <p>{detail}</p>
-                  <div className="website-alternative-includes"><h4>{['Ways we can support', 'Design possibilities', 'Across your project'][index]}</h4><ul>{areas.map(item => <li key={item}><Check size={16} aria-hidden="true" />{item}</li>)}</ul></div>
-                </div>
-              </article>
-            ))}
-          </div>
-          <p className="website-draft-note"><span className="website-draft-mark" aria-hidden="true">*</span> Proposed services. Specific scope, deliverables and responsibilities are discussed and agreed for each project.</p>
+        <section className="website-section website-services-alternative" id="services" aria-labelledby="website-service-comparison-title">
+          <ServiceLayoutComparison />
+          <p className="website-draft-note"><span className="website-draft-mark" aria-hidden="true">*</span> Service scope, deliverables and responsibilities are discussed and agreed for each project. Plan approvals are subject to applicable requirements and decisions by the relevant authorities.</p>
         </section>
         <ProjectStartingPoints />
         <WebsiteJourney />

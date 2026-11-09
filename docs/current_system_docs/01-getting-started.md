@@ -98,10 +98,14 @@ is a concept, not a photograph of a completed company project.
 Below-the-fold sections fade and slide into view as visitors scroll. Clicking a
 top-menu section link replays that section's reveal, including on repeat visits.
 About Us also replays the Client First content and its three cards.
-The What We Do section uses blueprint-style icon panels and visible service
-details for Construction, Design & Planning, and Project Coordination. Its content
-also describes potential support for new homes, business spaces, renovations or
-extensions, interior design, early design guidance and other agreed projects.
+The What We Do section uses six compact blueprint-style service cards for
+Structural & Architecture Design, Plan Approvals, Building Construction &
+Renovation, Home Transformation Ideas, Interior & Exterior Works, and All Types
+of Fabrication. Selecting a service highlights its icon and brings a shared
+details panel into view. Hiding details fades the panel out over 450ms and returns
+to the Services overview without replaying its entrance animation. Reduced-motion
+users receive an immediate close. No empty panel or comparison layout is shown.
+Plan approvals remain subject to applicable requirements and authority decisions.
 The Services menu links directly to this section. Project Starting Points serves
 as the Plan your project destination, reusing the six project choices and
 preparation checklists in an icon-led, hoverable list. It replaces the separate

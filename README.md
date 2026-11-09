@@ -81,6 +81,12 @@ Normal `docker compose down` preserves `vridhi_pgdata`; removing Docker volumes 
 
 The frontend and backend are separate local processes in one monorepo. Implemented vertical slice: backend sessions, portfolio/project detail, project status history, procurement create/edit and payment ledger, ordered inventory registration/read model, starter billing entries, timecards, local user listing, dashboard and portfolio summary. Seed data and calculations are development samples.
 
+Inventory's **Stock ledger** and individual-material **Stock Movements** popups show 10 rows per page
+by default, with 10, 20, 50 or 100 rows per page and Previous/Next controls.
+
+In the Users editor, module permission changes apply to the assigned project selected in
+**Project permissions**, independently of the current workspace project.
+
 Not yet implemented: invitation/reset delivery, complete project/value document APIs, full role/permission and membership administration, payment receipts and idempotency persistence, goods-receipt/movement workflows, approved change-order lifecycle, complete contract/invoice/client payment models, full attendance approval/correction, audit console, exports, production storage scanning, robust automated migrations, and comprehensive authorization granularity. The source design describes 112 API method/routes; this codebase is a smaller first slice and must not be represented as all 112 production APIs implemented.
 
 ## Checks

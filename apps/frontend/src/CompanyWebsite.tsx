@@ -383,8 +383,8 @@ export default function CompanyWebsite() {
           <ServiceLayoutComparison />
           <p className="website-draft-note"><span className="website-draft-mark" aria-hidden="true">*</span> Service scope, deliverables and responsibilities are discussed and agreed for each project. Plan approvals are subject to applicable requirements and decisions by the relevant authorities.</p>
         </section>
-        <ProjectStartingPoints />
         <WebsiteJourney />
+        <ProjectStartingPoints />
         <section className="website-section website-contact" id="contact" aria-labelledby="website-contact-title">
           <div className="website-contact-copy">
             <p className="website-eyebrow">CONTACT US</p>

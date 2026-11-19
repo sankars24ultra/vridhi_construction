@@ -30,6 +30,9 @@ The shared Python bootstrap:
    when manifests, Node version/platform or required install markers change.
    Lockfile URLs use public npm with integrity hashes.
 6. Starts API/Vite on loopback, verifies readiness, then opens the browser.
+   A fresh database receives only the initial administrator account. No sample
+   projects, vendors, inventory, or transactions are preloaded. Existing data
+   is preserved; using a new laptop does not clear a database it connects to.
    Healthy services tracked by this bootstrap are reused. Changed source or
    configuration requires an explicit restart. Untracked listeners are not adopted
    and no process is killed automatically.
@@ -62,7 +65,7 @@ Manual startup alternatives follow:
 4. In `apps/frontend`, run `npm ci`, then `npm run dev`. Open `http://127.0.0.1:5173`. Vite proxies `/api` to FastAPI. If port 5173 is occupied, start with `npm run dev -- --port 5174`; the local API allows both loopback origins.
 5. API docs are at `http://127.0.0.1:8000/docs`; readiness is `/api/v1/ready`.
 
-At API startup, SQLAlchemy automatically creates missing mapped tables, then seeds an empty database. It does not alter existing columns. Use `python -m alembic upgrade head` in the backend environment for schema changes. The initial account password is Argon2id-hashed.
+At API startup, SQLAlchemy automatically creates missing mapped tables, then creates only the administrator account if there are no users. No sample business data is added, and existing records are not removed. It does not alter existing columns. Use `python -m alembic upgrade head` in the backend environment for schema changes. The initial account password is Argon2id-hashed.
 
 To switch the existing setup from Docker PostgreSQL, edit `.env` and change `DATABASE_MODE=docker` (or an absent mode inferred from port 5433) to `DATABASE_MODE=local`, then point `DATABASE_URL` to your installed server on port 5432. This only changes which database the app connects to: it does not copy or delete data. The existing Docker volume remains untouched. If you need those records in local PostgreSQL, export/import them separately with `pg_dump`/`pg_restore`.
 
@@ -79,7 +82,7 @@ Normal `docker compose down` preserves `vridhi_pgdata`; removing Docker volumes 
 
 ## Current implementation boundary
 
-The frontend and backend are separate local processes in one monorepo. Implemented vertical slice: backend sessions, portfolio/project detail, project status history, procurement create/edit and payment ledger, ordered inventory registration/read model, starter billing entries, timecards, local user listing, dashboard and portfolio summary. Seed data and calculations are development samples.
+The frontend and backend are separate local processes in one monorepo. Implemented vertical slice: backend sessions, portfolio/project detail, project status history, procurement create/edit and payment ledger, ordered inventory registration/read model, billing entries, timecards, local user listing, dashboard and portfolio summary. Fresh installations start without sample business data.
 
 Inventory's **Stock ledger** and individual-material **Stock Movements** popups show 10 rows per page
 by default, with 10, 20, 50 or 100 rows per page and Previous/Next controls.
